@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search, Calendar, MapPin, Clock, X, DollarSign, Edit2, Trash2, ArrowUpDown } from "lucide-react"
 import type { Activity, Friend } from "@/lib/types"
 import { format, isAfter, isBefore, startOfDay } from "date-fns"
-import { deleteActivity } from "@/lib/storage"
+import { deleteActivity, logActivity } from "@/lib/storage"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -119,6 +119,27 @@ export function ActivitiesListView({ activities, friends, onEdit, onUpdate }: Ac
   }
 
   const handleDelete = async (id: string) => {
+    // Get activity details before deleting
+    const activity = activities.find((a) => a.id === id)
+    if (activity) {
+      // Get participant names
+      const activityFriends = getActivityFriends(activity)
+      const participantNames = activityFriends.map((f) => f.name).join(", ")
+      
+      // Log the deletion with all details (Admin is the deleter)
+      await logActivity(
+        "trip_deleted",
+        activity.id,
+        activity.title,
+        activity.type,
+        participantNames,
+        activity.location,
+        activity.startDate,
+        activity.endDate,
+        "Admin"
+      )
+    }
+    
     await deleteActivity(id)
     setDeleteActivityId(null)
     onUpdate()

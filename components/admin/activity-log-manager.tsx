@@ -4,8 +4,8 @@ import { useEffect, useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { getActivityLogs } from "@/lib/storage"
 import type { ActivityLog } from "@/lib/types"
-import { Calendar, Trash2, Check, X } from "lucide-react"
-import { formatDistanceToNow } from "date-fns"
+import { Calendar, Trash2, Check, X, MapPin, Users, Clock } from "lucide-react"
+import { formatDistanceToNow, format } from "date-fns"
 import { Badge } from "@/components/ui/badge"
 
 export function ActivityLogManager() {
@@ -80,25 +80,27 @@ export function ActivityLogManager() {
   }
 
   const getActionText = (log: ActivityLog) => {
+    const typeLabel = log.activityType === "trip" ? "trip" : "activity"
+    
     switch (log.actionType) {
       case "trip_created":
         return (
           <>
-            <span className="font-semibold">{log.friendName || "Someone"}</span> created trip{" "}
+            <span className="font-semibold">{log.friendName || "Someone"}</span> created {typeLabel}{" "}
             <span className="font-semibold">{log.activityTitle}</span>
           </>
         )
       case "trip_updated":
         return (
           <>
-            <span className="font-semibold">{log.friendName || "Someone"}</span> updated trip{" "}
+            <span className="font-semibold">{log.friendName || "Someone"}</span> updated {typeLabel}{" "}
             <span className="font-semibold">{log.activityTitle}</span>
           </>
         )
       case "trip_deleted":
         return (
           <>
-            <span className="font-semibold">{log.friendName || "Someone"}</span> deleted trip{" "}
+            <span className="font-semibold">{log.friendName || "Someone"}</span> deleted {typeLabel}{" "}
             <span className="font-semibold">{log.activityTitle}</span>
           </>
         )
@@ -118,6 +120,22 @@ export function ActivityLogManager() {
         )
       default:
         return null
+    }
+  }
+  
+  const formatDateRange = (startDate?: string, endDate?: string) => {
+    if (!startDate) return null
+    
+    try {
+      const start = format(new Date(startDate), "MMM d, yyyy")
+      if (!endDate) return start
+      
+      const end = format(new Date(endDate), "MMM d, yyyy")
+      if (start === end) return start
+      
+      return `${start} - ${end}`
+    } catch {
+      return null
     }
   }
 
@@ -152,6 +170,38 @@ export function ActivityLogManager() {
                       </p>
                     </div>
                     <p className="text-sm">{getActionText(log)}</p>
+                    
+                    {/* Show comprehensive details for deletions */}
+                    {log.actionType === "trip_deleted" && (log.startDate || log.location || log.participantNames) && (
+                      <div className="mt-3 p-3 bg-red-50 dark:bg-red-950/20 rounded-lg border border-red-200 dark:border-red-900/30 space-y-2">
+                        <p className="text-xs font-semibold text-red-700 dark:text-red-400 mb-2">Deleted Activity Details:</p>
+                        
+                        {log.startDate && (
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <Clock className="h-3 w-3 text-red-600 dark:text-red-400" />
+                            <span className="font-medium">Dates:</span>
+                            <span>{formatDateRange(log.startDate, log.endDate)}</span>
+                          </div>
+                        )}
+                        
+                        {log.location && (
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <MapPin className="h-3 w-3 text-red-600 dark:text-red-400" />
+                            <span className="font-medium">Location:</span>
+                            <span>{log.location}</span>
+                          </div>
+                        )}
+                        
+                        {log.participantNames && (
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <Users className="h-3 w-3 text-red-600 dark:text-red-400" />
+                            <span className="font-medium">Participants:</span>
+                            <span>{log.participantNames}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    
                     {log.details && (
                       <p className="text-xs text-muted-foreground mt-2 p-2 bg-muted/30 rounded">{log.details}</p>
                     )}

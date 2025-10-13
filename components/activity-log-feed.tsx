@@ -122,6 +122,9 @@ export function ActivityLogFeed() {
           <>
             <span className="font-semibold">{log.friendName || "Someone"}</span> deleted {typeLabel}{" "}
             <span className="font-semibold">{log.activityTitle}</span>
+            {log.participantNames && (
+              <span className="text-muted-foreground"> (with {log.participantNames})</span>
+            )}
           </>
         )
       default:
