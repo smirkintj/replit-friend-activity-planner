@@ -131,9 +131,9 @@ export function ActivityLogFeed() {
 
   if (isLoading) {
     return (
-      <Card>
+      <Card className="glass-card">
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">Recent Activity</CardTitle>
+          <CardTitle className="text-base gradient-text">Recent Activity</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">Loading...</p>
@@ -143,9 +143,9 @@ export function ActivityLogFeed() {
   }
 
   return (
-    <Card>
+    <Card className="glass-card hover-lift">
       <CardHeader className="pb-2">
-        <CardTitle className="text-base">Recent Activity</CardTitle>
+        <CardTitle className="text-base gradient-text">🎬 Recent Activity</CardTitle>
       </CardHeader>
       <CardContent>
         <div ref={scrollRef} className="space-y-2 max-h-[180px] overflow-hidden" style={{ scrollBehavior: "auto" }}>

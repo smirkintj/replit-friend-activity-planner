@@ -38,8 +38,8 @@ export default function HomePage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="h-12 w-12 rounded-full border-4 border-primary border-t-transparent animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">Loading...</p>
+          <div className="h-16 w-16 rounded-full border-4 border-primary border-t-transparent animate-spin mx-auto mb-4 glow-primary" />
+          <p className="text-lg font-medium gradient-text">Loading your adventures...</p>
         </div>
       </div>
     )
@@ -47,33 +47,33 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b bg-card/80 backdrop-blur-md sticky top-0 z-10 shadow-sm">
+      <header className="glass-card border-b sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-md">
-                <Calendar className="h-5 w-5 text-white" />
+              <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-primary via-secondary to-accent flex items-center justify-center shadow-lg glow-primary animate-bounce-subtle">
+                <Calendar className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold tracking-tight">gengputrafreebila</h1>
+                <h1 className="text-2xl font-bold tracking-tight gradient-text">gengputrafreebila</h1>
                 <p className="text-sm text-muted-foreground">semua busy kan so boleh check sini tengok siapa free ye</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <Link href="/past-trips">
-                <Button variant="ghost" size="sm" className="gap-2">
+                <Button variant="ghost" size="sm" className="gap-2 hover-lift">
                   <History className="h-4 w-4" />
                   <span className="hidden sm:inline">Kisah Lama</span>
                 </Button>
               </Link>
               <Link href="/feature-requests">
-                <Button variant="ghost" size="sm" className="gap-2">
+                <Button variant="ghost" size="sm" className="gap-2 hover-lift">
                   <Lightbulb className="h-4 w-4" />
-                  <span className="hidden sm:inline">Nak feature </span>
+                  <span className="hidden sm:inline">Nak feature</span>
                 </Button>
               </Link>
               <Link href="/admin">
-                <Button variant="outline" className="shadow-sm bg-transparent">
+                <Button variant="outline" className="shadow-md hover-lift">
                   <Settings className="h-4 w-4 mr-2" />
                   Admin
                 </Button>
@@ -86,16 +86,16 @@ export default function HomePage() {
       <main className="container mx-auto px-4 py-8">
         {data.friends.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-6">
-              <Calendar className="h-10 w-10 text-primary" />
+            <div className="h-24 w-24 rounded-3xl bg-gradient-to-br from-primary/30 via-secondary/30 to-accent/30 flex items-center justify-center mb-6 animate-bounce-subtle glow-primary">
+              <Calendar className="h-12 w-12 text-primary" />
             </div>
-            <h2 className="text-2xl font-bold mb-2">Welcome to gengputrafreebila</h2>
-            <p className="text-muted-foreground mb-6 max-w-md">
+            <h2 className="text-3xl font-bold mb-3 gradient-text">Welcome to gengputrafreebila</h2>
+            <p className="text-muted-foreground mb-8 max-w-md text-lg">
               Get started by adding your friends and their activities in the admin dashboard.
             </p>
             <Link href="/admin">
-              <Button size="lg" className="shadow-md">
-                <Settings className="h-4 w-4 mr-2" />
+              <Button size="lg" className="shadow-lg glow-accent hover-lift bg-gradient-to-r from-primary to-secondary text-white">
+                <Settings className="h-5 w-5 mr-2" />
                 Go to Admin Dashboard
               </Button>
             </Link>
@@ -106,12 +106,12 @@ export default function HomePage() {
               <ActivityLogFeed />
 
               <Tabs defaultValue="availability" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 mb-6">
-                  <TabsTrigger value="availability" className="gap-2">
+                <TabsList className="grid w-full grid-cols-2 mb-6 glass-card p-1">
+                  <TabsTrigger value="availability" className="gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-secondary data-[state=active]:text-white">
                     <Users className="h-4 w-4" />
                     Availability
                   </TabsTrigger>
-                  <TabsTrigger value="calendar" className="gap-2">
+                  <TabsTrigger value="calendar" className="gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-secondary data-[state=active]:text-white">
                     <Calendar className="h-4 w-4" />
                     Calendar
                   </TabsTrigger>

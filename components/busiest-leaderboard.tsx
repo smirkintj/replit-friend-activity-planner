@@ -54,22 +54,22 @@ export function BusiestLeaderboard({ data, monthsAhead = 6 }: BusiestLeaderboard
   const getRankBadge = (index: number) => {
     switch (index) {
       case 0:
-        return "bg-gradient-to-r from-yellow-400 to-yellow-600 text-white"
+        return "badge-gold glow-accent"
       case 1:
-        return "bg-gradient-to-r from-gray-300 to-gray-500 text-white"
+        return "badge-silver"
       case 2:
-        return "bg-gradient-to-r from-amber-500 to-amber-700 text-white"
+        return "badge-bronze"
       default:
         return "bg-muted text-muted-foreground"
     }
   }
 
   return (
-    <Card className="shadow-md border-2">
-      <CardHeader className="bg-gradient-to-r from-primary/10 to-accent/10 pb-3">
-        <CardTitle className="text-lg font-bold flex items-center gap-2">
-          <Trophy className="h-5 w-5 text-primary" />
-          Anugerah Terpaling Busy
+    <Card className="glass-card hover-lift rainbow-border">
+      <CardHeader className="bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 pb-3">
+        <CardTitle className="text-lg font-bold flex items-center gap-2 gradient-text">
+          <Trophy className="h-5 w-5 text-accent animate-bounce-subtle" />
+          🏆 Anugerah Terpaling Busy
         </CardTitle>
         <p className="text-xs text-muted-foreground">Who's got the most plans?</p>
       </CardHeader>
