@@ -11,7 +11,7 @@ export function ActivityLogFeed() {
   const [logs, setLogs] = useState<ActivityLog[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const scrollRef = useRef<HTMLDivElement>(null)
-  const animationRef = useRef<number>()
+  const animationRef = useRef<number | undefined>(undefined)
 
   useEffect(() => {
     const loadLogs = async () => {

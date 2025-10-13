@@ -4,75 +4,120 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Enhanced color scheme with more vibrant, gamified colors */
-  --background: oklch(0.99 0.005 240);
-  --foreground: oklch(0.2 0.01 240);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.2 0.01 240);
+  /* 🎮 GAMIFIED COLOR PALETTE - Light Mode */
+  /* Soft lavender-white background instead of harsh white */
+  --background: oklch(0.985 0.008 270); /* Soft lavender-white #f8f9fe */
+  --foreground: oklch(0.25 0.015 270);
+  
+  /* Cards with glass-morphism effect */
+  --card: oklch(1 0 0); /* Pure white cards */
+  --card-foreground: oklch(0.25 0.015 270);
+  
+  /* Popovers */
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.2 0.01 240);
-  --primary: oklch(0.58 0.24 260);
-  --primary-foreground: oklch(0.99 0.005 240);
-  --secondary: oklch(0.96 0.01 240);
-  --secondary-foreground: oklch(0.2 0.01 240);
-  --muted: oklch(0.97 0.005 240);
-  --muted-foreground: oklch(0.5 0.01 240);
-  --accent: oklch(0.68 0.22 180);
-  --accent-foreground: oklch(0.99 0.005 240);
-  --destructive: oklch(0.58 0.24 30);
-  --destructive-foreground: oklch(0.99 0.005 240);
-  --border: oklch(0.92 0.005 240);
-  --input: oklch(0.95 0.005 240);
-  --ring: oklch(0.58 0.24 260);
-  --chart-1: oklch(0.58 0.24 260);
-  --chart-2: oklch(0.68 0.22 180);
-  --chart-3: oklch(0.62 0.2 50);
-  --chart-4: oklch(0.68 0.2 300);
-  --chart-5: oklch(0.72 0.18 330);
-  --radius: 0.5rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --popover-foreground: oklch(0.25 0.015 270);
+  
+  /* Primary: Vibrant indigo - energetic & modern */
+  --primary: oklch(0.62 0.24 265); /* #6366f1 indigo */
+  --primary-foreground: oklch(1 0 0);
+  
+  /* Secondary: Purple - adds depth */
+  --secondary: oklch(0.60 0.25 285); /* #8b5cf6 purple */
+  --secondary-foreground: oklch(1 0 0);
+  
+  /* Muted backgrounds */
+  --muted: oklch(0.97 0.008 270);
+  --muted-foreground: oklch(0.5 0.015 270);
+  
+  /* Accent: Warm amber - gamified points/highlights */
+  --accent: oklch(0.72 0.18 70); /* #f59e0b amber */
+  --accent-foreground: oklch(0.15 0.015 270);
+  
+  /* Success: Fresh green for available status */
+  --success: oklch(0.65 0.19 165); /* #10b981 green */
+  --success-foreground: oklch(1 0 0);
+  
+  /* Destructive: Vibrant pink-red for busy status */
+  --destructive: oklch(0.61 0.24 15); /* #f43f5e pink-red */
+  --destructive-foreground: oklch(1 0 0);
+  
+  /* Borders and inputs */
+  --border: oklch(0.93 0.008 270);
+  --input: oklch(0.96 0.008 270);
+  --ring: oklch(0.62 0.24 265);
+  
+  /* Chart colors - playful palette */
+  --chart-1: oklch(0.62 0.24 265); /* Indigo */
+  --chart-2: oklch(0.60 0.25 285); /* Purple */
+  --chart-3: oklch(0.72 0.18 70); /* Amber */
+  --chart-4: oklch(0.65 0.19 165); /* Green */
+  --chart-5: oklch(0.61 0.24 15); /* Pink */
+  
+  /* Rounded corners for friendly feel */
+  --radius: 0.75rem;
+  
+  /* Sidebar */
+  --sidebar: oklch(0.99 0.005 270);
+  --sidebar-foreground: oklch(0.25 0.015 270);
+  --sidebar-primary: oklch(0.62 0.24 265);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.97 0.008 270);
+  --sidebar-accent-foreground: oklch(0.25 0.015 270);
+  --sidebar-border: oklch(0.93 0.008 270);
+  --sidebar-ring: oklch(0.62 0.24 265);
 }
 
 .dark {
-  --background: oklch(0.15 0.01 240);
-  --foreground: oklch(0.98 0.005 240);
-  --card: oklch(0.18 0.01 240);
-  --card-foreground: oklch(0.98 0.005 240);
-  --popover: oklch(0.18 0.01 240);
-  --popover-foreground: oklch(0.98 0.005 240);
-  --primary: oklch(0.6 0.24 250);
-  --primary-foreground: oklch(0.15 0.01 240);
-  --secondary: oklch(0.25 0.01 240);
-  --secondary-foreground: oklch(0.98 0.005 240);
-  --muted: oklch(0.25 0.01 240);
-  --muted-foreground: oklch(0.6 0.01 240);
-  --accent: oklch(0.7 0.22 180);
-  --accent-foreground: oklch(0.15 0.01 240);
-  --destructive: oklch(0.5 0.2 25);
-  --destructive-foreground: oklch(0.98 0.005 240);
-  --border: oklch(0.3 0.01 240);
-  --input: oklch(0.3 0.01 240);
-  --ring: oklch(0.6 0.24 250);
-  --chart-1: oklch(0.6 0.24 250);
-  --chart-2: oklch(0.7 0.22 180);
-  --chart-3: oklch(0.65 0.2 50);
-  --chart-4: oklch(0.7 0.2 300);
-  --chart-5: oklch(0.75 0.18 330);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
+  /* 🌙 DARK MODE - Deep space colors with golden accents */
+  --background: oklch(0.16 0.015 265); /* Deep space blue-black #0f0f1a */
+  --foreground: oklch(0.92 0.005 270);
+  
+  /* Elevated card surfaces */
+  --card: oklch(0.20 0.018 265); /* #1a1a2e elevated surfaces */
+  --card-foreground: oklch(0.92 0.005 270);
+  
+  --popover: oklch(0.20 0.018 265);
+  --popover-foreground: oklch(0.92 0.005 270);
+  
+  /* Lighter indigo for dark mode contrast */
+  --primary: oklch(0.68 0.22 265); /* #818cf8 lighter indigo */
+  --primary-foreground: oklch(0.16 0.015 265);
+  
+  /* Purple accent */
+  --secondary: oklch(0.65 0.23 285); /* Lighter purple */
+  --secondary-foreground: oklch(0.92 0.005 270);
+  
+  --muted: oklch(0.25 0.015 265);
+  --muted-foreground: oklch(0.60 0.012 270);
+  
+  /* Golden glow accent for dark mode */
+  --accent: oklch(0.78 0.15 85); /* #fbbf24 golden */
+  --accent-foreground: oklch(0.16 0.015 265);
+  
+  --success: oklch(0.70 0.18 165);
+  --success-foreground: oklch(0.16 0.015 265);
+  
+  --destructive: oklch(0.65 0.22 15);
+  --destructive-foreground: oklch(0.92 0.005 270);
+  
+  --border: oklch(0.30 0.018 265);
+  --input: oklch(0.28 0.018 265);
+  --ring: oklch(0.68 0.22 265);
+  
+  --chart-1: oklch(0.68 0.22 265);
+  --chart-2: oklch(0.65 0.23 285);
+  --chart-3: oklch(0.78 0.15 85);
+  --chart-4: oklch(0.70 0.18 165);
+  --chart-5: oklch(0.65 0.22 15);
+  
+  --sidebar: oklch(0.18 0.015 265);
+  --sidebar-foreground: oklch(0.92 0.005 270);
+  --sidebar-primary: oklch(0.68 0.22 265);
+  --sidebar-primary-foreground: oklch(0.92 0.005 270);
+  --sidebar-accent: oklch(0.25 0.015 265);
+  --sidebar-accent-foreground: oklch(0.92 0.005 270);
+  --sidebar-border: oklch(0.30 0.018 265);
+  --sidebar-ring: oklch(0.68 0.22 265);
 }
 
 @theme inline {
@@ -120,7 +165,111 @@
   * {
     @apply border-border outline-ring/50;
   }
+  
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  /* 🎨 Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer utilities {
+  /* ✨ Glass-morphism effect for cards */
+  .glass-card {
+    @apply bg-card/80 backdrop-blur-xl border border-border/50;
+    box-shadow: 0 8px 32px 0 rgba(99, 102, 241, 0.08);
+  }
+  
+  .glass-card-dark {
+    @apply bg-card/60 backdrop-blur-xl border border-border/30;
+    box-shadow: 0 8px 32px 0 rgba(129, 140, 248, 0.12);
+  }
+  
+  /* 🌟 Gradient text for headers */
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent;
+  }
+  
+  /* 💫 Glowing effect for interactive elements */
+  .glow-primary {
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+  }
+  
+  .glow-accent {
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+  }
+  
+  /* 🎯 Playful hover animations */
+  .hover-lift {
+    @apply transition-all duration-300;
+  }
+  
+  .hover-lift:hover {
+    @apply -translate-y-1 shadow-lg;
+  }
+  
+  /* 🏆 Badge styles for gamification */
+  .badge-gold {
+    @apply bg-gradient-to-br from-amber-400 to-amber-600 text-white shadow-lg;
+  }
+  
+  .badge-silver {
+    @apply bg-gradient-to-br from-gray-300 to-gray-500 text-white shadow-lg;
+  }
+  
+  .badge-bronze {
+    @apply bg-gradient-to-br from-orange-400 to-orange-600 text-white shadow-lg;
+  }
+  
+  /* 🎮 Progress bar animations */
+  .progress-bar {
+    @apply bg-gradient-to-r from-primary via-secondary to-accent;
+    animation: shimmer 2s linear infinite;
+  }
+  
+  @keyframes shimmer {
+    0% {
+      background-position: -200% center;
+    }
+    100% {
+      background-position: 200% center;
+    }
+  }
+  
+  /* 💥 Bounce animation for interactive elements */
+  .animate-bounce-subtle {
+    animation: bounce-subtle 2s ease-in-out infinite;
+  }
+  
+  @keyframes bounce-subtle {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+  
+  /* 🌈 Rainbow border animation */
+  .rainbow-border {
+    border: 2px solid transparent;
+    background: linear-gradient(var(--card), var(--card)) padding-box,
+                linear-gradient(90deg, 
+                  oklch(0.62 0.24 265),
+                  oklch(0.60 0.25 285),
+                  oklch(0.72 0.18 70),
+                  oklch(0.65 0.19 165)
+                ) border-box;
+    animation: rainbow-rotate 3s linear infinite;
+  }
+  
+  @keyframes rainbow-rotate {
+    to {
+      background-position: 200% center;
+    }
   }
 }
