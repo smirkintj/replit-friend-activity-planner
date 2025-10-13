@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search, Calendar, MapPin, Clock, X, DollarSign, Edit2, Trash2, ArrowUpDown } from "lucide-react"
 import type { Activity, Friend } from "@/lib/types"
 import { format, isAfter, isBefore, startOfDay } from "date-fns"
-import { deleteActivity, logActivity } from "@/lib/storage"
+import { deleteActivity, logActivity, isSuperAdmin } from "@/lib/storage"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,6 +39,11 @@ export function ActivitiesListView({ activities, friends, onEdit, onUpdate, logg
   const [customEndDate, setCustomEndDate] = useState("")
   const [deleteActivityId, setDeleteActivityId] = useState<string | null>(null)
   const [sortOrder, setSortOrder] = useState<"nearest" | "furthest">("nearest")
+  const [isSuper, setIsSuper] = useState(false)
+  
+  useEffect(() => {
+    setIsSuper(isSuperAdmin())
+  }, [])
 
   const filteredActivities = useMemo(() => {
     let filtered = activities
@@ -356,8 +361,8 @@ export function ActivitiesListView({ activities, friends, onEdit, onUpdate, logg
                         onEdit(activity)
                       }}
                       className="flex-1"
-                      disabled={!!(loggedInFriendId && activity.organizerId !== loggedInFriendId)}
-                      title={loggedInFriendId && activity.organizerId !== loggedInFriendId ? "Only the organizer can edit this activity" : "Edit activity"}
+                      disabled={!isSuper && !!(loggedInFriendId && activity.organizerId !== loggedInFriendId)}
+                      title={isSuper || !loggedInFriendId || activity.organizerId === loggedInFriendId ? "Edit activity" : "Only admin or organizer can edit"}
                     >
                       <Edit2 className="h-3.5 w-3.5 mr-1" />
                       Edit
@@ -370,8 +375,8 @@ export function ActivitiesListView({ activities, friends, onEdit, onUpdate, logg
                         setDeleteActivityId(activity.id)
                       }}
                       className="flex-1 text-destructive hover:text-destructive"
-                      disabled={!!(loggedInFriendId && activity.organizerId !== loggedInFriendId)}
-                      title={loggedInFriendId && activity.organizerId !== loggedInFriendId ? "Only the organizer can delete this activity" : "Delete activity"}
+                      disabled={!isSuper && !!(loggedInFriendId && activity.organizerId !== loggedInFriendId)}
+                      title={isSuper || !loggedInFriendId || activity.organizerId === loggedInFriendId ? "Delete activity" : "Only admin or organizer can delete"}
                     >
                       <Trash2 className="h-3.5 w-3.5 mr-1" />
                       Delete

@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Plus, Trash2, Edit2, X, Check, Calendar, Crown, Search, MessageSquare } from "lucide-react"
-import { saveFriend, deleteFriend, getTaggedComments, getLoggedInFriendId, logActivity } from "@/lib/storage"
+import { saveFriend, deleteFriend, getTaggedComments, getLoggedInFriendId, logActivity, isSuperAdmin } from "@/lib/storage"
 import type { AppData, Friend } from "@/lib/types"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -40,10 +40,12 @@ export function FriendsManager({ data, onUpdate }: FriendsManagerProps) {
 
   const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({})
   const [loggedInFriendId, setLoggedInFriendId] = useState<string | null>(null)
+  const [isSuper, setIsSuper] = useState(false)
 
   useEffect(() => {
-    // Get logged in friend ID
+    // Get logged in friend ID and check if superadmin
     setLoggedInFriendId(getLoggedInFriendId())
+    setIsSuper(isSuperAdmin())
   }, [])
 
   useEffect(() => {
@@ -338,8 +340,8 @@ export function FriendsManager({ data, onUpdate }: FriendsManagerProps) {
                   size="icon"
                   className="h-8 w-8"
                   onClick={() => handleEdit(friend)}
-                  title={friend.id !== loggedInFriendId ? "You can only edit your own profile" : "Edit friend"}
-                  disabled={friend.id !== loggedInFriendId}
+                  title={isSuper || friend.id === loggedInFriendId ? "Edit friend" : "Only admin or friend owner can edit"}
+                  disabled={!isSuper && friend.id !== loggedInFriendId}
                 >
                   <Edit2 className="h-4 w-4" />
                 </Button>
@@ -348,8 +350,8 @@ export function FriendsManager({ data, onUpdate }: FriendsManagerProps) {
                   size="icon"
                   className="h-8 w-8 text-destructive hover:text-destructive"
                   onClick={() => handleDelete(friend.id)}
-                  title={friend.id !== loggedInFriendId ? "You can only delete your own profile" : "Delete friend"}
-                  disabled={friend.id !== loggedInFriendId}
+                  title={isSuper || friend.id === loggedInFriendId ? "Delete friend" : "Only admin or friend owner can delete"}
+                  disabled={!isSuper && friend.id !== loggedInFriendId}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>

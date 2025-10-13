@@ -18,7 +18,7 @@ import type {
 // Friend authentication functions
 export const isAuthenticated = (): boolean => {
   if (typeof window === "undefined") return false
-  return !!sessionStorage.getItem("logged-in-friend-id")
+  return !!sessionStorage.getItem("logged-in-role")
 }
 
 export const getLoggedInFriendId = (): string | null => {
@@ -31,8 +31,26 @@ export const getLoggedInFriendName = (): string | null => {
   return sessionStorage.getItem("logged-in-friend-name")
 }
 
+export const getLoggedInRole = (): "superadmin" | "friend" | null => {
+  if (typeof window === "undefined") return null
+  const role = sessionStorage.getItem("logged-in-role")
+  return role as "superadmin" | "friend" | null
+}
+
+export const isSuperAdmin = (): boolean => {
+  return getLoggedInRole() === "superadmin"
+}
+
+export const setFriendLogin = (role: "superadmin" | "friend", friendId: string | null, friendName: string): void => {
+  if (typeof window === "undefined") return
+  sessionStorage.setItem("logged-in-role", role)
+  sessionStorage.setItem("logged-in-friend-id", friendId || "")
+  sessionStorage.setItem("logged-in-friend-name", friendName)
+}
+
 export const setFriendLogout = (): void => {
   if (typeof window === "undefined") return
+  sessionStorage.removeItem("logged-in-role")
   sessionStorage.removeItem("logged-in-friend-id")
   sessionStorage.removeItem("logged-in-friend-name")
 }
@@ -112,7 +130,7 @@ export const getStoredData = async (): Promise<AppData> => {
   return { friends, groups, activities, pendingRequests }
 }
 
-export const saveFriend = async (friend: Omit<Friend, "id"> & { id?: string }): Promise<void> => {
+export const saveFriend = async (friend: Omit<Friend, "id"> & { id?: string }): Promise<string> => {
   const supabase = createClient()
 
   const dbFriend = {
@@ -127,8 +145,11 @@ export const saveFriend = async (friend: Omit<Friend, "id"> & { id?: string }): 
 
   if (friend.id) {
     await supabase.from("friends").update(dbFriend).eq("id", friend.id)
+    return friend.id
   } else {
-    await supabase.from("friends").insert(dbFriend)
+    const { data, error } = await supabase.from("friends").insert(dbFriend).select().single()
+    if (error) throw error
+    return data.id
   }
 }
 

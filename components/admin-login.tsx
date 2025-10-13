@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { getStoredData } from "@/lib/storage"
+import { getStoredData, setFriendLogin } from "@/lib/storage"
 import { Lock, User } from "lucide-react"
 import type { Friend } from "@/lib/types"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -22,6 +22,8 @@ export function AdminLogin({ onLogin }: AdminLoginProps) {
   const [pin, setPin] = useState("")
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(true)
+  const [loginMode, setLoginMode] = useState<"friend" | "admin">("friend")
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
     const loadFriends = async () => {
@@ -32,23 +34,41 @@ export function AdminLogin({ onLogin }: AdminLoginProps) {
     loadFriends()
   }, [])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError("")
+    setIsSubmitting(true)
 
-    if (!selectedFriendId) {
-      setError("Please select who you are")
-      return
-    }
+    try {
+      if (loginMode === "friend" && !selectedFriendId) {
+        setError("Please select who you are")
+        setIsSubmitting(false)
+        return
+      }
 
-    const friend = friends.find(f => f.id === selectedFriendId)
-    
-    if (friend && friend.pin === pin) {
-      sessionStorage.setItem("logged-in-friend-id", friend.id)
-      sessionStorage.setItem("logged-in-friend-name", friend.name)
-      onLogin()
-    } else {
-      setError("Salah PIN lah!")
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          friendId: loginMode === "admin" ? null : selectedFriendId,
+          pin: pin,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        setFriendLogin(data.role, data.friendId, data.friendName)
+        onLogin()
+      } else {
+        setError(data.message || "Salah PIN lah!")
+        setPin("")
+      }
+    } catch (err) {
+      setError("Login failed. Please try again.")
       setPin("")
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -71,58 +91,81 @@ export function AdminLogin({ onLogin }: AdminLoginProps) {
           </div>
           <CardTitle className="text-2xl">Who are you?</CardTitle>
           <CardDescription>Pilih siapa kau dan masukkan PIN kau</CardDescription>
+          <div className="flex justify-center gap-2 mt-4">
+            <Button
+              type="button"
+              variant={loginMode === "friend" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setLoginMode("friend")}
+            >
+              Friend Login
+            </Button>
+            <Button
+              type="button"
+              variant={loginMode === "admin" ? "default" : "outline"}
+              size="sm"
+              onClick={() => {
+                setLoginMode("admin")
+                setSelectedFriendId("")
+              }}
+            >
+              Admin Login
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Select Your Name</label>
-              <Select value={selectedFriendId} onValueChange={(value) => {
-                setSelectedFriendId(value)
-                setError("")
-              }}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Choose your name..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {friends.map((friend) => (
-                    <SelectItem key={friend.id} value={friend.id}>
-                      <div className="flex items-center gap-2">
-                        <Avatar className="h-6 w-6">
-                          <AvatarImage src={friend.imageUrl} alt={friend.name} />
-                          <AvatarFallback>{friend.name.slice(0, 2).toUpperCase()}</AvatarFallback>
-                        </Avatar>
-                        <span>{friend.name}</span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            {loginMode === "friend" && (
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Select Your Name</label>
+                <Select value={selectedFriendId} onValueChange={(value) => {
+                  setSelectedFriendId(value)
+                  setError("")
+                }}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choose your name..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {friends.map((friend) => (
+                      <SelectItem key={friend.id} value={friend.id}>
+                        <div className="flex items-center gap-2">
+                          <Avatar className="h-6 w-6">
+                            <AvatarImage src={friend.imageUrl} alt={friend.name} />
+                            <AvatarFallback>{friend.name.slice(0, 2).toUpperCase()}</AvatarFallback>
+                          </Avatar>
+                          <span>{friend.name}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             
             <div className="space-y-2">
-              <label className="text-sm font-medium">Your PIN</label>
+              <label className="text-sm font-medium">{loginMode === "admin" ? "Admin PIN" : "Your PIN"}</label>
               <Input
                 type="password"
-                placeholder="Enter your PIN"
+                placeholder={loginMode === "admin" ? "Enter admin PIN (9406)" : "Enter your PIN"}
                 value={pin}
                 onChange={(e) => {
                   setPin(e.target.value)
                   setError("")
                 }}
                 className="w-full"
-                disabled={!selectedFriendId}
+                disabled={loginMode === "friend" && !selectedFriendId}
               />
               {error && <p className="text-sm text-destructive">{error}</p>}
-              {selectedFriendId && (
+              {loginMode === "friend" && selectedFriendId && (
                 <p className="text-xs text-muted-foreground">
                   Default PIN is 2468 (you can change it later)
                 </p>
               )}
             </div>
             
-            <Button type="submit" className="w-full" disabled={!selectedFriendId}>
+            <Button type="submit" className="w-full" disabled={isSubmitting || (loginMode === "friend" && !selectedFriendId)}>
               <Lock className="h-4 w-4 mr-2" />
-              Login
+              {isSubmitting ? "Logging in..." : "Login"}
             </Button>
           </form>
         </CardContent>
