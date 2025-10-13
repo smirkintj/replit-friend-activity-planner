@@ -3,17 +3,17 @@
 import { useEffect, useState } from "react"
 import { AdminLogin } from "@/components/admin-login"
 import { AdminDashboard } from "@/components/admin-dashboard"
-import { isAdminAuthenticated } from "@/lib/storage"
+import { isAuthenticated } from "@/lib/storage"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 
 export default function AdminPage() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    setIsAuthenticated(isAdminAuthenticated())
+    setIsLoggedIn(isAuthenticated())
     setIsLoading(false)
   }, [])
 
@@ -25,8 +25,8 @@ export default function AdminPage() {
     )
   }
 
-  if (!isAuthenticated) {
-    return <AdminLogin onLogin={() => setIsAuthenticated(true)} />
+  if (!isLoggedIn) {
+    return <AdminLogin onLogin={() => setIsLoggedIn(true)} />
   }
 
   return (

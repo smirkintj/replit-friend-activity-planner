@@ -15,52 +15,26 @@ import type {
   ActivityReaction,
 } from "./types"
 
-const SUPER_ADMIN_PIN = "9406" // Putra (full access)
-const FRIEND_ADMIN_PIN = "2468" // Friend admins (limited access)
-
-export type AdminRole = "super" | "friend" | null
-
-// Admin password functions with role support
-export const checkAdminPassword = (password: string): AdminRole => {
-  if (typeof window === "undefined") return null
-  
-  if (password === SUPER_ADMIN_PIN) {
-    return "super"
-  } else if (password === FRIEND_ADMIN_PIN) {
-    return "friend"
-  }
-  
-  return null
-}
-
-export const isAdminAuthenticated = (): boolean => {
+// Friend authentication functions
+export const isAuthenticated = (): boolean => {
   if (typeof window === "undefined") return false
-  return sessionStorage.getItem("admin-authenticated") === "true"
+  return !!sessionStorage.getItem("logged-in-friend-id")
 }
 
-export const getAdminRole = (): AdminRole => {
+export const getLoggedInFriendId = (): string | null => {
   if (typeof window === "undefined") return null
-  const role = sessionStorage.getItem("admin-role")
-  return (role as AdminRole) || null
+  return sessionStorage.getItem("logged-in-friend-id")
 }
 
-export const isSuperAdmin = (): boolean => {
-  return getAdminRole() === "super"
+export const getLoggedInFriendName = (): string | null => {
+  if (typeof window === "undefined") return null
+  return sessionStorage.getItem("logged-in-friend-name")
 }
 
-export const isFriendAdmin = (): boolean => {
-  return getAdminRole() === "friend"
-}
-
-export const setAdminAuthenticated = (authenticated: boolean, role?: AdminRole): void => {
+export const setFriendLogout = (): void => {
   if (typeof window === "undefined") return
-  if (authenticated && role) {
-    sessionStorage.setItem("admin-authenticated", "true")
-    sessionStorage.setItem("admin-role", role)
-  } else {
-    sessionStorage.removeItem("admin-authenticated")
-    sessionStorage.removeItem("admin-role")
-  }
+  sessionStorage.removeItem("logged-in-friend-id")
+  sessionStorage.removeItem("logged-in-friend-name")
 }
 
 export const getStoredData = async (): Promise<AppData> => {
@@ -83,6 +57,7 @@ export const getStoredData = async (): Promise<AppData> => {
       isOwner: f.is_owner || false, // Added isOwner field from database
       quote: f.quote || undefined, // Added quote field to Friend mapping
       instagramHandle: f.instagram_handle || undefined, // Added instagram_handle mapping from database
+      pin: f.pin || "2468", // Personal PIN for authentication, default 2468
     })) || []
 
   const groups: Group[] =
@@ -147,6 +122,7 @@ export const saveFriend = async (friend: Omit<Friend, "id"> & { id?: string }): 
     is_owner: friend.isOwner || false, // Save isOwner field to database
     quote: friend.quote || null, // Added quote field to database save
     instagram_handle: friend.instagramHandle || null, // Added instagram_handle to database save
+    pin: friend.pin || "2468", // Save personal PIN, default to 2468
   }
 
   if (friend.id) {
