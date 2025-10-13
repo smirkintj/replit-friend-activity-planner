@@ -5,7 +5,7 @@ const SUPERADMIN_PIN = "9406"
 
 export async function POST(request: Request) {
   try {
-    const { friendId, pin } = await request.json()
+    const { pin } = await request.json()
 
     // Check if it's superadmin login
     if (pin === SUPERADMIN_PIN) {
@@ -17,28 +17,30 @@ export async function POST(request: Request) {
       })
     }
 
-    // Validate friend PIN
+    // Look up friend by PIN
     const supabase = await createClient()
-    const { data: friend, error } = await supabase
+    const { data: friends, error } = await supabase
       .from("friends")
       .select("id, name, pin")
-      .eq("id", friendId)
-      .single()
+      .eq("pin", pin)
 
-    if (error || !friend) {
+    if (error) {
+      console.error("Database error:", error)
       return NextResponse.json(
-        { success: false, message: "Friend not found" },
-        { status: 404 }
+        { success: false, message: "Database error" },
+        { status: 500 }
       )
     }
 
-    // Compare PINs (in future, these should be hashed)
-    if (friend.pin !== pin) {
+    if (!friends || friends.length === 0) {
       return NextResponse.json(
         { success: false, message: "Invalid PIN" },
         { status: 401 }
       )
     }
+
+    // Use the first friend with this PIN
+    const friend = friends[0]
 
     return NextResponse.json({
       success: true,
