@@ -9,13 +9,13 @@ import { PendingRequests } from "@/components/admin/pending-requests"
 import { FeatureRequestsManager } from "@/components/admin/feature-requests-manager"
 import { JoinRequestsManager } from "@/components/admin/join-requests-manager"
 import { ActivityLogManager } from "@/components/admin/activity-log-manager"
-import { getStoredData } from "@/lib/storage"
+import { getStoredData, isSuperAdmin } from "@/lib/storage"
 import type { AppData, Activity } from "@/lib/types"
 import { Badge } from "@/components/ui/badge"
 import { ActivitiesListView } from "@/components/admin/activities-list-view"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ChevronDown, ChevronUp, Plus } from "lucide-react"
+import { ChevronDown, ChevronUp, Plus, Lock } from "lucide-react"
 
 export function AdminDashboard() {
   const [data, setData] = useState<AppData>({ friends: [], groups: [], activities: [], pendingRequests: [] })
@@ -24,6 +24,12 @@ export function AdminDashboard() {
   const [showJoinRequests, setShowJoinRequests] = useState(true)
   const [editingActivity, setEditingActivity] = useState<Activity | null>(null)
   const formRef = useRef<HTMLDivElement>(null)
+  const [isSuperAdminUser, setIsSuperAdminUser] = useState(() => isSuperAdmin())
+
+  useEffect(() => {
+    // Update admin role state when component mounts
+    setIsSuperAdminUser(isSuperAdmin())
+  }, [])
 
   useEffect(() => {
     const loadData = async () => {
@@ -88,7 +94,19 @@ export function AdminDashboard() {
             <FriendsManager data={data} onUpdate={refreshData} />
           </TabsContent>
           <TabsContent value="groups">
-            <GroupsManager data={data} onUpdate={refreshData} />
+            {isSuperAdminUser ? (
+              <GroupsManager data={data} onUpdate={refreshData} />
+            ) : (
+              <Card>
+                <CardContent className="py-16 text-center">
+                  <Lock className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                  <h3 className="text-lg font-semibold mb-2">🔒 Locked for Putra only</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Only the super admin can manage groups.
+                  </p>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
         </Tabs>
       </TabsContent>
@@ -176,7 +194,19 @@ export function AdminDashboard() {
       </TabsContent>
 
       <TabsContent value="activity-log" className="mt-6">
-        <ActivityLogManager />
+        {isSuperAdminUser ? (
+          <ActivityLogManager />
+        ) : (
+          <Card>
+            <CardContent className="py-16 text-center">
+              <Lock className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+              <h3 className="text-lg font-semibold mb-2">🔒 Locked for Putra only</h3>
+              <p className="text-sm text-muted-foreground">
+                Only the super admin can view activity logs.
+              </p>
+            </CardContent>
+          </Card>
+        )}
       </TabsContent>
     </Tabs>
   )

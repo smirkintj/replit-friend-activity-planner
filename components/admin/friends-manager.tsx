@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Plus, Trash2, Edit2, X, Check, Calendar, Crown, Search, MessageSquare } from "lucide-react"
-import { saveFriend, deleteFriend, getTaggedComments } from "@/lib/storage"
+import { saveFriend, deleteFriend, getTaggedComments, isSuperAdmin } from "@/lib/storage"
 import type { AppData, Friend } from "@/lib/types"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -38,6 +38,12 @@ export function FriendsManager({ data, onUpdate }: FriendsManagerProps) {
   const [selectedGroupFilter, setSelectedGroupFilter] = useState<string>("all")
 
   const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({})
+  const [isSuperAdminUser, setIsSuperAdminUser] = useState(() => isSuperAdmin())
+
+  useEffect(() => {
+    // Update admin role state when component mounts
+    setIsSuperAdminUser(isSuperAdmin())
+  }, [])
 
   useEffect(() => {
     loadUnreadCounts()
@@ -273,7 +279,8 @@ export function FriendsManager({ data, onUpdate }: FriendsManagerProps) {
                   size="icon"
                   className="h-8 w-8"
                   onClick={() => handleEdit(friend)}
-                  title="Edit friend"
+                  title={friend.isOwner && !isSuperAdminUser ? "Only Putra can edit this account" : "Edit friend"}
+                  disabled={friend.isOwner && !isSuperAdminUser}
                 >
                   <Edit2 className="h-4 w-4" />
                 </Button>
@@ -282,7 +289,8 @@ export function FriendsManager({ data, onUpdate }: FriendsManagerProps) {
                   size="icon"
                   className="h-8 w-8 text-destructive hover:text-destructive"
                   onClick={() => handleDelete(friend.id)}
-                  title="Delete friend"
+                  title={friend.isOwner && !isSuperAdminUser ? "Only Putra can delete this account" : "Delete friend"}
+                  disabled={friend.isOwner && !isSuperAdminUser}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
