@@ -20,9 +20,16 @@ export default function HomePage() {
 
   useEffect(() => {
     const loadData = async () => {
-      const loadedData = await getStoredData()
-      setData(loadedData)
-      setIsLoading(false)
+      try {
+        console.log('[HomePage] Starting to load data...')
+        const loadedData = await getStoredData()
+        console.log('[HomePage] Data loaded successfully:', loadedData)
+        setData(loadedData)
+        setIsLoading(false)
+      } catch (error) {
+        console.error('[HomePage] Error loading data:', error)
+        setIsLoading(false)
+      }
     }
     loadData()
   }, [])
