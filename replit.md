@@ -55,12 +55,12 @@ Design preference: Modern, fun, minimal, and gamified - NOT professional.
 ### Authentication & Authorization
 
 **Two-Tier Admin System** (October 2025): PIN-based authentication with role-based access control
-- **Super Admin (Putra)**: PIN 2468 - Full access to all features
+- **Super Admin (Putra)**: PIN 9406 - Full access to all features
   - Manage friends, groups, activities
   - Edit/delete any friend account including owner account
   - View activity logs
   - Manage groups
-- **Friend Admin**: PIN 1234 - Limited access
+- **Friend Admin**: PIN 2468 - Limited access
   - Create/manage friends (except owner account)
   - Create/manage activities
   - Update their own profile

@@ -15,8 +15,8 @@ import type {
   ActivityReaction,
 } from "./types"
 
-const SUPER_ADMIN_PIN = "2468" // Putra (full access)
-const FRIEND_ADMIN_PIN = "1234" // Friend admins (limited access)
+const SUPER_ADMIN_PIN = "9406" // Putra (full access)
+const FRIEND_ADMIN_PIN = "2468" // Friend admins (limited access)
 
 export type AdminRole = "super" | "friend" | null
 
