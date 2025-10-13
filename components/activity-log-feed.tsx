@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { getPublicActivityLogs } from "@/lib/storage"
 import type { ActivityLog } from "@/lib/types"
-import { Calendar, Trash2, Edit } from "lucide-react"
+import { Calendar, Trash2, Edit, Users } from "lucide-react"
 import { formatDistanceToNow, format } from "date-fns"
 
 export function ActivityLogFeed() {
@@ -66,6 +66,16 @@ export function ActivityLogFeed() {
         return <Edit className="h-3 w-3 text-blue-500" />
       case "trip_deleted":
         return <Trash2 className="h-3 w-3 text-red-500" />
+      case "join_approved":
+        return <Calendar className="h-3 w-3 text-green-500" />
+      case "join_rejected":
+        return <Trash2 className="h-3 w-3 text-red-500" />
+      case "friend_created":
+        return <Users className="h-3 w-3 text-green-500" />
+      case "friend_updated":
+        return <Users className="h-3 w-3 text-blue-500" />
+      case "friend_deleted":
+        return <Users className="h-3 w-3 text-red-500" />
       default:
         return <Calendar className="h-3 w-3" />
     }
@@ -125,6 +135,38 @@ export function ActivityLogFeed() {
             {log.participantNames && (
               <span className="text-muted-foreground"> (with {log.participantNames})</span>
             )}
+          </>
+        )
+      case "join_approved":
+        return (
+          <>
+            <span className="font-semibold">{log.friendName || "Someone"}</span> approved join for{" "}
+            <span className="font-semibold">{log.activityTitle}</span>
+          </>
+        )
+      case "join_rejected":
+        return (
+          <>
+            <span className="font-semibold">{log.friendName || "Someone"}</span> rejected join for{" "}
+            <span className="font-semibold">{log.activityTitle}</span>
+          </>
+        )
+      case "friend_created":
+        return (
+          <>
+            <span className="font-semibold">{log.activityTitle}</span> joined as a friend
+          </>
+        )
+      case "friend_updated":
+        return (
+          <>
+            <span className="font-semibold">{log.activityTitle}</span> updated their profile
+          </>
+        )
+      case "friend_deleted":
+        return (
+          <>
+            <span className="font-semibold">{log.activityTitle}</span> was removed
           </>
         )
       default:

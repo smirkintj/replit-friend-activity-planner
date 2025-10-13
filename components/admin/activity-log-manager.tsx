@@ -37,6 +37,12 @@ export function ActivityLogManager() {
         return <Check className="h-4 w-4 text-green-500" />
       case "join_rejected":
         return <X className="h-4 w-4 text-red-500" />
+      case "friend_created":
+        return <Users className="h-4 w-4 text-green-500" />
+      case "friend_updated":
+        return <Users className="h-4 w-4 text-blue-500" />
+      case "friend_deleted":
+        return <Users className="h-4 w-4 text-red-500" />
       default:
         return <Calendar className="h-4 w-4" />
     }
@@ -72,6 +78,24 @@ export function ActivityLogManager() {
         return (
           <Badge variant="outline" className="bg-red-500/10 text-red-700 border-red-200">
             Join Rejected
+          </Badge>
+        )
+      case "friend_created":
+        return (
+          <Badge variant="outline" className="bg-green-500/10 text-green-700 border-green-200">
+            Friend Added
+          </Badge>
+        )
+      case "friend_updated":
+        return (
+          <Badge variant="outline" className="bg-blue-500/10 text-blue-700 border-blue-200">
+            Friend Updated
+          </Badge>
+        )
+      case "friend_deleted":
+        return (
+          <Badge variant="outline" className="bg-red-500/10 text-red-700 border-red-200">
+            Friend Removed
           </Badge>
         )
       default:
@@ -116,6 +140,24 @@ export function ActivityLogManager() {
           <>
             <span className="font-semibold">{log.friendName || "Someone"}</span> rejected join request for{" "}
             <span className="font-semibold">{log.activityTitle}</span>
+          </>
+        )
+      case "friend_created":
+        return (
+          <>
+            <span className="font-semibold">{log.activityTitle}</span> joined as a friend
+          </>
+        )
+      case "friend_updated":
+        return (
+          <>
+            <span className="font-semibold">{log.activityTitle}</span> updated their profile
+          </>
+        )
+      case "friend_deleted":
+        return (
+          <>
+            <span className="font-semibold">{log.activityTitle}</span> was removed from friends
           </>
         )
       default:

@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Plus, Trash2, Edit2, X, Check, Calendar, Crown, Search, MessageSquare } from "lucide-react"
-import { saveFriend, deleteFriend, getTaggedComments, getLoggedInFriendId } from "@/lib/storage"
+import { saveFriend, deleteFriend, getTaggedComments, getLoggedInFriendId, logActivity } from "@/lib/storage"
 import type { AppData, Friend } from "@/lib/types"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -81,7 +81,7 @@ export function FriendsManager({ data, onUpdate }: FriendsManagerProps) {
   const handleAdd = async () => {
     if (!formData.name.trim()) return
 
-    await saveFriend({
+    const friendId = await saveFriend({
       name: formData.name,
       imageUrl: formData.imageUrl || `/placeholder.svg?height=100&width=100&query=${encodeURIComponent(formData.name)}`,
       groupIds: formData.groupIds,
@@ -90,6 +90,18 @@ export function FriendsManager({ data, onUpdate }: FriendsManagerProps) {
       instagramHandle: formData.instagramHandle.trim() || undefined,
       pin: "2468",
     })
+
+    await logActivity(
+      "friend_created",
+      friendId,
+      formData.name,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      formData.name
+    )
 
     setFormData({ name: "", imageUrl: "", groupIds: [], quote: "", instagramHandle: "", pin: "" })
     setIsAdding(false)
@@ -122,6 +134,18 @@ export function FriendsManager({ data, onUpdate }: FriendsManagerProps) {
       pin: formData.pin.trim() || "2468",
     })
 
+    await logActivity(
+      "friend_updated",
+      editingId,
+      formData.name,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      formData.name
+    )
+
     setFormData({ name: "", imageUrl: "", groupIds: [], quote: "", instagramHandle: "", pin: "" })
     setEditingId(null)
     onUpdate()
@@ -137,7 +161,24 @@ export function FriendsManager({ data, onUpdate }: FriendsManagerProps) {
   }
 
   const handleDelete = async (id: string) => {
+    const friend = data.friends.find(f => f.id === id)
+    
     await deleteFriend(id)
+    
+    if (friend) {
+      await logActivity(
+        "friend_deleted",
+        friend.id,
+        friend.name,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        friend.name
+      )
+    }
+    
     onUpdate()
   }
 

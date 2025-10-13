@@ -579,9 +579,9 @@ export const deleteBacklogComment = async (commentId: string): Promise<void> => 
 }
 
 export const logActivity = async (
-  actionType: "trip_created" | "trip_updated" | "trip_deleted" | "join_approved" | "join_rejected",
-  activityId: string,
-  activityTitle: string,
+  actionType: "trip_created" | "trip_updated" | "trip_deleted" | "join_approved" | "join_rejected" | "friend_created" | "friend_updated" | "friend_deleted",
+  activityId?: string,
+  activityTitle?: string,
   activityType?: "trip" | "activity",
   participantNames?: string,
   location?: string,
@@ -607,14 +607,14 @@ export const logActivity = async (
     .from("activity_log")
     .insert({
       action_type: actionType,
-      activity_id: activityId,
-      activity_title: activityTitle,
-      activity_type: activityType,
-      participant_names: participantNames,
-      location,
-      start_date: startDate,
-      end_date: endDate,
-      friend_name: organizerName,
+      activity_id: activityId || null,
+      activity_title: activityTitle || null,
+      activity_type: activityType || null,
+      participant_names: participantNames || null,
+      location: location || null,
+      start_date: startDate || null,
+      end_date: endDate || null,
+      friend_name: organizerName || null,
     })
     .select()
 
@@ -650,7 +650,10 @@ export const getActivityLogs = async (limit?: number): Promise<ActivityLog[]> =>
         | "trip_updated"
         | "trip_deleted"
         | "join_approved"
-        | "join_rejected",
+        | "join_rejected"
+        | "friend_created"
+        | "friend_updated"
+        | "friend_deleted",
       activityId: log.activity_id,
       activityTitle: log.activity_title,
       activityType: log.activity_type,

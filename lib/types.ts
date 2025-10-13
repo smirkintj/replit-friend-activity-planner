@@ -124,7 +124,7 @@ export interface BacklogComment {
 
 export interface ActivityLog {
   id: string
-  actionType: "trip_created" | "trip_updated" | "trip_deleted" | "join_approved" | "join_rejected"
+  actionType: "trip_created" | "trip_updated" | "trip_deleted" | "join_approved" | "join_rejected" | "friend_created" | "friend_updated" | "friend_deleted"
   activityId?: string
   activityTitle?: string
   activityType?: "trip" | "activity" // Type of activity (trip or activity)
