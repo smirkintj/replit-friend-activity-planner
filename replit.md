@@ -7,6 +7,7 @@ A collaborative activity and trip planning application that helps friends coordi
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Design preference: Modern, fun, minimal, and gamified - NOT professional.
 
 ## System Architecture
 
@@ -16,6 +17,12 @@ Preferred communication style: Simple, everyday language.
 - **Rationale**: Provides modern React features, server-side rendering, and excellent developer experience with built-in routing
 - **UI Library**: Radix UI primitives with custom shadcn/ui components for accessible, customizable UI elements
 - **Styling**: Tailwind CSS with custom CSS variables for theming, supporting light/dark modes via oklch color space
+  - **Design System (October 2025)**: Modern, fun, minimal, gamified aesthetic
+    - **Light Mode**: Soft lavender-white background (#f8f9fe), vibrant indigo primary (#6366f1), purple secondary (#8b5cf6), warm amber accent (#f59e0b)
+    - **Dark Mode**: Deep space blue-black background (#0f0f1a), lighter indigo (#818cf8), golden accent (#fbbf24)
+    - **Glass-morphism**: Cards use backdrop-blur and subtle shadows for frosted glass effect
+    - **Gamified Elements**: Badge system (gold/silver/bronze), gradient text headers, glowing effects, rainbow borders, subtle bounce animations
+    - **Utility Classes**: `.glass-card`, `.gradient-text`, `.glow-primary`, `.hover-lift`, `.badge-gold`, `.rainbow-border`, `.animate-bounce-subtle`
 - **State Management**: React hooks (useState, useEffect, useMemo) for local state; no global state library needed for current scope
 
 **Key Design Patterns**:
