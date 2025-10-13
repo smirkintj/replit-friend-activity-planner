@@ -78,7 +78,7 @@ export const getStoredData = async (): Promise<AppData> => {
         title: a.title,
         startDate: a.start_date,
         endDate: a.end_date,
-        type: a.type as "trip" | "busy" | "available",
+        type: a.type as "trip" | "activity",
         withWho: a.with_who,
         notes: a.notes,
         linkedActivityId: a.linked_activity_id,
@@ -549,7 +549,7 @@ export const getBacklogComments = async (itemId: string): Promise<BacklogComment
       id: c.id,
       backlogItemId: c.backlog_item_id,
       friendId: c.friend_id,
-      friendName: c.friends?.name || "Unknown",
+      friendName: (c.friends as any)?.name || "Unknown",
       comment: c.comment,
       createdAt: c.created_at,
     })) || []
@@ -775,14 +775,14 @@ export const getActivityComments = async (activityId: string): Promise<ActivityC
   return (
     data?.map((c) => {
       const taggedNames =
-        c.tagged_friend_ids?.map((id) => taggedFriendsData?.find((f) => f.id === id)?.name || "Unknown") || []
+        c.tagged_friend_ids?.map((id: string) => taggedFriendsData?.find((f) => f.id === id)?.name || "Unknown") || []
 
       return {
         id: c.id,
         activityId: c.activity_id,
         friendId: c.friend_id,
-        friendName: c.friends?.name || "Unknown",
-        friendImageUrl: c.friends?.image_url || "",
+        friendName: (c.friends as any)?.name || "Unknown",
+        friendImageUrl: (c.friends as any)?.image_url || "",
         comment: c.comment,
         taggedFriendIds: c.tagged_friend_ids || [],
         taggedFriendNames: taggedNames,
@@ -846,7 +846,7 @@ export const getActivityReactions = async (activityId: string): Promise<Activity
       id: r.id,
       activityId: r.activity_id,
       friendId: r.friend_id,
-      friendName: r.friends?.name || "Unknown",
+      friendName: (r.friends as any)?.name || "Unknown",
       reactionType: r.reaction_type as "like" | "love" | "laugh" | "wow" | "sad",
       createdAt: r.created_at,
     })) || []
@@ -922,13 +922,13 @@ export const getTaggedComments = async (friendId: string): Promise<ActivityComme
       id: c.id,
       activityId: c.activity_id,
       friendId: c.friend_id,
-      friendName: c.friends?.name || "Unknown",
-      friendImageUrl: c.friends?.image_url || "",
+      friendName: (c.friends as any)?.name || "Unknown",
+      friendImageUrl: (c.friends as any)?.image_url || "",
       comment: c.comment,
       taggedFriendIds: c.tagged_friend_ids || [],
-      activityTitle: c.activities?.title,
-      activityStartDate: c.activities?.start_date,
-      activityEndDate: c.activities?.end_date,
+      activityTitle: (c.activities as any)?.title,
+      activityStartDate: (c.activities as any)?.start_date,
+      activityEndDate: (c.activities as any)?.end_date,
       createdAt: c.created_at,
     })) || []
   )

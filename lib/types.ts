@@ -22,7 +22,7 @@ export interface Activity {
   title: string
   startDate: string
   endDate: string
-  type: "trip" | "busy" | "available" | "activity"
+  type: "trip" | "activity"
   withWho?: string
   notes?: string
   linkedActivityId?: string // Link to another activity
