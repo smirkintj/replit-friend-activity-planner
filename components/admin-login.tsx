@@ -27,9 +27,17 @@ export function AdminLogin({ onLogin }: AdminLoginProps) {
 
   useEffect(() => {
     const loadFriends = async () => {
-      const data = await getStoredData()
-      setFriends(data.friends)
-      setIsLoading(false)
+      try {
+        console.log("Loading friends...")
+        const data = await getStoredData()
+        console.log("Friends loaded:", data.friends.length)
+        setFriends(data.friends)
+        setIsLoading(false)
+      } catch (error) {
+        console.error("Error loading friends:", error)
+        setIsLoading(false)
+        setError("Failed to load friends")
+      }
     }
     loadFriends()
   }, [])
