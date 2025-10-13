@@ -54,15 +54,31 @@ Design preference: Modern, fun, minimal, and gamified - NOT professional.
 
 ### Authentication & Authorization
 
-**Admin System**: PIN-based authentication (2468)
-- **Rationale**: Simple protection for admin features without complex user management
-- **Session Management**: Session storage keeps admin authenticated during browser session
-- **Admin Routes**: Separate `/admin` page for managing friends, groups, activities, and requests
+**Two-Tier Admin System** (October 2025): PIN-based authentication with role-based access control
+- **Super Admin (Putra)**: PIN 2468 - Full access to all features
+  - Manage friends, groups, activities
+  - Edit/delete any friend account including owner account
+  - View activity logs
+  - Manage groups
+- **Friend Admin**: PIN 1234 - Limited access
+  - Create/manage friends (except owner account)
+  - Create/manage activities
+  - Update their own profile
+  - **Restricted**: Cannot edit Putra's account, cannot view activity logs, cannot manage groups
+
+**Session Management**: 
+- Session storage keeps admin authenticated during browser session
+- Admin role stored in session storage for access control
+- Role persists across page reloads
+- `isSuperAdmin()` and `isFriendAdmin()` helper functions for role checks
+
+**Admin Routes**: Separate `/admin` page for managing friends, groups, activities, and requests
 
 **Security Considerations**:
-- Admin PIN is hardcoded (development approach; should use environment variables in production)
+- Admin PINs are hardcoded (development approach; should use environment variables in production)
 - No user authentication system currently implemented
 - Public pages accessible without authentication
+- UI-level role restrictions (future: add server-side validation)
 
 ### External Dependencies
 
@@ -141,3 +157,12 @@ Design preference: Modern, fun, minimal, and gamified - NOT professional.
 - Reaction system (heart, thumbs up, laugh, frown, sparkles)
 - Tagged comment notifications
 - Activity feed with auto-scrolling
+
+**Activity Logging & Deletion Tracking** (October 2025):
+- Comprehensive deletion logging captures all activity details before deletion
+- Admin activity log shows detailed deletion information:
+  - Dates, location, participants in structured red-highlighted detail box
+  - Deleted by "Admin" attribution
+  - Works in both light and dark modes
+- Public activity feed shows basic deletion context with participants
+- All create, update, and delete actions are logged for audit trail
