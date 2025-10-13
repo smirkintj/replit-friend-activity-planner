@@ -30,6 +30,7 @@ export function FriendsManager({ data, onUpdate }: FriendsManagerProps) {
     groupIds: [] as string[],
     quote: "",
     instagramHandle: "",
+    pin: "",
   })
   const [calendarFriend, setCalendarFriend] = useState<Friend | null>(null)
   const [taggedCommentsFriend, setTaggedCommentsFriend] = useState<Friend | null>(null)
@@ -87,9 +88,10 @@ export function FriendsManager({ data, onUpdate }: FriendsManagerProps) {
       isOwner: formData.name.toLowerCase() === "putra",
       quote: formData.quote.trim() || undefined,
       instagramHandle: formData.instagramHandle.trim() || undefined,
+      pin: "2468",
     })
 
-    setFormData({ name: "", imageUrl: "", groupIds: [], quote: "", instagramHandle: "" })
+    setFormData({ name: "", imageUrl: "", groupIds: [], quote: "", instagramHandle: "", pin: "" })
     setIsAdding(false)
     onUpdate()
   }
@@ -102,6 +104,7 @@ export function FriendsManager({ data, onUpdate }: FriendsManagerProps) {
       groupIds: friend.groupIds,
       quote: friend.quote || "",
       instagramHandle: friend.instagramHandle || "",
+      pin: friend.pin || "2468",
     })
   }
 
@@ -116,9 +119,10 @@ export function FriendsManager({ data, onUpdate }: FriendsManagerProps) {
       isOwner: formData.name.toLowerCase() === "putra",
       quote: formData.quote.trim() || undefined,
       instagramHandle: formData.instagramHandle.trim() || undefined,
+      pin: formData.pin.trim() || "2468",
     })
 
-    setFormData({ name: "", imageUrl: "", groupIds: [], quote: "", instagramHandle: "" })
+    setFormData({ name: "", imageUrl: "", groupIds: [], quote: "", instagramHandle: "", pin: "" })
     setEditingId(null)
     onUpdate()
   }
@@ -248,6 +252,20 @@ export function FriendsManager({ data, onUpdate }: FriendsManagerProps) {
               </div>
               <p className="text-xs text-muted-foreground">Enter Instagram username without the @ symbol</p>
             </div>
+            {editingId && (
+              <div className="space-y-2">
+                <Label htmlFor="pin">Personal PIN</Label>
+                <Input
+                  id="pin"
+                  type="password"
+                  placeholder="4-digit PIN"
+                  value={formData.pin}
+                  onChange={(e) => setFormData({ ...formData, pin: e.target.value.replace(/\D/g, "").slice(0, 4) })}
+                  maxLength={4}
+                />
+                <p className="text-xs text-muted-foreground">Update your personal PIN to login (4 digits)</p>
+              </div>
+            )}
             <div className="flex gap-2">
               <Button onClick={editingId ? handleUpdate : handleAdd}>
                 <Check className="h-4 w-4 mr-2" />
@@ -258,7 +276,7 @@ export function FriendsManager({ data, onUpdate }: FriendsManagerProps) {
                 onClick={() => {
                   setIsAdding(false)
                   setEditingId(null)
-                  setFormData({ name: "", imageUrl: "", groupIds: [], quote: "", instagramHandle: "" })
+                  setFormData({ name: "", imageUrl: "", groupIds: [], quote: "", instagramHandle: "", pin: "" })
                 }}
               >
                 <X className="h-4 w-4 mr-2" />
