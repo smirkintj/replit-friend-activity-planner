@@ -118,13 +118,14 @@ export function FriendsManager({ data, onUpdate }: FriendsManagerProps) {
       groupIds: friend.groupIds,
       quote: friend.quote || "",
       instagramHandle: friend.instagramHandle || "",
-      pin: friend.pin || "2468",
+      pin: "", // PIN is not editable through this form for security
     })
   }
 
   const handleUpdate = async () => {
     if (!formData.name.trim() || !editingId) return
 
+    // PIN is not updated through this form - it's managed separately for security
     await saveFriend({
       id: editingId,
       name: formData.name,
@@ -133,7 +134,6 @@ export function FriendsManager({ data, onUpdate }: FriendsManagerProps) {
       isOwner: formData.name.toLowerCase() === "putra",
       quote: formData.quote.trim() || undefined,
       instagramHandle: formData.instagramHandle.trim() || undefined,
-      pin: formData.pin.trim() || "2468",
     })
 
     await logActivity(

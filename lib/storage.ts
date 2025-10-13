@@ -59,7 +59,8 @@ export const getStoredData = async (): Promise<AppData> => {
   const supabase = createClient()
 
   const [friendsRes, groupsRes, activitiesRes, requestsRes, participantsRes] = await Promise.all([
-    supabase.from("friends").select("*").order("name"),
+    // Don't fetch PIN data to client for security - PINs are validated server-side only
+    supabase.from("friends").select("id, name, image_url, group_id, is_owner, quote, instagram_handle").order("name"),
     supabase.from("groups").select("*").order("name"),
     supabase.from("activities").select("*").order("start_date"),
     supabase.from("friend_requests").select("*").eq("status", "pending").order("created_at"),
@@ -72,10 +73,10 @@ export const getStoredData = async (): Promise<AppData> => {
       name: f.name,
       imageUrl: f.image_url || "",
       groupIds: f.group_id ? [f.group_id] : [],
-      isOwner: f.is_owner || false, // Added isOwner field from database
-      quote: f.quote || undefined, // Added quote field to Friend mapping
-      instagramHandle: f.instagram_handle || undefined, // Added instagram_handle mapping from database
-      pin: f.pin || "2468", // Personal PIN for authentication, default 2468
+      isOwner: f.is_owner || false,
+      quote: f.quote || undefined,
+      instagramHandle: f.instagram_handle || undefined,
+      // PIN is never sent to client for security
     })) || []
 
   const groups: Group[] =
@@ -130,23 +131,29 @@ export const getStoredData = async (): Promise<AppData> => {
   return { friends, groups, activities, pendingRequests }
 }
 
-export const saveFriend = async (friend: Omit<Friend, "id"> & { id?: string }): Promise<string> => {
+export const saveFriend = async (friend: Omit<Friend, "id"> & { id?: string; pin?: string }): Promise<string> => {
   const supabase = createClient()
 
-  const dbFriend = {
+  const dbFriend: any = {
     name: friend.name,
     image_url: friend.imageUrl,
     group_id: friend.groupIds[0] || null,
-    is_owner: friend.isOwner || false, // Save isOwner field to database
-    quote: friend.quote || null, // Added quote field to database save
-    instagram_handle: friend.instagramHandle || null, // Added instagram_handle to database save
-    pin: friend.pin || "2468", // Save personal PIN, default to 2468
+    is_owner: friend.isOwner || false,
+    quote: friend.quote || null,
+    instagram_handle: friend.instagramHandle || null,
+  }
+
+  // Only include PIN if explicitly provided (for new friends or PIN updates)
+  if (friend.pin !== undefined) {
+    dbFriend.pin = friend.pin || "2468"
   }
 
   if (friend.id) {
     await supabase.from("friends").update(dbFriend).eq("id", friend.id)
     return friend.id
   } else {
+    // New friends always get default PIN
+    dbFriend.pin = friend.pin || "2468"
     const { data, error } = await supabase.from("friends").insert(dbFriend).select().single()
     if (error) throw error
     return data.id

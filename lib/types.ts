@@ -6,7 +6,8 @@ export interface Friend {
   isOwner?: boolean // Added isOwner field to identify portal owner
   quote?: string // Added quote field (max 35 characters)
   instagramHandle?: string // Added Instagram handle field
-  pin?: string // Personal PIN for authentication (default: 2468)
+  // PIN is never included in client-side Friend objects for security
+  // PINs are stored in database and validated server-side only
 }
 
 export interface Group {
