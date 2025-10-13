@@ -131,8 +131,30 @@ export const getStoredData = async (): Promise<AppData> => {
   return { friends, groups, activities, pendingRequests }
 }
 
+// Generate a unique random 4-digit PIN
+const generateUniquePin = async (supabase: any): Promise<string> => {
+  const SUPERADMIN_PIN = "9406"
+  const maxAttempts = 100 // Prevent infinite loops
+  
+  for (let i = 0; i < maxAttempts; i++) {
+    const pin = Math.floor(1000 + Math.random() * 9000).toString()
+    
+    // Skip if it matches superadmin PIN
+    if (pin === SUPERADMIN_PIN) continue
+    
+    // Check if PIN already exists
+    const { data } = await supabase.from("friends").select("id").eq("pin", pin).single()
+    
+    // If no match found, PIN is unique
+    if (!data) return pin
+  }
+  
+  throw new Error("Unable to generate unique PIN after maximum attempts")
+}
+
 export const saveFriend = async (friend: Omit<Friend, "id"> & { id?: string; pin?: string }): Promise<string> => {
   const supabase = createClient()
+  const SUPERADMIN_PIN = "9406"
 
   const dbFriend: any = {
     name: friend.name,
@@ -143,17 +165,33 @@ export const saveFriend = async (friend: Omit<Friend, "id"> & { id?: string; pin
     instagram_handle: friend.instagramHandle || null,
   }
 
-  // Only include PIN if explicitly provided (for new friends or PIN updates)
+  // Validate and include PIN if explicitly provided (for updates)
   if (friend.pin !== undefined) {
-    dbFriend.pin = friend.pin || "2468"
+    // Prevent using superadmin PIN
+    if (friend.pin === SUPERADMIN_PIN) {
+      throw new Error("Cannot use superadmin PIN for friend account")
+    }
+    
+    // Check if PIN already exists (excluding current friend if updating)
+    const query = supabase.from("friends").select("id").eq("pin", friend.pin)
+    if (friend.id) {
+      query.neq("id", friend.id)
+    }
+    const { data: existingPin } = await query.single()
+    
+    if (existingPin) {
+      throw new Error("PIN already in use by another friend")
+    }
+    
+    dbFriend.pin = friend.pin
   }
 
   if (friend.id) {
     await supabase.from("friends").update(dbFriend).eq("id", friend.id)
     return friend.id
   } else {
-    // New friends always get default PIN
-    dbFriend.pin = friend.pin || "2468"
+    // New friends get unique random PIN (or explicit PIN if provided and validated)
+    dbFriend.pin = friend.pin || await generateUniquePin(supabase)
     const { data, error } = await supabase.from("friends").insert(dbFriend).select().single()
     if (error) throw error
     return data.id

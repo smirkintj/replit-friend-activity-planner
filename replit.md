@@ -60,25 +60,41 @@ Design preference: Modern, fun, minimal, and gamified - NOT professional.
   - Edit/delete any friend account including owner account
   - View activity logs
   - Manage groups
-- **Friend Admin**: PIN 2468 - Limited access
-  - Create/manage friends (except owner account)
-  - Create/manage activities
+- **Friend Login**: Each friend has unique 4-digit PIN - Limited access
+  - Create/manage activities they organize
   - Update their own profile
-  - **Restricted**: Cannot edit Putra's account, cannot view activity logs, cannot manage groups
+  - **Restricted**: Cannot edit other friends' accounts, cannot view activity logs, cannot manage groups
+
+**Friend PINs** (Updated October 2025):
+- Aizud: 8145
+- Ariff: 3418
+- ASBI: 7007
+- Atikah: 8834
+- Clara: 9364
+- Este: 7919
+- Fahmi: 2161
+- Ilman: 9685
+- Lavanya: 5612
+- Putra: 8255 (Owner)
+- Sabronzo: 1565
+- Thara: 1976
+- Zikri: 3880
+- Zulfikar: 1160
 
 **Session Management**: 
 - Session storage keeps admin authenticated during browser session
 - Admin role stored in session storage for access control
 - Role persists across page reloads
 - `isSuperAdmin()` and `isFriendAdmin()` helper functions for role checks
+- Server-side PIN validation via `/api/auth/login` endpoint
 
 **Admin Routes**: Separate `/admin` page for managing friends, groups, activities, and requests
 
-**Security Considerations**:
-- Admin PINs are hardcoded (development approach; should use environment variables in production)
-- No user authentication system currently implemented
-- Public pages accessible without authentication
-- UI-level role restrictions (future: add server-side validation)
+**Security Improvements** (October 2025):
+- PINs validated server-side only (never sent to client)
+- Each friend has unique random 4-digit PIN (no collisions)
+- New friends automatically get random PINs generated
+- PIN update API endpoint (`/api/admin/update-pins`) for bulk PIN regeneration
 
 ### External Dependencies
 
