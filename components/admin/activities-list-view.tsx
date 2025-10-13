@@ -27,9 +27,10 @@ interface ActivitiesListViewProps {
   friends: Friend[]
   onEdit: (activity: Activity) => void
   onUpdate: () => void
+  loggedInFriendId?: string | null
 }
 
-export function ActivitiesListView({ activities, friends, onEdit, onUpdate }: ActivitiesListViewProps) {
+export function ActivitiesListView({ activities, friends, onEdit, onUpdate, loggedInFriendId }: ActivitiesListViewProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [typeFilter, setTypeFilter] = useState<"all" | "trip" | "activity">("all")
   const [friendFilter, setFriendFilter] = useState<string>("all")
@@ -355,6 +356,8 @@ export function ActivitiesListView({ activities, friends, onEdit, onUpdate }: Ac
                         onEdit(activity)
                       }}
                       className="flex-1"
+                      disabled={!!(loggedInFriendId && activity.organizerId !== loggedInFriendId)}
+                      title={loggedInFriendId && activity.organizerId !== loggedInFriendId ? "Only the organizer can edit this activity" : "Edit activity"}
                     >
                       <Edit2 className="h-3.5 w-3.5 mr-1" />
                       Edit
@@ -367,6 +370,8 @@ export function ActivitiesListView({ activities, friends, onEdit, onUpdate }: Ac
                         setDeleteActivityId(activity.id)
                       }}
                       className="flex-1 text-destructive hover:text-destructive"
+                      disabled={!!(loggedInFriendId && activity.organizerId !== loggedInFriendId)}
+                      title={loggedInFriendId && activity.organizerId !== loggedInFriendId ? "Only the organizer can delete this activity" : "Delete activity"}
                     >
                       <Trash2 className="h-3.5 w-3.5 mr-1" />
                       Delete

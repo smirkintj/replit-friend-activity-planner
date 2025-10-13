@@ -9,7 +9,7 @@ import { PendingRequests } from "@/components/admin/pending-requests"
 import { FeatureRequestsManager } from "@/components/admin/feature-requests-manager"
 import { JoinRequestsManager } from "@/components/admin/join-requests-manager"
 import { ActivityLogManager } from "@/components/admin/activity-log-manager"
-import { getStoredData, getLoggedInFriendId, getLoggedInFriendName } from "@/lib/storage"
+import { getStoredData, getLoggedInFriendId, getLoggedInFriendName, setFriendLogout } from "@/lib/storage"
 import type { AppData, Activity } from "@/lib/types"
 import { Badge } from "@/components/ui/badge"
 import { ActivitiesListView } from "@/components/admin/activities-list-view"
@@ -24,10 +24,12 @@ export function AdminDashboard() {
   const [showJoinRequests, setShowJoinRequests] = useState(true)
   const [editingActivity, setEditingActivity] = useState<Activity | null>(null)
   const formRef = useRef<HTMLDivElement>(null)
+  const [loggedInFriendId, setLoggedInFriendId] = useState<string | null>(null)
   const [loggedInFriendName, setLoggedInFriendName] = useState<string | null>(null)
 
   useEffect(() => {
-    // Get logged in friend name
+    // Get logged in friend ID and name
+    setLoggedInFriendId(getLoggedInFriendId())
     setLoggedInFriendName(getLoggedInFriendName())
   }, [])
 
@@ -154,6 +156,7 @@ export function AdminDashboard() {
               friends={data.friends}
               onEdit={handleEditActivity}
               onUpdate={refreshData}
+              loggedInFriendId={loggedInFriendId}
             />
           </div>
         </div>
