@@ -20,8 +20,10 @@ export function AdminLogin({ onLogin }: AdminLoginProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (checkAdminPassword(password)) {
-      setAdminAuthenticated(true)
+    const role = checkAdminPassword(password)
+    
+    if (role) {
+      setAdminAuthenticated(true, role)
       onLogin()
     } else {
       setError("Salah PIN lah!")

@@ -15,12 +15,22 @@ import type {
   ActivityReaction,
 } from "./types"
 
-const ADMIN_PIN = "2468"
+const SUPER_ADMIN_PIN = "2468" // Putra (full access)
+const FRIEND_ADMIN_PIN = "1234" // Friend admins (limited access)
 
-// Admin password functions still use localStorage (browser-specific)
-export const checkAdminPassword = (password: string): boolean => {
-  if (typeof window === "undefined") return false
-  return password === ADMIN_PIN
+export type AdminRole = "super" | "friend" | null
+
+// Admin password functions with role support
+export const checkAdminPassword = (password: string): AdminRole => {
+  if (typeof window === "undefined") return null
+  
+  if (password === SUPER_ADMIN_PIN) {
+    return "super"
+  } else if (password === FRIEND_ADMIN_PIN) {
+    return "friend"
+  }
+  
+  return null
 }
 
 export const isAdminAuthenticated = (): boolean => {
@@ -28,12 +38,28 @@ export const isAdminAuthenticated = (): boolean => {
   return sessionStorage.getItem("admin-authenticated") === "true"
 }
 
-export const setAdminAuthenticated = (authenticated: boolean): void => {
+export const getAdminRole = (): AdminRole => {
+  if (typeof window === "undefined") return null
+  const role = sessionStorage.getItem("admin-role")
+  return (role as AdminRole) || null
+}
+
+export const isSuperAdmin = (): boolean => {
+  return getAdminRole() === "super"
+}
+
+export const isFriendAdmin = (): boolean => {
+  return getAdminRole() === "friend"
+}
+
+export const setAdminAuthenticated = (authenticated: boolean, role?: AdminRole): void => {
   if (typeof window === "undefined") return
-  if (authenticated) {
+  if (authenticated && role) {
     sessionStorage.setItem("admin-authenticated", "true")
+    sessionStorage.setItem("admin-role", role)
   } else {
     sessionStorage.removeItem("admin-authenticated")
+    sessionStorage.removeItem("admin-role")
   }
 }
 
