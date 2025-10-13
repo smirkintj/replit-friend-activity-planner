@@ -145,7 +145,10 @@ export function ActivityLogFeed() {
   return (
     <Card className="glass-card hover-lift">
       <CardHeader className="pb-2">
-        <CardTitle className="text-base gradient-text">🎬 Recent Activity</CardTitle>
+        <CardTitle className="text-base gradient-text flex items-center gap-2">
+          <Calendar className="h-4 w-4 text-primary" />
+          Recent Activity
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div ref={scrollRef} className="space-y-2 max-h-[180px] overflow-hidden" style={{ scrollBehavior: "auto" }}>

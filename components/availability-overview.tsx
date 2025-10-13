@@ -249,7 +249,7 @@ export function AvailabilityOverview({ data, monthsAhead = 6 }: AvailabilityOver
                     "flex flex-col items-center gap-2 p-3 rounded-xl border transition-all duration-200",
                     activities.length > 0
                       ? "bg-gradient-to-br from-destructive/5 to-destructive/10 border-destructive/20 hover:border-destructive hover:shadow-md cursor-pointer"
-                      : "bg-gradient-to-br from-accent/5 to-accent/10 border-accent/20 hover:border-accent/30",
+                      : "bg-gradient-to-br from-green-500/5 to-green-600/10 border-green-500/20 hover:border-green-500/30",
                   )}
                 >
                   <div className="relative">
@@ -273,7 +273,7 @@ export function AvailabilityOverview({ data, monthsAhead = 6 }: AvailabilityOver
                   <div className="text-center w-full">
                     <p className="font-semibold text-sm truncate">{friend.name}</p>
                     {activities.length === 0 ? (
-                      <Badge className="bg-gradient-to-r from-accent to-accent/80 text-white text-xs mt-1">FREE</Badge>
+                      <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white text-xs mt-1">FREE</Badge>
                     ) : (
                       <div className="mt-1 space-y-1">
                         <p className="text-xs font-medium truncate w-full text-destructive" title={nextActivity.title}>

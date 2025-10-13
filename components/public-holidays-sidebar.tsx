@@ -31,8 +31,8 @@ export function PublicHolidaysSidebar() {
     <Card className="glass-card h-fit sticky top-24 hover-lift">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg gradient-text">
-          <Calendar className="h-5 w-5 text-accent" />
-          🌴 Malaysia Public Holidays
+          <Calendar className="h-5 w-5 text-primary" />
+          Malaysia Public Holidays
         </CardTitle>
         <div className="flex items-center gap-2 mt-2">
           <Popover open={isSelectingRange} onOpenChange={setIsSelectingRange}>
