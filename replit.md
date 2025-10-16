@@ -39,7 +39,7 @@ Design preference: Modern, fun, minimal, and gamified - NOT professional.
 - **Client Creation**: Separate browser and server clients using @supabase/ssr for proper cookie handling
 
 **Data Models**:
-- **Friends**: User profiles with avatars, groups, quotes, Instagram handles
+- **Friends**: User profiles with avatars, groups, quotes, Instagram handles, and email addresses (for notifications)
 - **Groups**: Friend categorization with custom colors
 - **Activities**: Trip/activity records supporting single or multiple participants, recurring events, budgets, and itineraries
 - **Requests**: Friend requests, join requests, feature requests with approval workflows
@@ -108,6 +108,19 @@ Design preference: Modern, fun, minimal, and gamified - NOT professional.
   - API route `/api/upload` handles file uploads
   - 5MB size limit, image files only
   - Public access URLs returned
+
+**Email Service** (October 2025):
+- **Resend**: Transactional email service for trip notifications
+  - API route `/api/send-trip-email` handles email delivery
+  - 3,000 emails/month free tier
+  - Integration with Replit connector for API key management
+  - Supports `.ics` calendar attachments for easy "Add to Calendar" functionality
+  - Email Templates:
+    - **Trip Created**: Sent to all participants when a new trip is created
+    - **Trip Updated**: Sent when trip dates change (includes old/new dates comparison)
+    - **Trip Cancelled**: Sent when a trip is deleted/cancelled
+  - Smart filtering: Only sends to participants with email addresses, excludes organizer from notifications
+  - Error handling: Logs failures but doesn't block trip operations
 
 **Analytics & Monitoring**:
 - **Vercel Analytics**: Built-in analytics for deployment tracking

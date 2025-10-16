@@ -401,6 +401,15 @@ export function ActivitiesManager({ data, onUpdate, editingActivity }: Activitie
       } catch (error) {
         console.error("[v0] Failed to log activity deletion:", error)
       }
+
+      // Send cancellation emails to participants BEFORE deletion
+      try {
+        const { sendTripNotifications } = await import("@/lib/email-helpers")
+        await sendTripNotifications('cancelled', activity, data.friends)
+      } catch (error) {
+        console.error("[v0] Failed to send cancellation emails:", error)
+        // Continue with deletion even if email fails
+      }
     } else {
       console.error("[v0] Activity not found for deletion:", id)
     }
