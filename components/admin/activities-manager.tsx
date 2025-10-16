@@ -169,6 +169,10 @@ export function ActivitiesManager({ data, onUpdate, editingActivity }: Activitie
     )
     console.log("[v0] Activity log created for:", formData.title)
 
+    // Send email notifications to participants
+    const { sendTripNotifications } = await import("@/lib/email-helpers")
+    await sendTripNotifications('created', { ...activityData, id: activityId }, data.friends)
+
     setFormData({
       friendIds: [],
       organizerId: "",
@@ -192,9 +196,16 @@ export function ActivitiesManager({ data, onUpdate, editingActivity }: Activitie
     onUpdate()
   }
 
+  const [originalDates, setOriginalDates] = useState<{ startDate: string; endDate: string } | null>(null)
+
   const handleEdit = (activity: Activity) => {
     setEditingId(activity.id)
     setShowTimeFields(!!(activity.startTime && activity.endTime))
+    // Store original dates for comparison
+    setOriginalDates({
+      startDate: activity.startDate,
+      endDate: activity.endDate,
+    })
     setFormData({
       friendIds: activity.friendIds || [activity.friendId],
       organizerId: activity.organizerId || activity.friendIds?.[0] || activity.friendId,
@@ -304,6 +315,27 @@ export function ActivitiesManager({ data, onUpdate, editingActivity }: Activitie
     )
     console.log("[v0] Activity update logged for:", formData.title)
 
+    // Check if dates changed and send email notifications
+    if (originalDates && (originalDates.startDate !== formData.startDate || originalDates.endDate !== formData.endDate)) {
+      const { sendTripNotifications } = await import("@/lib/email-helpers")
+      await sendTripNotifications('updated', {
+        id: editingId,
+        friendId: formData.friendIds[0],
+        friendIds: formData.friendIds,
+        organizerId: formData.organizerId,
+        title: formData.title,
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+        type: formData.type,
+        withWho: formData.withWho,
+        notes: formData.notes,
+        location: formData.location,
+      }, data.friends, {
+        oldStartDate: originalDates.startDate,
+        oldEndDate: originalDates.endDate,
+      })
+    }
+
     setFormData({
       friendIds: [],
       organizerId: "",
@@ -322,6 +354,7 @@ export function ActivitiesManager({ data, onUpdate, editingActivity }: Activitie
       recurrencePattern: "weekly",
       recurrenceEndDate: "",
     })
+    setOriginalDates(null)
     setEditingId(null)
     setShowTimeFields(false)
     onUpdate()

@@ -144,6 +144,10 @@ export function ActivitiesListView({ activities, friends, onEdit, onUpdate, logg
         activity.endDate,
         "Admin"
       )
+
+      // Send cancellation emails to participants
+      const { sendTripNotifications } = await import("@/lib/email-helpers")
+      await sendTripNotifications('cancelled', activity, friends)
     }
     
     await deleteActivity(id)
