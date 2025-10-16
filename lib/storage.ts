@@ -60,8 +60,7 @@ export const getStoredData = async (): Promise<AppData> => {
 
   const [friendsRes, groupsRes, activitiesRes, requestsRes, participantsRes] = await Promise.all([
     // Don't fetch PIN data to client for security - PINs are validated server-side only
-    // Note: email column temporarily removed until database column is added
-    supabase.from("friends").select("id, name, image_url, group_id, is_owner, quote, instagram_handle").order("name"),
+    supabase.from("friends").select("id, name, email, image_url, group_id, is_owner, quote, instagram_handle").order("name"),
     supabase.from("groups").select("*").order("name"),
     supabase.from("activities").select("*").order("start_date"),
     supabase.from("friend_requests").select("*").eq("status", "pending").order("created_at"),
@@ -81,7 +80,7 @@ export const getStoredData = async (): Promise<AppData> => {
     friendsRes.data?.map((f) => ({
       id: f.id,
       name: f.name,
-      // email: Temporarily removed until database column is added
+      email: f.email || undefined,
       imageUrl: f.image_url || "",
       groupIds: f.group_id ? [f.group_id] : [],
       isOwner: f.is_owner || false,
@@ -169,7 +168,7 @@ export const saveFriend = async (friend: Omit<Friend, "id"> & { id?: string; pin
 
   const dbFriend: any = {
     name: friend.name,
-    // email: Temporarily removed until database column is added
+    email: friend.email || null,
     image_url: friend.imageUrl,
     group_id: friend.groupIds[0] || null,
     is_owner: friend.isOwner || false,
