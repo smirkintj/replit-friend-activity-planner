@@ -60,18 +60,28 @@ export const getStoredData = async (): Promise<AppData> => {
 
   const [friendsRes, groupsRes, activitiesRes, requestsRes, participantsRes] = await Promise.all([
     // Don't fetch PIN data to client for security - PINs are validated server-side only
-    supabase.from("friends").select("id, name, email, image_url, group_id, is_owner, quote, instagram_handle").order("name"),
+    // Note: email column temporarily removed until database column is added
+    supabase.from("friends").select("id, name, image_url, group_id, is_owner, quote, instagram_handle").order("name"),
     supabase.from("groups").select("*").order("name"),
     supabase.from("activities").select("*").order("start_date"),
     supabase.from("friend_requests").select("*").eq("status", "pending").order("created_at"),
     supabase.from("activity_participants").select("*"),
   ])
 
+  // Log errors for debugging
+  if (friendsRes.error) {
+    console.error('[Storage] Friends query error:', friendsRes.error)
+  }
+  if (groupsRes.error) console.error('[Storage] Groups query error:', groupsRes.error)
+  if (activitiesRes.error) console.error('[Storage] Activities query error:', activitiesRes.error)
+  if (requestsRes.error) console.error('[Storage] Requests query error:', requestsRes.error)
+  if (participantsRes.error) console.error('[Storage] Participants query error:', participantsRes.error)
+
   const friends: Friend[] =
     friendsRes.data?.map((f) => ({
       id: f.id,
       name: f.name,
-      email: f.email || undefined,
+      // email: Temporarily removed until database column is added
       imageUrl: f.image_url || "",
       groupIds: f.group_id ? [f.group_id] : [],
       isOwner: f.is_owner || false,
