@@ -26,6 +26,7 @@ export function FriendsManager({ data, onUpdate }: FriendsManagerProps) {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     name: "",
+    email: "",
     imageUrl: "",
     groupIds: [] as string[],
     quote: "",
@@ -85,6 +86,7 @@ export function FriendsManager({ data, onUpdate }: FriendsManagerProps) {
 
     const friendId = await saveFriend({
       name: formData.name,
+      email: formData.email.trim() || undefined,
       imageUrl: formData.imageUrl || `/placeholder.svg?height=100&width=100&query=${encodeURIComponent(formData.name)}`,
       groupIds: formData.groupIds,
       isOwner: formData.name.toLowerCase() === "putra",
@@ -105,7 +107,7 @@ export function FriendsManager({ data, onUpdate }: FriendsManagerProps) {
       formData.name
     )
 
-    setFormData({ name: "", imageUrl: "", groupIds: [], quote: "", instagramHandle: "", pin: "" })
+    setFormData({ name: "", email: "", imageUrl: "", groupIds: [], quote: "", instagramHandle: "", pin: "" })
     setIsAdding(false)
     onUpdate()
   }
@@ -114,6 +116,7 @@ export function FriendsManager({ data, onUpdate }: FriendsManagerProps) {
     setEditingId(friend.id)
     setFormData({
       name: friend.name,
+      email: friend.email || "",
       imageUrl: friend.imageUrl,
       groupIds: friend.groupIds,
       quote: friend.quote || "",
@@ -129,6 +132,7 @@ export function FriendsManager({ data, onUpdate }: FriendsManagerProps) {
     await saveFriend({
       id: editingId,
       name: formData.name,
+      email: formData.email.trim() || undefined,
       imageUrl: formData.imageUrl,
       groupIds: formData.groupIds,
       isOwner: formData.name.toLowerCase() === "putra",
@@ -148,7 +152,7 @@ export function FriendsManager({ data, onUpdate }: FriendsManagerProps) {
       formData.name
     )
 
-    setFormData({ name: "", imageUrl: "", groupIds: [], quote: "", instagramHandle: "", pin: "" })
+    setFormData({ name: "", email: "", imageUrl: "", groupIds: [], quote: "", instagramHandle: "", pin: "" })
     setEditingId(null)
     onUpdate()
   }
@@ -242,6 +246,17 @@ export function FriendsManager({ data, onUpdate }: FriendsManagerProps) {
               />
             </div>
             <div className="space-y-2">
+              <Label htmlFor="email">Email (for trip notifications)</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="friend@example.com"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              />
+              <p className="text-xs text-muted-foreground">Used to send trip notifications and calendar invites</p>
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="quote">Personal Quote (max 35 characters)</Label>
               <Input
                 id="quote"
@@ -319,7 +334,7 @@ export function FriendsManager({ data, onUpdate }: FriendsManagerProps) {
                 onClick={() => {
                   setIsAdding(false)
                   setEditingId(null)
-                  setFormData({ name: "", imageUrl: "", groupIds: [], quote: "", instagramHandle: "", pin: "" })
+                  setFormData({ name: "", email: "", imageUrl: "", groupIds: [], quote: "", instagramHandle: "", pin: "" })
                 }}
               >
                 <X className="h-4 w-4 mr-2" />

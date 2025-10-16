@@ -1,6 +1,7 @@
 export interface Friend {
   id: string
   name: string
+  email?: string // Email for trip notifications
   imageUrl: string
   groupIds: string[]
   isOwner?: boolean // Added isOwner field to identify portal owner
