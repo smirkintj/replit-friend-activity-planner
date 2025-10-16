@@ -169,7 +169,7 @@ export const saveFriend = async (friend: Omit<Friend, "id"> & { id?: string; pin
 
   const dbFriend: any = {
     name: friend.name,
-    email: friend.email || null,
+    // email: Temporarily removed until database column is added
     image_url: friend.imageUrl,
     group_id: friend.groupIds[0] || null,
     is_owner: friend.isOwner || false,
