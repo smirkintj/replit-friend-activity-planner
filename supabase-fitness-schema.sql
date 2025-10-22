@@ -3,8 +3,8 @@
 
 -- 1. Create fitness_activities table
 CREATE TABLE IF NOT EXISTS fitness_activities (
-  id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid()::text,
-  friend_id VARCHAR NOT NULL REFERENCES friends(id) ON DELETE CASCADE,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  friend_id UUID NOT NULL REFERENCES friends(id) ON DELETE CASCADE,
   type VARCHAR NOT NULL CHECK (type IN ('run', 'bike', 'swim', 'gym', 'yoga', 'walk', 'hike', 'other')),
   date TIMESTAMP NOT NULL DEFAULT NOW(),
   duration INTEGER NOT NULL, -- minutes
@@ -24,8 +24,8 @@ CREATE INDEX IF NOT EXISTS idx_fitness_activities_type ON fitness_activities(typ
 
 -- 2. Create fitness_badges table
 CREATE TABLE IF NOT EXISTS fitness_badges (
-  id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid()::text,
-  friend_id VARCHAR NOT NULL REFERENCES friends(id) ON DELETE CASCADE,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  friend_id UUID NOT NULL REFERENCES friends(id) ON DELETE CASCADE,
   badge_type VARCHAR NOT NULL, -- e.g., 'first_steps', 'marathon_runner', 'hot_streak'
   unlocked_at TIMESTAMP NOT NULL DEFAULT NOW(),
   metadata JSONB -- Store additional data like { distance: 42.5, streak_days: 7 }
@@ -36,16 +36,16 @@ CREATE INDEX IF NOT EXISTS idx_fitness_badges_type ON fitness_badges(badge_type)
 
 -- 3. Create squad_challenges table
 CREATE TABLE IF NOT EXISTS squad_challenges (
-  id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title VARCHAR NOT NULL,
   description TEXT,
   type VARCHAR NOT NULL CHECK (type IN ('distance', 'workout_count', 'streak', 'points')),
   target INTEGER NOT NULL,
   start_date TIMESTAMP NOT NULL,
   end_date TIMESTAMP NOT NULL,
-  participants VARCHAR[] DEFAULT '{}', -- Array of friend IDs
+  participants UUID[] DEFAULT '{}', -- Array of friend IDs
   is_active BOOLEAN DEFAULT true,
-  created_by VARCHAR REFERENCES friends(id),
+  created_by UUID REFERENCES friends(id),
   created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
@@ -54,8 +54,8 @@ CREATE INDEX IF NOT EXISTS idx_squad_challenges_dates ON squad_challenges(start_
 
 -- 4. Create fitness_stats table (cached aggregates for performance)
 CREATE TABLE IF NOT EXISTS fitness_stats (
-  id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid()::text,
-  friend_id VARCHAR NOT NULL REFERENCES friends(id) ON DELETE CASCADE,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  friend_id UUID NOT NULL REFERENCES friends(id) ON DELETE CASCADE,
   period VARCHAR NOT NULL CHECK (period IN ('week', 'month', 'year')),
   start_date DATE NOT NULL,
   total_points INTEGER DEFAULT 0,
@@ -70,8 +70,8 @@ CREATE INDEX IF NOT EXISTS idx_fitness_stats_friend_period ON fitness_stats(frie
 
 -- 5. Create strava_connections table
 CREATE TABLE IF NOT EXISTS strava_connections (
-  id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid()::text,
-  friend_id VARCHAR NOT NULL UNIQUE REFERENCES friends(id) ON DELETE CASCADE,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  friend_id UUID NOT NULL UNIQUE REFERENCES friends(id) ON DELETE CASCADE,
   athlete_id BIGINT NOT NULL,
   access_token TEXT NOT NULL,
   refresh_token TEXT NOT NULL,
