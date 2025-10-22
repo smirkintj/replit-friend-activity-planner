@@ -253,6 +253,13 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Register webhook in background (don't await)
+    fetch('https://korangfreebila.replit.app/api/strava/webhook/register', {
+      method: 'POST',
+    }).catch(err => 
+      console.error('Error registering webhook:', err)
+    );
+
     // Sync recent activities in background (don't await)
     syncRecentActivities(friendId).catch(err => 
       console.error('Error syncing recent activities:', err)
