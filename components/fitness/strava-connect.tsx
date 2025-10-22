@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Activity, X, CheckCircle2, Loader2 } from "lucide-react"
-import { getStravaConnection } from "@/lib/strava-storage"
-import type { StravaConnection } from "@/lib/strava-storage"
+import type { StravaConnectionStatus } from "@/lib/strava-storage"
 
 interface StravaConnectProps {
   friendId: string
@@ -11,19 +10,27 @@ interface StravaConnectProps {
 }
 
 export function StravaConnect({ friendId, friendName }: StravaConnectProps) {
-  const [connection, setConnection] = useState<StravaConnection | null>(null)
+  const [status, setStatus] = useState<StravaConnectionStatus | null>(null)
   const [loading, setLoading] = useState(true)
   const [disconnecting, setDisconnecting] = useState(false)
 
   useEffect(() => {
-    loadConnection()
+    loadStatus()
   }, [friendId])
 
-  async function loadConnection() {
+  async function loadStatus() {
     setLoading(true)
-    const conn = await getStravaConnection(friendId)
-    setConnection(conn)
-    setLoading(false)
+    try {
+      const response = await fetch(`/api/strava/status?friend_id=${friendId}`)
+      if (response.ok) {
+        const data = await response.json()
+        setStatus(data)
+      }
+    } catch (error) {
+      console.error('Error loading Strava status:', error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   function handleConnect() {
@@ -45,7 +52,7 @@ export function StravaConnect({ friendId, friendName }: StravaConnectProps) {
       })
 
       if (response.ok) {
-        setConnection(null)
+        setStatus({ isConnected: false })
       } else {
         alert("Failed to disconnect Strava. Please try again.")
       }
@@ -66,7 +73,7 @@ export function StravaConnect({ friendId, friendName }: StravaConnectProps) {
     )
   }
 
-  if (connection) {
+  if (status?.isConnected) {
     return (
       <div className="glass-card p-4 rounded-lg">
         <div className="flex items-center justify-between">
@@ -99,9 +106,9 @@ export function StravaConnect({ friendId, friendName }: StravaConnectProps) {
             )}
           </button>
         </div>
-        {connection.last_sync_at && (
+        {status.lastSyncAt && (
           <p className="text-xs text-muted-foreground mt-2">
-            Last synced: {new Date(connection.last_sync_at).toLocaleString()}
+            Last synced: {new Date(status.lastSyncAt).toLocaleString()}
           </p>
         )}
       </div>

@@ -56,10 +56,10 @@ export async function saveStravaConnection(
   return data;
 }
 
-export async function getStravaConnection(
+export async function getStravaConnectionServer(
   friendId: string
 ): Promise<StravaConnection | null> {
-  const supabase = createBrowserClient();
+  const supabase = await createServerClient();
 
   const { data, error } = await supabase
     .from('strava_connections')
@@ -72,6 +72,12 @@ export async function getStravaConnection(
   }
 
   return data;
+}
+
+export interface StravaConnectionStatus {
+  isConnected: boolean;
+  lastSyncAt?: string;
+  connectedAt?: string;
 }
 
 export async function deleteStravaConnection(
@@ -142,7 +148,7 @@ export async function refreshStravaToken(
 export async function getValidStravaToken(
   friendId: string
 ): Promise<string | null> {
-  let connection = await getStravaConnection(friendId);
+  let connection = await getStravaConnectionServer(friendId);
 
   if (!connection) {
     return null;
