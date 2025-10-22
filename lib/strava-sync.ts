@@ -164,6 +164,7 @@ export async function syncRecentActivities(friendId: string): Promise<number> {
       return 0;
     }
 
+    // Fetch list of activities (summary data only - no calories in this endpoint)
     const response = await fetch(
       'https://www.strava.com/api/v3/athlete/activities?per_page=30',
       {
@@ -188,22 +189,39 @@ export async function syncRecentActivities(friendId: string): Promise<number> {
         continue;
       }
 
-      const distanceKm = activity.distance / 1000;
-      const durationMinutes = Math.round(activity.moving_time / 60);
-      const type = mapStravaType(activity.type);
+      // Fetch detailed activity to get calories data (not available in list endpoint)
+      const detailResponse = await fetch(
+        `https://www.strava.com/api/v3/activities/${activity.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      if (!detailResponse.ok) {
+        console.error(`Failed to fetch detailed activity ${activity.id}`);
+        continue;
+      }
+
+      const detailedActivity: StravaActivity = await detailResponse.json();
+
+      const distanceKm = detailedActivity.distance / 1000;
+      const durationMinutes = Math.round(detailedActivity.moving_time / 60);
+      const type = mapStravaType(detailedActivity.type);
       const points = calculatePoints(type, distanceKm, durationMinutes);
 
       const fitnessActivity: Omit<FitnessActivity, 'id' | 'createdAt' | 'points'> = {
         friendId,
         type,
-        date: new Date(activity.start_date).toISOString(),
+        date: new Date(detailedActivity.start_date).toISOString(),
         duration: durationMinutes,
         distance: distanceKm,
-        calories: activity.calories,
-        heartRate: activity.average_heartrate ? Math.round(activity.average_heartrate) : undefined,
+        calories: detailedActivity.calories,
+        heartRate: detailedActivity.average_heartrate ? Math.round(detailedActivity.average_heartrate) : undefined,
         source: 'strava',
-        stravaId: activity.id.toString(),
-        notes: activity.name,
+        stravaId: detailedActivity.id.toString(),
+        notes: detailedActivity.name,
       };
 
       const created = await addFitnessActivity(fitnessActivity);
