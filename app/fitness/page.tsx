@@ -188,91 +188,172 @@ export default function FitnessPage() {
         )}
 
         {weekSummary && currentFriend && (
-          <Card className="backdrop-blur-lg border overflow-hidden"
-                style={{
-                  background: 'rgba(15, 20, 45, 0.6)',
-                  borderColor: 'rgba(139, 92, 246, 0.3)',
-                  boxShadow: '0 0 30px rgba(139, 92, 246, 0.15)'
-                }}>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-10 w-10 border-2"
-                          style={{ borderColor: '#8b5cf6' }}>
-                    <AvatarImage src={currentFriend.imageUrl} />
-                    <AvatarFallback style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)' }}>
-                      {currentFriend.name.slice(0, 2)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <h2 className="text-xl font-bold text-white">
-                    💪 {currentFriend.name.toUpperCase()}'S WEEK
-                  </h2>
-                </div>
-                <Badge variant="secondary" className="gap-1 px-3 py-1 text-white border-0"
-                       style={{
-                         background: 'linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)',
-                         boxShadow: '0 0 15px rgba(245, 158, 11, 0.4)'
-                       }}>
-                  <Flame className="h-3 w-3" />
-                  {weekSummary.streak} day streak
-                </Badge>
-              </div>
-
-              <div className="grid grid-cols-7 gap-2 mb-6">
-                {weekDays.map((day, i) => (
-                  <div key={i} className="text-center">
-                    <div className="text-xs text-gray-400 mb-1">{day.day}</div>
-                    <div
-                      className={`
-                        w-full aspect-square rounded-full flex items-center justify-center text-lg font-bold
-                        transition-all duration-200
-                        ${day.hasWorkout
-                          ? "text-white border-2"
-                          : "text-gray-500 border border-gray-700"
-                        }
-                      `}
-                      style={day.hasWorkout ? {
-                        background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
-                        borderColor: '#a78bfa',
-                        boxShadow: '0 0 15px rgba(139, 92, 246, 0.6)'
-                      } : {}}
-                    >
-                      {day.hasWorkout ? "✅" : day.date}
+          <div className="space-y-4">
+            {/* Competitive Stats Card */}
+            <Card className="backdrop-blur-lg border overflow-hidden"
+                  style={{
+                    background: 'rgba(15, 20, 45, 0.6)',
+                    borderColor: 'rgba(139, 92, 246, 0.3)',
+                    boxShadow: '0 0 30px rgba(139, 92, 246, 0.15)'
+                  }}>
+              <CardContent className="pt-6">
+                {/* Header with Rank */}
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-4">
+                    <Avatar className="h-14 w-14 border-3"
+                            style={{ borderColor: '#8b5cf6' }}>
+                      <AvatarImage src={currentFriend.imageUrl} />
+                      <AvatarFallback style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)' }}>
+                        {currentFriend.name.slice(0, 2)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h2 className="text-2xl font-bold text-white">
+                        {currentFriend.name.toUpperCase()}'S WEEK
+                      </h2>
+                      {(() => {
+                        const userEntry = leaderboard.find(e => e.friendId === currentFriend.id)
+                        const leader = leaderboard[0]
+                        const pointsBehind = leader && userEntry ? leader.points - userEntry.points : 0
+                        
+                        return userEntry && (
+                          <div className="flex items-center gap-2 mt-1">
+                            <Badge className="gap-1 px-2 py-0.5 text-xs border-0 text-white"
+                                   style={{
+                                     background: userEntry.rank === 1 
+                                       ? 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)'
+                                       : 'rgba(139, 92, 246, 0.3)'
+                                   }}>
+                              {userEntry.rank === 1 ? '👑' : `#${userEntry.rank}`} RANK {userEntry.rank}
+                            </Badge>
+                            {pointsBehind > 0 && (
+                              <span className="text-xs text-gray-400">
+                                {pointsBehind} pts behind leader
+                              </span>
+                            )}
+                            {userEntry.rank === 1 && (
+                              <span className="text-xs text-yellow-400">
+                                🔥 You're crushing it!
+                              </span>
+                            )}
+                          </div>
+                        )
+                      })()}
                     </div>
                   </div>
-                ))}
-              </div>
+                  <Badge variant="secondary" className="gap-1 px-3 py-1.5 text-white border-0"
+                         style={{
+                           background: 'linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)',
+                           boxShadow: '0 0 15px rgba(245, 158, 11, 0.4)'
+                         }}>
+                    <Flame className="h-4 w-4" />
+                    {weekSummary.streak} DAY STREAK
+                  </Badge>
+                </div>
 
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div className="p-4 rounded-lg backdrop-blur-sm"
-                     style={{ 
-                       background: 'rgba(139, 92, 246, 0.1)',
-                       border: '1px solid rgba(139, 92, 246, 0.2)'
-                     }}>
-                  <div className="text-3xl font-bold text-white">{weekSummary.totalPoints}</div>
-                  <div className="text-xs text-gray-400 uppercase tracking-wider">points</div>
+                {/* Weekly Progress Grid */}
+                <div className="grid grid-cols-7 gap-2 mb-6">
+                  {weekDays.map((day, i) => (
+                    <div key={i} className="text-center">
+                      <div className="text-xs text-gray-400 mb-1 font-medium">{day.day}</div>
+                      <div
+                        className={`
+                          w-full aspect-square rounded-xl flex items-center justify-center text-lg font-bold
+                          transition-all duration-200
+                          ${day.hasWorkout
+                            ? "text-white border-2"
+                            : "text-gray-500 border border-gray-700"
+                          }
+                        `}
+                        style={day.hasWorkout ? {
+                          background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
+                          borderColor: '#a78bfa',
+                          boxShadow: '0 0 20px rgba(139, 92, 246, 0.6)'
+                        } : {}}
+                      >
+                        {day.hasWorkout ? "✅" : day.date}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div className="p-4 rounded-lg backdrop-blur-sm"
-                     style={{ 
-                       background: 'rgba(139, 92, 246, 0.1)',
-                       border: '1px solid rgba(139, 92, 246, 0.2)'
-                     }}>
-                  <div className="text-3xl font-bold text-white">{weekSummary.totalWorkouts}</div>
-                  <div className="text-xs text-gray-400 uppercase tracking-wider">workouts</div>
-                </div>
-                <div className="p-4 rounded-lg backdrop-blur-sm"
-                     style={{ 
-                       background: 'rgba(139, 92, 246, 0.1)',
-                       border: '1px solid rgba(139, 92, 246, 0.2)'
-                     }}>
-                  <div className="text-3xl font-bold text-white">
-                    {weekSummary.totalDistance.toFixed(1)}
+
+                {/* Main Stats - 4 Column Grid */}
+                <div className="grid grid-cols-4 gap-4">
+                  <div className="p-4 rounded-xl backdrop-blur-sm text-center"
+                       style={{ 
+                         background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(99, 102, 241, 0.2) 100%)',
+                         border: '2px solid rgba(139, 92, 246, 0.4)',
+                         boxShadow: '0 0 20px rgba(139, 92, 246, 0.2)'
+                       }}>
+                    <div className="text-4xl font-bold text-white mb-1">{weekSummary.totalPoints}</div>
+                    <div className="text-xs text-gray-300 uppercase tracking-wider font-semibold">Points</div>
                   </div>
-                  <div className="text-xs text-gray-400 uppercase tracking-wider">km</div>
+                  <div className="p-4 rounded-xl backdrop-blur-sm text-center"
+                       style={{ 
+                         background: 'rgba(251, 146, 60, 0.15)',
+                         border: '2px solid rgba(251, 146, 60, 0.3)'
+                       }}>
+                    <div className="text-4xl font-bold text-orange-400 mb-1">{weekSummary.totalCalories || 0}</div>
+                    <div className="text-xs text-gray-300 uppercase tracking-wider font-semibold">Calories</div>
+                  </div>
+                  <div className="p-4 rounded-xl backdrop-blur-sm text-center"
+                       style={{ 
+                         background: 'rgba(139, 92, 246, 0.1)',
+                         border: '1px solid rgba(139, 92, 246, 0.2)'
+                       }}>
+                    <div className="text-4xl font-bold text-white mb-1">{weekSummary.totalWorkouts}</div>
+                    <div className="text-xs text-gray-300 uppercase tracking-wider font-semibold">Workouts</div>
+                  </div>
+                  <div className="p-4 rounded-xl backdrop-blur-sm text-center"
+                       style={{ 
+                         background: 'rgba(139, 92, 246, 0.1)',
+                         border: '1px solid rgba(139, 92, 246, 0.2)'
+                       }}>
+                    <div className="text-4xl font-bold text-white mb-1">{weekSummary.totalDistance.toFixed(1)}</div>
+                    <div className="text-xs text-gray-300 uppercase tracking-wider font-semibold">km</div>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+
+            {/* Point System Explainer */}
+            <Card className="backdrop-blur-lg border"
+                  style={{
+                    background: 'rgba(15, 20, 45, 0.4)',
+                    borderColor: 'rgba(139, 92, 246, 0.2)'
+                  }}>
+              <CardContent className="pt-4 pb-4">
+                <div className="flex items-start gap-3">
+                  <div className="text-2xl">💡</div>
+                  <div className="flex-1">
+                    <h3 className="text-sm font-bold text-white mb-2">HOW POINTS WORK</h3>
+                    <div className="grid grid-cols-2 gap-2 text-xs text-gray-300">
+                      <div className="flex items-center gap-2">
+                        <span className="text-purple-400 font-mono">10pts/km</span>
+                        <span className="text-gray-500">→</span>
+                        <span>Run, Bike, Walk, Swim</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-purple-400 font-mono">5pts/10min</span>
+                        <span className="text-gray-500">→</span>
+                        <span>Gym, Strength</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-purple-400 font-mono">3pts/10min</span>
+                        <span className="text-gray-500">→</span>
+                        <span>Yoga, Other</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-orange-400 font-mono">+Streak</span>
+                        <span className="text-gray-500">→</span>
+                        <span>Daily workout bonus!</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         )}
 
         {currentFriend && (

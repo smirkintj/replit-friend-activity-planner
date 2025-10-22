@@ -243,6 +243,9 @@ export async function getWeekSummary(friendId: string) {
     totalDistance: weekActivities
       .filter(a => a.distance)
       .reduce((sum, a) => sum + (a.distance || 0), 0),
+    totalCalories: weekActivities
+      .filter(a => a.calories)
+      .reduce((sum, a) => sum + (a.calories || 0), 0),
     streak: streak,
     badgesCount: badges.length,
     dailyActivities: dailyActivities
