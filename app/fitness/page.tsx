@@ -19,6 +19,7 @@ import {
 import { WorkoutForm } from "@/components/fitness/workout-form"
 import { Leaderboard } from "@/components/fitness/leaderboard"
 import { BadgeGallery } from "@/components/fitness/badge-gallery"
+import { StravaConnect } from "@/components/fitness/strava-connect"
 import type { Friend, FitnessActivity, LeaderboardEntry, FitnessBadge } from "@/lib/types"
 import { getActivityIcon, getActivityColor } from "@/lib/fitness-points"
 import { format, startOfWeek, addDays } from "date-fns"
@@ -207,6 +208,13 @@ export default function FitnessPage() {
               </div>
             </CardContent>
           </Card>
+        )}
+
+        {currentFriendId && (
+          <StravaConnect
+            friendId={currentFriendId}
+            friendName={friends.find(f => f.id === currentFriendId)?.name || "Friend"}
+          />
         )}
 
         <Leaderboard entries={leaderboard} />
