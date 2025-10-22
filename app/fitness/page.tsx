@@ -20,10 +20,10 @@ import { WorkoutForm } from "@/components/fitness/workout-form"
 import { Leaderboard } from "@/components/fitness/leaderboard"
 import { BadgeGallery } from "@/components/fitness/badge-gallery"
 import { StravaConnect } from "@/components/fitness/strava-connect"
+import { FriendLogin } from "@/components/fitness/friend-login"
 import type { Friend, FitnessActivity, LeaderboardEntry, FitnessBadge } from "@/lib/types"
 import { getActivityIcon, getActivityColor } from "@/lib/fitness-points"
 import { format, startOfWeek, addDays } from "date-fns"
-import { getLoggedInFriendId } from "@/lib/storage"
 
 export default function FitnessPage() {
   const [friends, setFriends] = useState<Friend[]>([])
@@ -33,28 +33,36 @@ export default function FitnessPage() {
   const [recentActivities, setRecentActivities] = useState<any[]>([])
   const [weekSummary, setWeekSummary] = useState<any>(null)
   const [userBadges, setUserBadges] = useState<FitnessBadge[]>([])
-  const [currentFriendId, setCurrentFriendId] = useState<string>("")
+  const [currentFriend, setCurrentFriend] = useState<Friend | null>(null)
 
   useEffect(() => {
-    loadData()
+    // Check if friend is logged in from session
+    const storedFriendId = sessionStorage.getItem('fitness_friend_id')
+    if (storedFriendId) {
+      loadData(storedFriendId)
+    } else {
+      setIsLoading(false)
+    }
   }, [])
 
-  const loadData = async () => {
+  const handleLogin = async (friend: Friend) => {
+    setCurrentFriend(friend)
+    await loadData(friend.id)
+  }
+
+  const loadData = async (friendId: string) => {
     try {
+      setIsLoading(true)
       const data = await getStoredData()
       setFriends(data.friends)
       
-      // Get logged in friend ID
-      const loggedInId = getLoggedInFriendId()
-      if (loggedInId) {
-        setCurrentFriendId(loggedInId)
-      } else {
-        // Default to first friend if not logged in
-        setCurrentFriendId(data.friends[0]?.id || "")
+      const friend = data.friends.find(f => f.id === friendId)
+      if (friend) {
+        setCurrentFriend(friend)
       }
       
       // Load fitness data
-      await loadFitnessData(data.friends)
+      await loadFitnessData(data.friends, friendId)
       
       setIsLoading(false)
     } catch (error) {
@@ -63,29 +71,19 @@ export default function FitnessPage() {
     }
   }
 
-  const loadFitnessData = async (friendList: Friend[]) => {
+  const loadFitnessData = async (friendList: Friend[], userId: string) => {
     try {
-      const [leaderboardData, recentData] = await Promise.all([
+      const [leaderboardData, recentData, summary, badges] = await Promise.all([
         getWeeklyLeaderboard(friendList),
-        getRecentActivities(15)
+        getRecentActivities(15),
+        getWeekSummary(userId),
+        getFitnessBadges(userId)
       ])
       
       setLeaderboard(leaderboardData)
       setRecentActivities(recentData)
-
-      // Load current user's data
-      const loggedInId = getLoggedInFriendId()
-      if (loggedInId || friendList.length > 0) {
-        const userId = loggedInId || friendList[0]?.id
-        if (userId) {
-          const [summary, badges] = await Promise.all([
-            getWeekSummary(userId),
-            getFitnessBadges(userId)
-          ])
-          setWeekSummary(summary)
-          setUserBadges(badges)
-        }
-      }
+      setWeekSummary(summary)
+      setUserBadges(badges)
     } catch (error) {
       console.error("Error loading fitness data:", error)
     }
@@ -93,7 +91,9 @@ export default function FitnessPage() {
 
   const handleAddWorkout = async (activity: Omit<FitnessActivity, "id" | "createdAt" | "points">) => {
     await addFitnessActivity(activity)
-    await loadFitnessData(friends)
+    if (currentFriend) {
+      await loadFitnessData(friends, currentFriend.id)
+    }
   }
 
   const weekDays = Array.from({ length: 7 }, (_, i) => {
@@ -107,12 +107,19 @@ export default function FitnessPage() {
     }
   })
 
+  // Show login screen if not authenticated
+  if (!currentFriend && !isLoading) {
+    return <FriendLogin onLogin={handleLogin} />
+  }
+
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center"
+           style={{ background: 'linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%)' }}>
         <div className="text-center">
-          <div className="h-16 w-16 rounded-full border-4 border-primary border-t-transparent animate-spin mx-auto mb-4 glow-primary" />
-          <p className="text-lg font-medium gradient-text">Loading your fitness data...</p>
+          <div className="h-16 w-16 rounded-full border-4 border-t-transparent animate-spin mx-auto mb-4"
+               style={{ borderColor: 'rgba(139, 92, 246, 0.3)', borderTopColor: '#8b5cf6' }} />
+          <p className="text-lg font-medium text-white">Loading your fitness data...</p>
         </div>
       </div>
     )
@@ -155,7 +162,7 @@ export default function FitnessPage() {
               friends={friends}
               onSubmit={handleAddWorkout}
               onClose={() => setShowWorkoutForm(false)}
-              currentFriendId={currentFriendId}
+              currentFriendId={currentFriend?.id || ""}
             />
           </div>
         )}
@@ -210,10 +217,10 @@ export default function FitnessPage() {
           </Card>
         )}
 
-        {currentFriendId && (
+        {currentFriend && (
           <StravaConnect
-            friendId={currentFriendId}
-            friendName={friends.find(f => f.id === currentFriendId)?.name || "Friend"}
+            friendId={currentFriend.id}
+            friendName={currentFriend.name}
           />
         )}
 
