@@ -6,7 +6,7 @@ A collaborative activity and trip planning application that helps friends coordi
 
 **New Feature (October 2025)**: **FitSquad** - A gamified fitness tracking system where friends can log workouts, compete on leaderboards, unlock achievement badges, and participate in squad challenges. Features automatic points calculation, streak tracking, and a comprehensive badge system with 17 unlockable achievements.
 
-**Latest Update (October 2025)**: **Strava Auto-Sync** - Friends can now connect their Strava accounts for automatic workout syncing. One-time OAuth connection enables real-time webhook-based activity import with automatic points calculation and badge unlocking.
+**Latest Update (October 2025)**: **Competitive FitSquad Redesign** - Enhanced YOUR WEEK section with competitive elements (rank display, points behind leader, calories tracking), point system explainer, and weekly challenges that reset every Monday for ongoing engagement. Strava Auto-Sync enables real-time webhook-based activity import with automatic points calculation and badge unlocking.
 
 ## User Preferences
 
@@ -50,10 +50,12 @@ Design preference: Modern, fun, minimal, and gamified - NOT professional.
 - **Activity Logs**: Audit trail for all activity changes
 - **Comments/Reactions**: Social features for activity engagement
 - **Fitness Tracking (October 2025)**: Workout activities, achievement badges, squad challenges, and weekly stats
-  - **Fitness Activities**: Individual workouts with type, duration, distance, points, and source (manual/Strava/Apple Health)
+  - **Fitness Activities**: Individual workouts with type, duration, distance, calories, points, and source (manual/Strava/Apple Health)
   - **Fitness Badges**: Unlockable achievements across cardio, strength, streak, and special categories
   - **Squad Challenges**: Group fitness goals with targets and participant tracking
   - **Fitness Stats**: Cached weekly/monthly aggregates for performance
+  - **Weekly Challenges**: Rotating goals that reset every Monday (5 challenge types: distance, workouts, points, calories, streak)
+  - **Competitive Features**: Rank display, points-behind-leader tracking, weekly leaderboards with gamified UI
 
 **Storage Strategy**:
 - Session storage for admin authentication (browser-only)
