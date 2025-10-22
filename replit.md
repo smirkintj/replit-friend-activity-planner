@@ -6,6 +6,8 @@ A collaborative activity and trip planning application that helps friends coordi
 
 **New Feature (October 2025)**: **FitSquad** - A gamified fitness tracking system where friends can log workouts, compete on leaderboards, unlock achievement badges, and participate in squad challenges. Features automatic points calculation, streak tracking, and a comprehensive badge system with 17 unlockable achievements.
 
+**Latest Update (October 2025)**: **Strava Auto-Sync** - Friends can now connect their Strava accounts for automatic workout syncing. One-time OAuth connection enables real-time webhook-based activity import with automatic points calculation and badge unlocking.
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
@@ -108,13 +110,22 @@ Design preference: Modern, fun, minimal, and gamified - NOT professional.
 **Database & Backend Services**:
 - **Supabase**: PostgreSQL database, real-time subscriptions, authentication infrastructure
   - Connection via browser client (@supabase/ssr) and server client
-  - Tables: friends, groups, activities, friend_requests, join_requests, feature_requests, backlog_items, activity_logs, activity_participants, activity_comments, activity_reactions, fitness_activities, fitness_badges, squad_challenges, fitness_stats
+  - Tables: friends, groups, activities, friend_requests, join_requests, feature_requests, backlog_items, activity_logs, activity_participants, activity_comments, activity_reactions, fitness_activities, fitness_badges, squad_challenges, fitness_stats, strava_connections
 
 **File Storage**:
 - **Vercel Blob**: Image upload and storage for friend avatars
   - API route `/api/upload` handles file uploads
   - 5MB size limit, image files only
   - Public access URLs returned
+
+**Fitness Tracking Integration** (October 2025):
+- **Strava API**: OAuth 2.0 + webhook integration for automatic workout sync
+  - OAuth endpoints: `/api/strava/auth`, `/api/strava/callback` for user authorization
+  - Webhook endpoint: `/api/strava/webhook` for real-time activity notifications
+  - Automatic token refresh every 6 hours
+  - Activity type mapping (Run, Ride, Swim, Gym, etc.) with points calculation
+  - Syncs last 30 activities on initial connection
+  - Real-time webhook for new activities going forward
 
 **Email Service** (October 2025):
 - **Resend**: Transactional email service for trip notifications
