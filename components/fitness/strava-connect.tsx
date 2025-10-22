@@ -34,7 +34,28 @@ export function StravaConnect({ friendId, friendName }: StravaConnectProps) {
   }
 
   function handleConnect() {
-    window.location.href = `/api/strava/auth?friend_id=${friendId}`
+    const authUrl = `/api/strava/auth?friend_id=${friendId}`;
+    const width = 600;
+    const height = 700;
+    const left = window.screen.width / 2 - width / 2;
+    const top = window.screen.height / 2 - height / 2;
+    
+    window.open(
+      authUrl,
+      'Strava Authorization',
+      `width=${width},height=${height},left=${left},top=${top}`
+    );
+    
+    // Poll for connection status after opening window
+    const checkInterval = setInterval(async () => {
+      await loadStatus();
+      if (status?.isConnected) {
+        clearInterval(checkInterval);
+      }
+    }, 2000);
+    
+    // Stop polling after 5 minutes
+    setTimeout(() => clearInterval(checkInterval), 5 * 60 * 1000);
   }
 
   async function handleDisconnect() {
