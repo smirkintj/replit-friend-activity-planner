@@ -25,27 +25,37 @@ This creates 5 tables:
 
 ---
 
-## Step 2: Register Webhook with Strava
+## Step 2: Update Strava App Settings
 
-For real-time activity syncing, you need to register your app's webhook endpoint with Strava.
+Before connecting, update your Strava app settings:
 
-### Option A: Using Curl (Easiest)
+1. Go to [Strava Settings](https://www.strava.com/settings/api)
+2. Find your app (Client ID: 182162)
+3. Update **Authorization Callback Domain** to: `korangfreebila.replit.app`
+4. Save changes
 
-Open your terminal and run this command (replace `YOUR_REPLIT_URL` with your actual Replit URL):
+This allows your Replit app to receive OAuth callbacks from Strava.
+
+---
+
+## Step 3: Register Webhook with Strava
+
+For real-time activity syncing, register your webhook endpoint with Strava.
+
+### Using the Shell in Replit
+
+1. Click **Tools** → **Shell** in the left sidebar
+2. Run this command:
 
 ```bash
 curl -X POST https://www.strava.com/api/v3/push_subscriptions \
   -F client_id=182162 \
   -F client_secret=9db92ce1ec711e7eda22e93a538f0c3bc47e4222 \
-  -F callback_url=https://korangbilafree.replit.app.dev/api/strava/webhook \
+  -F callback_url=https://korangfreebila.replit.app/api/strava/webhook \
   -F verify_token=FITSQUAD_WEBHOOK_2025
 ```
 
-### Get Your Replit URL
-
-1. Click the **Webview** tab in Replit
-2. Copy the URL from the address bar
-3. It should look like: `https://abc123-00-xyz.replit.dev`
+**Note:** Use your published URL (`.replit.app`), not the dev URL (`.replit.dev`).
 
 ### Expected Response
 
