@@ -23,6 +23,7 @@ import { BadgeGallery } from "@/components/fitness/badge-gallery"
 import { StravaConnect } from "@/components/fitness/strava-connect"
 import { FriendLogin } from "@/components/fitness/friend-login"
 import { WeeklyChallenges } from "@/components/fitness/weekly-challenges"
+import { FoodCalories } from "@/components/fitness/food-calories"
 import type { Friend, FitnessActivity, LeaderboardEntry, FitnessBadge, WeeklyChallenge } from "@/lib/types"
 import { getActivityIcon, getActivityColor } from "@/lib/fitness-points"
 import { format, startOfWeek, addDays } from "date-fns"
@@ -194,6 +195,13 @@ export default function FitnessPage() {
           </div>
         )}
 
+        {currentFriend && (
+          <StravaConnect
+            friendId={currentFriend.id}
+            friendName={currentFriend.name}
+          />
+        )}
+
         {weekSummary && currentFriend && (
           <div className="space-y-4">
             {/* Competitive Stats Card */}
@@ -258,30 +266,40 @@ export default function FitnessPage() {
                   </Badge>
                 </div>
 
-                {/* Weekly Progress Grid */}
-                <div className="grid grid-cols-7 gap-2 mb-6">
-                  {weekDays.map((day, i) => (
-                    <div key={i} className="text-center">
-                      <div className="text-xs text-gray-400 mb-1 font-medium">{day.day}</div>
-                      <div
-                        className={`
-                          w-full aspect-square rounded-xl flex items-center justify-center text-lg font-bold
-                          transition-all duration-200
-                          ${day.hasWorkout
-                            ? "text-white border-2"
-                            : "text-gray-500 border border-gray-700"
-                          }
-                        `}
-                        style={day.hasWorkout ? {
-                          background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
-                          borderColor: '#a78bfa',
-                          boxShadow: '0 0 20px rgba(139, 92, 246, 0.6)'
-                        } : {}}
-                      >
-                        {day.hasWorkout ? "✅" : day.date}
+                {/* Weekly Progress Bar */}
+                <div className="mb-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-sm font-semibold text-gray-300">Weekly Activity</span>
+                    <span className="text-sm text-gray-400">{weekDays.filter(d => d.hasWorkout).length}/7 days</span>
+                  </div>
+                  <div className="grid grid-cols-7 gap-2">
+                    {weekDays.map((day, i) => (
+                      <div key={i} className="space-y-1">
+                        <div className="text-xs text-center text-gray-400 font-medium">{day.day}</div>
+                        <div
+                          className="h-20 rounded-lg flex flex-col items-center justify-center transition-all duration-300 hover:scale-105"
+                          style={day.hasWorkout ? {
+                            background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
+                            boxShadow: '0 0 15px rgba(139, 92, 246, 0.5)'
+                          } : {
+                            background: 'rgba(255, 255, 255, 0.05)',
+                            border: '1px dashed rgba(255, 255, 255, 0.1)'
+                          }}
+                        >
+                          {day.hasWorkout ? (
+                            <div className="text-center">
+                              <div className="text-2xl mb-1">💪</div>
+                              <div className="text-xs text-white font-bold">{day.date}</div>
+                            </div>
+                          ) : (
+                            <div className="text-center">
+                              <div className="text-xl text-gray-600">{day.date}</div>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
 
                 {/* Main Stats - 4 Column Grid */}
@@ -338,7 +356,7 @@ export default function FitnessPage() {
                       <div className="flex items-center gap-2">
                         <span className="text-purple-400 font-mono">10pts/km</span>
                         <span className="text-gray-500">→</span>
-                        <span>Run, Bike, Walk, Swim</span>
+                        <span>Run, Bike, Walk, Hike, Swim</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-purple-400 font-mono">5pts/10min</span>
@@ -363,18 +381,13 @@ export default function FitnessPage() {
           </div>
         )}
 
+        <Leaderboard entries={leaderboard} />
+
         {weeklyChallenges.length > 0 && (
           <WeeklyChallenges challenges={weeklyChallenges} />
         )}
 
-        {currentFriend && (
-          <StravaConnect
-            friendId={currentFriend.id}
-            friendName={currentFriend.name}
-          />
-        )}
-
-        <Leaderboard entries={leaderboard} />
+        <FoodCalories />
 
         {userBadges && (
           <BadgeGallery unlockedBadges={userBadges} />

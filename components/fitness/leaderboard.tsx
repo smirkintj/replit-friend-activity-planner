@@ -61,31 +61,106 @@ export function Leaderboard({ entries, title = "🏆 THIS WEEK'S CHAMPIONS" }: L
     return ""
   }
 
-  return (
-    <Card className="backdrop-blur-lg border overflow-hidden"
-          style={{
-            background: 'rgba(15, 20, 45, 0.6)',
-            borderColor: 'rgba(139, 92, 246, 0.3)',
-            boxShadow: '0 0 30px rgba(139, 92, 246, 0.15)'
-          }}>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-white">
-          <Trophy className="h-6 w-6"
-                  style={{ color: '#fbbf24' }} />
-          {title}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        {entries.length === 0 ? (
+  const champion = entries[0]
+  const otherEntries = entries.slice(1)
+
+  if (entries.length === 0) {
+    return (
+      <Card className="backdrop-blur-lg border overflow-hidden"
+            style={{
+              background: 'rgba(15, 20, 45, 0.6)',
+              borderColor: 'rgba(139, 92, 246, 0.3)',
+              boxShadow: '0 0 30px rgba(139, 92, 246, 0.15)'
+            }}>
+        <CardContent className="pt-6">
           <div className="text-center py-8 text-gray-400">
             <p>No workouts yet this week!</p>
             <p className="text-sm mt-2">Be the first to log a workout 💪</p>
           </div>
-        ) : (
-          entries.map((entry) => (
+        </CardContent>
+      </Card>
+    )
+  }
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Champion Spotlight - Side Panel */}
+      <Card className="backdrop-blur-lg border overflow-hidden lg:col-span-1"
+            style={{
+              background: 'linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(245, 158, 11, 0.15) 100%)',
+              borderColor: 'rgba(251, 191, 36, 0.5)',
+              boxShadow: '0 0 30px rgba(251, 191, 36, 0.3)'
+            }}>
+        <CardContent className="pt-6 text-center">
+          <div className="mb-4">
+            <Trophy className="h-12 w-12 mx-auto mb-2"
+                    style={{ color: '#fbbf24' }} />
+            <h3 className="text-lg font-bold text-white">WEEK'S CHAMPION</h3>
+            <div className="text-6xl my-4">👑</div>
+          </div>
+
+          <Avatar className="h-24 w-24 border-4 mx-auto mb-4"
+                  style={{ borderColor: '#fbbf24' }}>
+            <AvatarImage src={champion.friendImageUrl} alt={champion.friendName} />
+            <AvatarFallback style={{ 
+              background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
+              fontSize: '2rem'
+            }}>
+              {champion.friendName.slice(0, 2).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+
+          <h2 className="text-2xl font-bold text-white mb-2">{champion.friendName}</h2>
+          
+          <div className="mb-4">
+            <div className="text-5xl font-bold text-yellow-400">{champion.points}</div>
+            <div className="text-sm text-gray-300 uppercase tracking-wider">points</div>
+          </div>
+
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between items-center p-2 rounded"
+                 style={{ background: 'rgba(0, 0, 0, 0.2)' }}>
+              <span className="text-gray-300">Workouts</span>
+              <span className="text-white font-bold">{champion.workouts}</span>
+            </div>
+            {champion.distance > 0 && (
+              <div className="flex justify-between items-center p-2 rounded"
+                   style={{ background: 'rgba(0, 0, 0, 0.2)' }}>
+                <span className="text-gray-300">Distance</span>
+                <span className="text-white font-bold">{champion.distance.toFixed(1)} km</span>
+              </div>
+            )}
+            <div className="flex justify-between items-center p-2 rounded"
+                 style={{ background: 'rgba(0, 0, 0, 0.2)' }}>
+              <span className="text-gray-300">Streak</span>
+              <span className="text-white font-bold">{champion.streak} days 🔥</span>
+            </div>
+            {champion.badges > 0 && (
+              <div className="flex justify-between items-center p-2 rounded"
+                   style={{ background: 'rgba(0, 0, 0, 0.2)' }}>
+                <span className="text-gray-300">Badges</span>
+                <span className="text-white font-bold">{champion.badges} 🏅</span>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Rest of Leaderboard */}
+      <Card className="backdrop-blur-lg border overflow-hidden lg:col-span-2"
+            style={{
+              background: 'rgba(15, 20, 45, 0.6)',
+              borderColor: 'rgba(139, 92, 246, 0.3)',
+              boxShadow: '0 0 30px rgba(139, 92, 246, 0.15)'
+            }}>
+        <CardHeader>
+          <CardTitle className="text-white">🏅 TOP PERFORMERS</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {otherEntries.map((entry) => (
             <div
               key={entry.friendId}
-              className="p-4 rounded-xl transition-all duration-200 hover:scale-[1.02]"
+              className="p-4 rounded-xl transition-all duration-200 hover:scale-[1.01]"
               style={getRankStyle(entry.rank)}
             >
               <div className="flex items-center gap-4">
@@ -104,49 +179,29 @@ export function Leaderboard({ entries, title = "🏆 THIS WEEK'S CHAMPIONS" }: L
                 </Avatar>
 
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-lg text-white">{entry.friendName}</h3>
-                    {entry.rank === 1 && (
-                      <Badge className="border-0 text-white px-2 py-0.5"
-                             style={{
-                               background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
-                               boxShadow: '0 0 15px rgba(251, 191, 36, 0.5)'
-                             }}>
-                        LEADER
-                      </Badge>
-                    )}
-                  </div>
+                  <h3 className="font-semibold text-lg text-white">{entry.friendName}</h3>
                   <div className="flex items-center gap-4 text-sm text-gray-400">
                     <span>{entry.workouts} workouts</span>
                     {entry.distance > 0 && <span>• {entry.distance.toFixed(1)}km</span>}
                     {entry.streak > 0 && (
                       <span className="flex items-center gap-1">
-                        • <Flame className="h-3 w-3 text-orange-400" /> {entry.streak} day streak
+                        • <Flame className="h-3 w-3 text-orange-400" /> {entry.streak} days
                       </span>
                     )}
                   </div>
                 </div>
 
                 <div className="text-right">
-                  <div className={`text-2xl font-bold ${entry.rank <= 3 ? "text-white" : "text-gray-300"}`}>
+                  <div className="text-2xl font-bold text-white">
                     {entry.points}
                   </div>
-                  <div className="text-xs text-gray-500 uppercase tracking-wider">points</div>
-                  <div className="mt-1">{getStreakEmojis(entry.streak)}</div>
+                  <div className="text-xs text-gray-500 uppercase">pts</div>
                 </div>
               </div>
-
-              {entry.badges > 0 && (
-                <div className="mt-3 flex items-center gap-2 text-sm text-gray-400 border-t pt-2"
-                     style={{ borderColor: 'rgba(139, 92, 246, 0.2)' }}>
-                  <Award className="h-4 w-4" />
-                  <span>{entry.badges} badge{entry.badges !== 1 ? "s" : ""} unlocked</span>
-                </div>
-              )}
             </div>
-          ))
-        )}
-      </CardContent>
-    </Card>
+          ))}
+        </CardContent>
+      </Card>
+    </div>
   )
 }
