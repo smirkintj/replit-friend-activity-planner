@@ -9,7 +9,7 @@ import { PublicHolidaysSidebar } from "@/components/public-holidays-sidebar"
 import { FriendRequestForm } from "@/components/friend-request-form"
 import { getStoredData } from "@/lib/storage"
 import type { AppData } from "@/lib/types"
-import { Settings, Calendar, Users, Lightbulb, History } from "lucide-react"
+import { Settings, Calendar, Users, Lightbulb, History, TrendingUp } from "lucide-react"
 import Link from "next/link"
 import { BusiestLeaderboard } from "@/components/busiest-leaderboard"
 import { ActivityLogFeed } from "@/components/activity-log-feed"
@@ -60,6 +60,12 @@ export default function HomePage() {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <Link href="/fitness">
+                <Button variant="ghost" size="sm" className="gap-2 hover-lift">
+                  <TrendingUp className="h-4 w-4" />
+                  <span className="hidden sm:inline">🏆 FitSquad</span>
+                </Button>
+              </Link>
               <Link href="/past-trips">
                 <Button variant="ghost" size="sm" className="gap-2 hover-lift">
                   <History className="h-4 w-4" />

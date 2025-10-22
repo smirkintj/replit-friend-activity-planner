@@ -4,6 +4,8 @@
 
 A collaborative activity and trip planning application that helps friends coordinate their schedules, track availability, and plan activities together. Built with Next.js 14, TypeScript, and Supabase, the app features a calendar-based interface for managing friend activities, trips, and group events. Users can view friend availability, submit activity requests, track public holidays, and participate in feature requests through a backlog voting system.
 
+**New Feature (October 2025)**: **FitSquad** - A gamified fitness tracking system where friends can log workouts, compete on leaderboards, unlock achievement badges, and participate in squad challenges. Features automatic points calculation, streak tracking, and a comprehensive badge system with 17 unlockable achievements.
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
@@ -45,6 +47,11 @@ Design preference: Modern, fun, minimal, and gamified - NOT professional.
 - **Requests**: Friend requests, join requests, feature requests with approval workflows
 - **Activity Logs**: Audit trail for all activity changes
 - **Comments/Reactions**: Social features for activity engagement
+- **Fitness Tracking (October 2025)**: Workout activities, achievement badges, squad challenges, and weekly stats
+  - **Fitness Activities**: Individual workouts with type, duration, distance, points, and source (manual/Strava/Apple Health)
+  - **Fitness Badges**: Unlockable achievements across cardio, strength, streak, and special categories
+  - **Squad Challenges**: Group fitness goals with targets and participant tracking
+  - **Fitness Stats**: Cached weekly/monthly aggregates for performance
 
 **Storage Strategy**:
 - Session storage for admin authentication (browser-only)
@@ -101,7 +108,7 @@ Design preference: Modern, fun, minimal, and gamified - NOT professional.
 **Database & Backend Services**:
 - **Supabase**: PostgreSQL database, real-time subscriptions, authentication infrastructure
   - Connection via browser client (@supabase/ssr) and server client
-  - Tables: friends, groups, activities, friend_requests, join_requests, feature_requests, backlog_items, activity_logs, activity_participants, activity_comments, activity_reactions
+  - Tables: friends, groups, activities, friend_requests, join_requests, feature_requests, backlog_items, activity_logs, activity_participants, activity_comments, activity_reactions, fitness_activities, fitness_badges, squad_challenges, fitness_stats
 
 **File Storage**:
 - **Vercel Blob**: Image upload and storage for friend avatars

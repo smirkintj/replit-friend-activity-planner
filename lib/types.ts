@@ -172,3 +172,81 @@ export interface ActivityReaction {
   reactionType: "like" | "love" | "laugh" | "wow" | "sad"
   createdAt: string
 }
+
+// Fitness tracking types
+export interface FitnessActivity {
+  id: string
+  friendId: string
+  type: "run" | "bike" | "swim" | "gym" | "yoga" | "walk" | "hike" | "other"
+  date: string
+  duration: number // minutes
+  distance?: number // km (optional for strength training)
+  calories?: number
+  heartRate?: number
+  points: number
+  source: "manual" | "strava" | "apple_health"
+  stravaId?: string
+  notes?: string
+  createdAt: string
+}
+
+export interface FitnessBadge {
+  id: string
+  friendId: string
+  badgeType: string // e.g., 'first_steps', 'marathon_runner', 'hot_streak'
+  unlockedAt: string
+  metadata?: {
+    distance?: number
+    streakDays?: number
+    workoutCount?: number
+    [key: string]: any
+  }
+}
+
+export interface SquadChallenge {
+  id: string
+  title: string
+  description?: string
+  type: "distance" | "workout_count" | "streak" | "points"
+  target: number
+  startDate: string
+  endDate: string
+  participants: string[] // Array of friend IDs
+  isActive: boolean
+  createdBy?: string
+  createdAt: string
+}
+
+export interface FitnessStats {
+  id: string
+  friendId: string
+  period: "week" | "month" | "year"
+  startDate: string
+  totalPoints: number
+  totalDistance: number
+  totalWorkouts: number
+  longestStreak: number
+  badgesCount: number
+  updatedAt: string
+}
+
+export interface LeaderboardEntry {
+  friendId: string
+  friendName: string
+  friendImageUrl: string
+  points: number
+  workouts: number
+  distance: number
+  streak: number
+  badges: number
+  rank: number
+}
+
+export interface BadgeDefinition {
+  id: string
+  name: string
+  description: string
+  emoji: string
+  category: "cardio" | "strength" | "streak" | "special"
+  condition: (activities: FitnessActivity[], badges: FitnessBadge[]) => boolean
+}
