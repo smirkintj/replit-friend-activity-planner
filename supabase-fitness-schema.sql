@@ -68,8 +68,25 @@ CREATE TABLE IF NOT EXISTS fitness_stats (
 
 CREATE INDEX IF NOT EXISTS idx_fitness_stats_friend_period ON fitness_stats(friend_id, period, start_date);
 
+-- 5. Create strava_connections table
+CREATE TABLE IF NOT EXISTS strava_connections (
+  id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  friend_id VARCHAR NOT NULL UNIQUE REFERENCES friends(id) ON DELETE CASCADE,
+  athlete_id BIGINT NOT NULL,
+  access_token TEXT NOT NULL,
+  refresh_token TEXT NOT NULL,
+  expires_at BIGINT NOT NULL,
+  scope VARCHAR NOT NULL,
+  connected_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  last_sync_at TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_strava_connections_friend_id ON strava_connections(friend_id);
+CREATE INDEX IF NOT EXISTS idx_strava_connections_athlete_id ON strava_connections(athlete_id);
+
 -- Add helpful comments
 COMMENT ON TABLE fitness_activities IS 'Stores individual workout activities for friends';
 COMMENT ON TABLE fitness_badges IS 'Tracks unlocked achievement badges';
 COMMENT ON TABLE squad_challenges IS 'Group fitness challenges for the squad';
 COMMENT ON TABLE fitness_stats IS 'Cached weekly/monthly statistics for performance';
+COMMENT ON TABLE strava_connections IS 'OAuth tokens for Strava integration per friend';
