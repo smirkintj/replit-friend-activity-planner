@@ -122,10 +122,13 @@ Design preference: Modern, fun, minimal, and gamified - NOT professional.
 - **Strava API**: OAuth 2.0 + webhook integration for automatic workout sync
   - OAuth endpoints: `/api/strava/auth`, `/api/strava/callback` for user authorization
   - Webhook endpoint: `/api/strava/webhook` for real-time activity notifications
+  - Webhook registration: `/api/strava/webhook/register` auto-registers webhook on first connection
+  - Manual sync: `/api/strava/sync` endpoint for on-demand activity sync (last 30 activities)
   - Automatic token refresh every 6 hours
   - Activity type mapping (Run, Ride, Swim, Gym, etc.) with points calculation
   - Syncs last 30 activities on initial connection
   - Real-time webhook for new activities going forward
+  - UI: "Sync Now" button in StravaConnect component with loading states and success messages
 
 **Email Service** (October 2025):
 - **Resend**: Transactional email service for trip notifications
