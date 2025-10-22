@@ -37,7 +37,7 @@ Open your terminal and run this command (replace `YOUR_REPLIT_URL` with your act
 curl -X POST https://www.strava.com/api/v3/push_subscriptions \
   -F client_id=182162 \
   -F client_secret=9db92ce1ec711e7eda22e93a538f0c3bc47e4222 \
-  -F callback_url=https://korangbilafree.replit.app/api/strava/webhook \
+  -F callback_url=https://korangbilafree.replit.app.dev/api/strava/webhook \
   -F verify_token=FITSQUAD_WEBHOOK_2025
 ```
 
