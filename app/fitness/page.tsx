@@ -14,14 +14,16 @@ import {
   getFitnessBadges,
   getWeeklyLeaderboard,
   getWeekSummary,
-  getRecentActivities
+  getRecentActivities,
+  getWeeklyChallenges
 } from "@/lib/fitness-storage"
 import { WorkoutForm } from "@/components/fitness/workout-form"
 import { Leaderboard } from "@/components/fitness/leaderboard"
 import { BadgeGallery } from "@/components/fitness/badge-gallery"
 import { StravaConnect } from "@/components/fitness/strava-connect"
 import { FriendLogin } from "@/components/fitness/friend-login"
-import type { Friend, FitnessActivity, LeaderboardEntry, FitnessBadge } from "@/lib/types"
+import { WeeklyChallenges } from "@/components/fitness/weekly-challenges"
+import type { Friend, FitnessActivity, LeaderboardEntry, FitnessBadge, WeeklyChallenge } from "@/lib/types"
 import { getActivityIcon, getActivityColor } from "@/lib/fitness-points"
 import { format, startOfWeek, addDays } from "date-fns"
 
@@ -34,6 +36,7 @@ export default function FitnessPage() {
   const [weekSummary, setWeekSummary] = useState<any>(null)
   const [userBadges, setUserBadges] = useState<FitnessBadge[]>([])
   const [currentFriend, setCurrentFriend] = useState<Friend | null>(null)
+  const [weeklyChallenges, setWeeklyChallenges] = useState<WeeklyChallenge[]>([])
 
   useEffect(() => {
     // Check if friend is logged in from session
@@ -80,10 +83,14 @@ export default function FitnessPage() {
         getFitnessBadges(userId)
       ])
       
+      // Calculate challenges from the already-fetched summary (no redundant query)
+      const challenges = getWeeklyChallenges(summary)
+      
       setLeaderboard(leaderboardData)
       setRecentActivities(recentData)
       setWeekSummary(summary)
       setUserBadges(badges)
+      setWeeklyChallenges(challenges)
     } catch (error) {
       console.error("Error loading fitness data:", error)
     }
@@ -354,6 +361,10 @@ export default function FitnessPage() {
               </CardContent>
             </Card>
           </div>
+        )}
+
+        {weeklyChallenges.length > 0 && (
+          <WeeklyChallenges challenges={weeklyChallenges} />
         )}
 
         {currentFriend && (

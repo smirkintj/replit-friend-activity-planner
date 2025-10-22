@@ -250,3 +250,17 @@ export interface BadgeDefinition {
   category: "cardio" | "strength" | "streak" | "special"
   condition: (activities: FitnessActivity[], badges: FitnessBadge[]) => boolean
 }
+
+export interface WeeklyChallenge {
+  id: string
+  title: string
+  description: string
+  emoji: string
+  type: "distance" | "workouts" | "points" | "calories" | "streak"
+  target: number
+  current: number
+  unit: string // "km", "workouts", "pts", "cal", "days"
+  progress: number // 0-100 percentage
+  completed: boolean
+  reward: string // e.g., "+50 bonus pts", "Special badge"
+}

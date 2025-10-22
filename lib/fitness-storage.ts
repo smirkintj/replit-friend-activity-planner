@@ -5,7 +5,8 @@ import type {
   SquadChallenge,
   FitnessStats,
   LeaderboardEntry,
-  Friend
+  Friend,
+  WeeklyChallenge
 } from "./types"
 import { calculateActivityPoints, calculateCurrentStreak } from "./fitness-points"
 import { checkBadgeUnlocks, BADGE_DEFINITIONS } from "./fitness-badges"
@@ -250,6 +251,95 @@ export async function getWeekSummary(friendId: string) {
     badgesCount: badges.length,
     dailyActivities: dailyActivities
   }
+}
+
+// Get weekly challenges with current progress (accepts existing summary to avoid redundant queries)
+export function getWeeklyChallenges(weekSummary: { totalPoints: number, totalWorkouts: number, totalDistance: number, totalCalories: number, streak: number }): WeeklyChallenge[] {
+  
+  // Define weekly challenges (these reset every week)
+  const challengeDefinitions = [
+    {
+      id: "distance_20k",
+      title: "Distance Warrior",
+      description: "Run or bike 20km this week",
+      emoji: "🏃",
+      type: "distance" as const,
+      target: 20,
+      unit: "km",
+      reward: "+100 bonus pts"
+    },
+    {
+      id: "five_workouts",
+      title: "Consistency King",
+      description: "Complete 5 workouts this week",
+      emoji: "💪",
+      type: "workouts" as const,
+      target: 5,
+      unit: "workouts",
+      reward: "+75 bonus pts"
+    },
+    {
+      id: "points_300",
+      title: "Point Hunter",
+      description: "Earn 300 points this week",
+      emoji: "⭐",
+      type: "points" as const,
+      target: 300,
+      unit: "pts",
+      reward: "+50 bonus pts"
+    },
+    {
+      id: "calories_2000",
+      title: "Calorie Crusher",
+      description: "Burn 2,000 calories this week",
+      emoji: "🔥",
+      type: "calories" as const,
+      target: 2000,
+      unit: "cal",
+      reward: "+80 bonus pts"
+    },
+    {
+      id: "streak_7",
+      title: "Perfect Week",
+      description: "Workout 7 days in a row",
+      emoji: "🎯",
+      type: "streak" as const,
+      target: 7,
+      unit: "days",
+      reward: "Special badge!"
+    }
+  ]
+  
+  return challengeDefinitions.map(def => {
+    let current = 0
+    switch (def.type) {
+      case "distance":
+        current = weekSummary.totalDistance
+        break
+      case "workouts":
+        current = weekSummary.totalWorkouts
+        break
+      case "points":
+        current = weekSummary.totalPoints
+        break
+      case "calories":
+        current = weekSummary.totalCalories
+        break
+      case "streak":
+        current = weekSummary.streak
+        break
+    }
+    
+    const progress = Math.min(100, Math.round((current / def.target) * 100))
+    const completed = current >= def.target
+    
+    return {
+      ...def,
+      current,
+      progress,
+      completed
+    }
+  })
 }
 
 // Get recent activities across all friends (for activity feed)
