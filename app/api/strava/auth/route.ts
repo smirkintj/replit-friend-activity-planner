@@ -9,7 +9,10 @@ export async function GET(request: NextRequest) {
   }
 
   const clientId = process.env.STRAVA_CLIENT_ID;
-  const redirectUri = `${request.nextUrl.origin}/api/strava/callback`;
+  // Use production URL for callback (must match Strava app settings exactly)
+  const redirectUri = process.env.NODE_ENV === 'production' 
+    ? 'https://korangfreebila.replit.app/api/strava/callback'
+    : `${request.nextUrl.origin}/api/strava/callback`;
 
   const authUrl = new URL('https://www.strava.com/oauth/authorize');
   authUrl.searchParams.set('client_id', clientId!);
