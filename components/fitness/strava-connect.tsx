@@ -46,22 +46,18 @@ export function StravaConnect({ friendId, friendName }: StravaConnectProps) {
       `width=${width},height=${height},left=${left},top=${top}`
     );
     
-    // Check if popup was blocked
     if (!popup) {
       alert("Please allow popups for this site to connect to Strava.");
       return;
     }
     
-    // Listen for the popup to close (user finished auth)
     const checkClosed = setInterval(() => {
       if (popup.closed) {
         clearInterval(checkClosed);
-        // Refresh status once after popup closes
         setTimeout(() => loadStatus(), 500);
       }
     }, 500);
     
-    // Stop checking after 10 minutes (cleanup)
     setTimeout(() => clearInterval(checkClosed), 10 * 60 * 1000);
   }
 
@@ -94,7 +90,7 @@ export function StravaConnect({ friendId, friendName }: StravaConnectProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+      <div className="flex items-center gap-2 text-sm text-gray-400">
         <Loader2 className="h-4 w-4 animate-spin" />
         <span>Checking Strava connection...</span>
       </div>
@@ -103,15 +99,24 @@ export function StravaConnect({ friendId, friendName }: StravaConnectProps) {
 
   if (status?.isConnected) {
     return (
-      <div className="glass-card p-4 rounded-lg">
+      <div className="p-4 rounded-lg backdrop-blur-lg border"
+           style={{
+             background: 'rgba(15, 20, 45, 0.6)',
+             borderColor: 'rgba(139, 92, 246, 0.3)',
+             boxShadow: '0 0 30px rgba(139, 92, 246, 0.15)'
+           }}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-500/10">
-              <CheckCircle2 className="h-5 w-5 text-orange-500" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-full"
+                 style={{
+                   background: 'rgba(251, 146, 60, 0.15)',
+                   border: '2px solid rgba(251, 146, 60, 0.3)'
+                 }}>
+              <CheckCircle2 className="h-5 w-5 text-orange-400" />
             </div>
             <div>
-              <p className="font-medium text-sm">Strava Connected</p>
-              <p className="text-xs text-muted-foreground">
+              <p className="font-medium text-sm text-white">Strava Connected</p>
+              <p className="text-xs text-gray-400">
                 Workouts sync automatically
               </p>
             </div>
@@ -119,7 +124,7 @@ export function StravaConnect({ friendId, friendName }: StravaConnectProps) {
           <button
             onClick={handleDisconnect}
             disabled={disconnecting}
-            className="flex items-center gap-2 px-3 py-1.5 text-xs rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-3 py-1.5 text-xs rounded-lg transition-colors disabled:opacity-50 text-red-400 border border-red-500/30 hover:bg-red-500/10"
           >
             {disconnecting ? (
               <>
@@ -135,7 +140,7 @@ export function StravaConnect({ friendId, friendName }: StravaConnectProps) {
           </button>
         </div>
         {status.lastSyncAt && (
-          <p className="text-xs text-muted-foreground mt-2">
+          <p className="text-xs text-gray-500 mt-2">
             Last synced: {new Date(status.lastSyncAt).toLocaleString()}
           </p>
         )}
@@ -144,22 +149,35 @@ export function StravaConnect({ friendId, friendName }: StravaConnectProps) {
   }
 
   return (
-    <div className="glass-card p-4 rounded-lg">
+    <div className="p-4 rounded-lg backdrop-blur-lg border"
+         style={{
+           background: 'rgba(15, 20, 45, 0.6)',
+           borderColor: 'rgba(139, 92, 246, 0.3)',
+           boxShadow: '0 0 30px rgba(139, 92, 246, 0.15)'
+         }}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-500/10">
-            <Activity className="h-5 w-5 text-orange-500" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-full"
+               style={{
+                 background: 'rgba(251, 146, 60, 0.15)',
+                 border: '2px solid rgba(251, 146, 60, 0.3)'
+               }}>
+            <Activity className="h-5 w-5 text-orange-400" />
           </div>
           <div>
-            <p className="font-medium text-sm">Connect Strava</p>
-            <p className="text-xs text-muted-foreground">
+            <p className="font-medium text-sm text-white">Connect Strava</p>
+            <p className="text-xs text-gray-400">
               Auto-sync your workouts
             </p>
           </div>
         </div>
         <button
           onClick={handleConnect}
-          className="px-4 py-2 text-sm rounded-lg bg-orange-500 text-white hover:bg-orange-600 transition-colors font-medium"
+          className="px-4 py-2 text-sm rounded-lg font-medium text-white transition-all"
+          style={{
+            background: 'linear-gradient(135deg, #fb923c 0%, #f97316 100%)',
+            boxShadow: '0 0 20px rgba(251, 146, 60, 0.4)'
+          }}
         >
           Connect
         </button>

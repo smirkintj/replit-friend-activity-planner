@@ -126,28 +126,48 @@ export default function FitnessPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="glass-card border-b sticky top-0 z-10">
+    <div className="min-h-screen" style={{ background: 'linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%)' }}>
+      <header className="sticky top-0 z-10 backdrop-blur-lg border-b"
+              style={{ 
+                background: 'rgba(10, 14, 39, 0.8)',
+                borderColor: 'rgba(139, 92, 246, 0.2)'
+              }}>
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Link href="/">
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white hover:bg-white/10">
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Back
                 </Button>
               </Link>
               <div className="flex items-center gap-3">
-                <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-primary via-secondary to-accent flex items-center justify-center shadow-lg glow-primary animate-bounce-subtle">
+                <div className="h-12 w-12 rounded-2xl flex items-center justify-center shadow-lg relative"
+                     style={{
+                       background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
+                       boxShadow: '0 0 20px rgba(139, 92, 246, 0.5)'
+                     }}>
                   <TrendingUp className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold gradient-text">FitSquad</h1>
-                  <p className="text-sm text-muted-foreground">Track, compete, achieve</p>
+                  <h1 className="text-2xl font-bold text-white">
+                    <span style={{ 
+                      background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent'
+                    }}>FitSquad</span>
+                  </h1>
+                  <p className="text-sm text-gray-400">Track, compete, achieve</p>
                 </div>
               </div>
             </div>
-            <Button onClick={() => setShowWorkoutForm(true)} className="gap-2">
+            <Button 
+              onClick={() => setShowWorkoutForm(true)} 
+              className="gap-2"
+              style={{
+                background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
+                boxShadow: '0 0 20px rgba(139, 92, 246, 0.3)'
+              }}>
               <Plus className="h-4 w-4" />
               Log Workout
             </Button>
@@ -167,13 +187,33 @@ export default function FitnessPage() {
           </div>
         )}
 
-        {weekSummary && (
-          <Card className="glass-card">
+        {weekSummary && currentFriend && (
+          <Card className="backdrop-blur-lg border overflow-hidden"
+                style={{
+                  background: 'rgba(15, 20, 45, 0.6)',
+                  borderColor: 'rgba(139, 92, 246, 0.3)',
+                  boxShadow: '0 0 30px rgba(139, 92, 246, 0.15)'
+                }}>
             <CardContent className="pt-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold gradient-text">💪 YOUR WEEK</h2>
-                <Badge variant="secondary" className="gap-1">
-                  <Flame className="h-3 w-3 text-orange-500" />
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-10 w-10 border-2"
+                          style={{ borderColor: '#8b5cf6' }}>
+                    <AvatarImage src={currentFriend.imageUrl} />
+                    <AvatarFallback style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)' }}>
+                      {currentFriend.name.slice(0, 2)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <h2 className="text-xl font-bold text-white">
+                    💪 {currentFriend.name.toUpperCase()}'S WEEK
+                  </h2>
+                </div>
+                <Badge variant="secondary" className="gap-1 px-3 py-1 text-white border-0"
+                       style={{
+                         background: 'linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)',
+                         boxShadow: '0 0 15px rgba(245, 158, 11, 0.4)'
+                       }}>
+                  <Flame className="h-3 w-3" />
                   {weekSummary.streak} day streak
                 </Badge>
               </div>
@@ -181,15 +221,21 @@ export default function FitnessPage() {
               <div className="grid grid-cols-7 gap-2 mb-6">
                 {weekDays.map((day, i) => (
                   <div key={i} className="text-center">
-                    <div className="text-xs text-muted-foreground mb-1">{day.day}</div>
+                    <div className="text-xs text-gray-400 mb-1">{day.day}</div>
                     <div
                       className={`
-                        w-full aspect-square rounded-full flex items-center justify-center text-lg
+                        w-full aspect-square rounded-full flex items-center justify-center text-lg font-bold
+                        transition-all duration-200
                         ${day.hasWorkout
-                          ? "bg-gradient-to-br from-primary to-secondary glow-primary text-white"
-                          : "bg-muted text-muted-foreground"
+                          ? "text-white border-2"
+                          : "text-gray-500 border border-gray-700"
                         }
                       `}
+                      style={day.hasWorkout ? {
+                        background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
+                        borderColor: '#a78bfa',
+                        boxShadow: '0 0 15px rgba(139, 92, 246, 0.6)'
+                      } : {}}
                     >
                       {day.hasWorkout ? "✅" : day.date}
                     </div>
@@ -198,19 +244,31 @@ export default function FitnessPage() {
               </div>
 
               <div className="grid grid-cols-3 gap-4 text-center">
-                <div>
-                  <div className="text-3xl font-bold gradient-text">{weekSummary.totalPoints}</div>
-                  <div className="text-xs text-muted-foreground">points</div>
+                <div className="p-4 rounded-lg backdrop-blur-sm"
+                     style={{ 
+                       background: 'rgba(139, 92, 246, 0.1)',
+                       border: '1px solid rgba(139, 92, 246, 0.2)'
+                     }}>
+                  <div className="text-3xl font-bold text-white">{weekSummary.totalPoints}</div>
+                  <div className="text-xs text-gray-400 uppercase tracking-wider">points</div>
                 </div>
-                <div>
-                  <div className="text-3xl font-bold gradient-text">{weekSummary.totalWorkouts}</div>
-                  <div className="text-xs text-muted-foreground">workouts</div>
+                <div className="p-4 rounded-lg backdrop-blur-sm"
+                     style={{ 
+                       background: 'rgba(139, 92, 246, 0.1)',
+                       border: '1px solid rgba(139, 92, 246, 0.2)'
+                     }}>
+                  <div className="text-3xl font-bold text-white">{weekSummary.totalWorkouts}</div>
+                  <div className="text-xs text-gray-400 uppercase tracking-wider">workouts</div>
                 </div>
-                <div>
-                  <div className="text-3xl font-bold gradient-text">
+                <div className="p-4 rounded-lg backdrop-blur-sm"
+                     style={{ 
+                       background: 'rgba(139, 92, 246, 0.1)',
+                       border: '1px solid rgba(139, 92, 246, 0.2)'
+                     }}>
+                  <div className="text-3xl font-bold text-white">
                     {weekSummary.totalDistance.toFixed(1)}
                   </div>
-                  <div className="text-xs text-muted-foreground">km</div>
+                  <div className="text-xs text-gray-400 uppercase tracking-wider">km</div>
                 </div>
               </div>
             </CardContent>
@@ -230,29 +288,46 @@ export default function FitnessPage() {
           <BadgeGallery unlockedBadges={userBadges} />
         )}
 
-        <Card className="glass-card">
+        <Card className="backdrop-blur-lg border overflow-hidden"
+              style={{
+                background: 'rgba(15, 20, 45, 0.6)',
+                borderColor: 'rgba(139, 92, 246, 0.3)',
+                boxShadow: '0 0 30px rgba(139, 92, 246, 0.15)'
+              }}>
           <CardContent className="pt-6">
-            <h2 className="text-xl font-bold gradient-text mb-4">📊 Recent Activity</h2>
+            <h2 className="text-xl font-bold mb-4 text-white">📊 RECENT ACTIVITY</h2>
             <div className="space-y-3">
               {recentActivities.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
+                <div className="text-center py-8 text-gray-400">
                   <p>No activities yet!</p>
                   <p className="text-sm mt-2">Be the first to log a workout 💪</p>
                 </div>
               ) : (
                 recentActivities.map((activity) => (
-                  <div key={activity.id} className="glass-card p-4 hover-lift transition-all">
+                  <div key={activity.id} 
+                       className="p-4 backdrop-blur-sm rounded-lg transition-all duration-200 hover:scale-[1.02]"
+                       style={{
+                         background: 'rgba(139, 92, 246, 0.08)',
+                         border: '1px solid rgba(139, 92, 246, 0.2)'
+                       }}>
                     <div className="flex items-center gap-3">
-                      <Avatar className="h-10 w-10">
+                      <Avatar className="h-10 w-10 border-2"
+                              style={{ borderColor: '#6366f1' }}>
                         <AvatarImage src={activity.friendImageUrl} />
-                        <AvatarFallback>{activity.friendName.slice(0, 2)}</AvatarFallback>
+                        <AvatarFallback style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)' }}>
+                          {activity.friendName.slice(0, 2)}
+                        </AvatarFallback>
                       </Avatar>
                       
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium">
-                          <span className="gradient-text">{activity.friendName}</span> completed a {activity.type}!
+                        <p className="font-medium text-white">
+                          <span style={{ 
+                            background: 'linear-gradient(135deg, #a78bfa 0%, #818cf8 100%)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent'
+                          }}>{activity.friendName}</span> completed a {activity.type}!
                         </p>
-                        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-3 text-sm text-gray-400">
                           <span>{getActivityIcon(activity.type)}</span>
                           {activity.distance && <span>{activity.distance}km</span>}
                           <span>• {activity.duration}min</span>
@@ -260,7 +335,11 @@ export default function FitnessPage() {
                         </div>
                       </div>
 
-                      <Badge className={`bg-gradient-to-r ${getActivityColor(activity.type)} text-white border-0`}>
+                      <Badge className="text-white border-0 px-3 py-1"
+                             style={{
+                               background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
+                               boxShadow: '0 0 15px rgba(139, 92, 246, 0.4)'
+                             }}>
                         +{activity.points} pts
                       </Badge>
                     </div>
