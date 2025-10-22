@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Activity, X, CheckCircle2, Loader2 } from "lucide-react"
+import { Activity, X, CheckCircle2, Loader2, RefreshCw } from "lucide-react"
 import type { StravaConnectionStatus } from "@/lib/strava-storage"
 
 interface StravaConnectProps {
@@ -13,6 +13,8 @@ export function StravaConnect({ friendId, friendName }: StravaConnectProps) {
   const [status, setStatus] = useState<StravaConnectionStatus | null>(null)
   const [loading, setLoading] = useState(true)
   const [disconnecting, setDisconnecting] = useState(false)
+  const [syncing, setSyncing] = useState(false)
+  const [syncMessage, setSyncMessage] = useState<string | null>(null)
 
   useEffect(() => {
     loadStatus()
@@ -61,6 +63,33 @@ export function StravaConnect({ friendId, friendName }: StravaConnectProps) {
     setTimeout(() => clearInterval(checkClosed), 10 * 60 * 1000);
   }
 
+  async function handleSync() {
+    setSyncing(true)
+    setSyncMessage(null)
+
+    try {
+      const response = await fetch(`/api/strava/sync?friend_id=${friendId}`)
+      const data = await response.json()
+
+      if (data.success) {
+        setSyncMessage(data.message)
+        
+        if (data.syncedCount > 0) {
+          setTimeout(() => {
+            window.location.reload()
+          }, 2000)
+        }
+      } else {
+        setSyncMessage(data.message || 'Sync failed. Please try again.')
+      }
+    } catch (error) {
+      console.error('Error syncing:', error)
+      setSyncMessage('An error occurred while syncing. Please try again.')
+    } finally {
+      setSyncing(false)
+    }
+  }
+
   async function handleDisconnect() {
     if (!confirm("Are you sure you want to disconnect Strava? Your existing workouts will remain.")) {
       return
@@ -105,7 +134,7 @@ export function StravaConnect({ friendId, friendName }: StravaConnectProps) {
              borderColor: 'rgba(139, 92, 246, 0.3)',
              boxShadow: '0 0 30px rgba(139, 92, 246, 0.15)'
            }}>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-full"
                  style={{
@@ -117,30 +146,64 @@ export function StravaConnect({ friendId, friendName }: StravaConnectProps) {
             <div>
               <p className="font-medium text-sm text-white">Strava Connected</p>
               <p className="text-xs text-gray-400">
-                Workouts sync automatically
+                Auto-sync enabled
               </p>
             </div>
           </div>
-          <button
-            onClick={handleDisconnect}
-            disabled={disconnecting}
-            className="flex items-center gap-2 px-3 py-1.5 text-xs rounded-lg transition-colors disabled:opacity-50 text-red-400 border border-red-500/30 hover:bg-red-500/10"
-          >
-            {disconnecting ? (
-              <>
-                <Loader2 className="h-3 w-3 animate-spin" />
-                <span>Disconnecting...</span>
-              </>
-            ) : (
-              <>
-                <X className="h-3 w-3" />
-                <span>Disconnect</span>
-              </>
-            )}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleSync}
+              disabled={syncing}
+              className="flex items-center gap-2 px-3 py-1.5 text-xs rounded-lg transition-all disabled:opacity-50 text-white border"
+              style={{
+                background: syncing ? 'rgba(139, 92, 246, 0.2)' : 'rgba(139, 92, 246, 0.3)',
+                borderColor: 'rgba(139, 92, 246, 0.5)'
+              }}
+            >
+              {syncing ? (
+                <>
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  <span>Syncing...</span>
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="h-3 w-3" />
+                  <span>Sync Now</span>
+                </>
+              )}
+            </button>
+            <button
+              onClick={handleDisconnect}
+              disabled={disconnecting}
+              className="flex items-center gap-2 px-3 py-1.5 text-xs rounded-lg transition-colors disabled:opacity-50 text-red-400 border border-red-500/30 hover:bg-red-500/10"
+            >
+              {disconnecting ? (
+                <>
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  <span>Disconnecting...</span>
+                </>
+              ) : (
+                <>
+                  <X className="h-3 w-3" />
+                  <span>Disconnect</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
+        
+        {syncMessage && (
+          <div className="p-3 rounded-lg mb-2 text-sm backdrop-blur-sm"
+               style={{
+                 background: 'rgba(139, 92, 246, 0.15)',
+                 border: '1px solid rgba(139, 92, 246, 0.3)'
+               }}>
+            <p className="text-white">{syncMessage}</p>
+          </div>
+        )}
+        
         {status.lastSyncAt && (
-          <p className="text-xs text-gray-500 mt-2">
+          <p className="text-xs text-gray-500">
             Last synced: {new Date(status.lastSyncAt).toLocaleString()}
           </p>
         )}
