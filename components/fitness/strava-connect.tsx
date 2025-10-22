@@ -40,22 +40,29 @@ export function StravaConnect({ friendId, friendName }: StravaConnectProps) {
     const left = window.screen.width / 2 - width / 2;
     const top = window.screen.height / 2 - height / 2;
     
-    window.open(
+    const popup = window.open(
       authUrl,
       'Strava Authorization',
       `width=${width},height=${height},left=${left},top=${top}`
     );
     
-    // Poll for connection status after opening window
-    const checkInterval = setInterval(async () => {
-      await loadStatus();
-      if (status?.isConnected) {
-        clearInterval(checkInterval);
-      }
-    }, 2000);
+    // Check if popup was blocked
+    if (!popup) {
+      alert("Please allow popups for this site to connect to Strava.");
+      return;
+    }
     
-    // Stop polling after 5 minutes
-    setTimeout(() => clearInterval(checkInterval), 5 * 60 * 1000);
+    // Listen for the popup to close (user finished auth)
+    const checkClosed = setInterval(() => {
+      if (popup.closed) {
+        clearInterval(checkClosed);
+        // Refresh status once after popup closes
+        setTimeout(() => loadStatus(), 500);
+      }
+    }, 500);
+    
+    // Stop checking after 10 minutes (cleanup)
+    setTimeout(() => clearInterval(checkClosed), 10 * 60 * 1000);
   }
 
   async function handleDisconnect() {
