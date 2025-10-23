@@ -1,17 +1,30 @@
 "use client"
 
+import { useState } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import type { LeaderboardEntry } from "@/lib/types"
+import type { LeaderboardEntry, Friend } from "@/lib/types"
 import { Trophy, Flame, Award } from "lucide-react"
+import { FriendProfileModal } from "./friend-profile-modal"
 
 interface LeaderboardProps {
   entries: LeaderboardEntry[]
+  friends: Friend[]
   title?: string
 }
 
-export function Leaderboard({ entries, title = "🏆 THIS WEEK'S CHAMPIONS" }: LeaderboardProps) {
+export function Leaderboard({ entries, friends, title = "🏆 THIS WEEK'S CHAMPIONS" }: LeaderboardProps) {
+  const [selectedEntry, setSelectedEntry] = useState<LeaderboardEntry | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const handleProfileClick = (entry: LeaderboardEntry) => {
+    setSelectedEntry(entry)
+    setIsModalOpen(true)
+  }
+
+  const selectedFriend = selectedEntry ? friends.find(f => f.id === selectedEntry.friendId) || null : null
+
   const getRankStyle = (rank: number) => {
     switch (rank) {
       case 1:
@@ -87,7 +100,15 @@ export function Leaderboard({ entries, title = "🏆 THIS WEEK'S CHAMPIONS" }: L
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <>
+      <FriendProfileModal 
+        friend={selectedFriend}
+        leaderboardEntry={selectedEntry}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
+      
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Champion Spotlight - Side Panel */}
       <Card className="backdrop-blur-lg border overflow-hidden lg:col-span-1"
             style={{
@@ -127,16 +148,12 @@ export function Leaderboard({ entries, title = "🏆 THIS WEEK'S CHAMPIONS" }: L
             )}
           </div>
 
-          {champion.stravaConnected && champion.stravaAthleteId && (
-            <a
-              href={`https://www.strava.com/athletes/${champion.stravaAthleteId}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs text-orange-400 hover:text-orange-300 mb-4 inline-block"
-            >
-              View Strava Profile →
-            </a>
-          )}
+          <button
+            onClick={() => handleProfileClick(champion)}
+            className="text-xs text-purple-400 hover:text-purple-300 mb-4 inline-block cursor-pointer"
+          >
+            View Profile →
+          </button>
           
           <div className="mb-4">
             <div className="text-5xl font-bold text-yellow-400">{champion.points}</div>
@@ -238,26 +255,17 @@ export function Leaderboard({ entries, title = "🏆 THIS WEEK'S CHAMPIONS" }: L
             return (
               <div
                 key={entry.friendId}
-                className="p-4 rounded-xl transition-all duration-200 hover:scale-[1.01]"
+                onClick={() => handleProfileClick(entry)}
+                className="p-4 rounded-xl transition-all duration-200 hover:scale-[1.01] cursor-pointer"
                 style={getRankStyle(entry.rank)}
               >
-                {entry.stravaConnected && entry.stravaAthleteId ? (
-                  <a
-                    href={`https://www.strava.com/athletes/${entry.stravaAthleteId}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block cursor-pointer"
-                  >
-                    {content}
-                  </a>
-                ) : (
-                  content
-                )}
+                {content}
               </div>
             )
           })}
         </CardContent>
       </Card>
     </div>
+    </>
   )
 }

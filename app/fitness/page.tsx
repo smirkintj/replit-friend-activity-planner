@@ -388,7 +388,7 @@ export default function FitnessPage() {
           </div>
         )}
 
-        <Leaderboard entries={leaderboard} />
+        <Leaderboard entries={leaderboard} friends={friends} />
 
         {weeklyChallenges.length > 0 && (
           <WeeklyChallenges challenges={weeklyChallenges} />
