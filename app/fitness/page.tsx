@@ -26,9 +26,12 @@ import { FriendLogin } from "@/components/fitness/friend-login"
 import { WeeklyChallenges } from "@/components/fitness/weekly-challenges"
 import { FoodCalories } from "@/components/fitness/food-calories"
 import { ActivityDetailModal } from "@/components/fitness/activity-detail-modal"
+import { StreakTierExplainer } from "@/components/fitness/streak-tier-explainer"
+import { StreakAvatar } from "@/components/fitness/streak-name-display"
 import type { Friend, FitnessActivity, LeaderboardEntry, FitnessBadge, WeeklyChallenge } from "@/lib/types"
 import { getActivityIcon, getActivityColor } from "@/lib/fitness-points"
 import { format, startOfWeek, addDays } from "date-fns"
+import { getCurrentStreakTier, getNextStreakTier, getDaysUntilNextTier } from "@/lib/streak-tiers"
 
 export default function FitnessPage() {
   const [friends, setFriends] = useState<Friend[]>([])
@@ -224,13 +227,12 @@ export default function FitnessPage() {
                 {/* Header with Rank */}
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-4">
-                    <Avatar className="h-14 w-14 border-3"
-                            style={{ borderColor: '#8b5cf6' }}>
-                      <AvatarImage src={currentFriend.imageUrl} />
-                      <AvatarFallback style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)' }}>
-                        {currentFriend.name.slice(0, 2)}
-                      </AvatarFallback>
-                    </Avatar>
+                    <StreakAvatar
+                      src={currentFriend.imageUrl}
+                      name={currentFriend.name}
+                      streakDays={weekSummary.streak}
+                      size="lg"
+                    />
                     <div>
                       <h2 className="text-2xl font-bold text-white">
                         {currentFriend.name.toUpperCase()}'S WEEK
@@ -265,14 +267,40 @@ export default function FitnessPage() {
                       })()}
                     </div>
                   </div>
-                  <Badge variant="secondary" className="gap-1 px-3 py-1.5 text-white border-0"
-                         style={{
-                           background: 'linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)',
-                           boxShadow: '0 0 15px rgba(245, 158, 11, 0.4)'
-                         }}>
-                    <Flame className="h-4 w-4" />
-                    {weekSummary.streak} DAY STREAK
-                  </Badge>
+                  
+                  {/* Streak Tier Display */}
+                  {(() => {
+                    const currentTier = getCurrentStreakTier(weekSummary.streak)
+                    const nextTier = getNextStreakTier(weekSummary.streak)
+                    const daysUntil = getDaysUntilNextTier(weekSummary.streak)
+                    
+                    return (
+                      <div className="text-right">
+                        <Badge variant="secondary" className="gap-2 px-3 py-1.5 text-white border-0 mb-2"
+                               style={{
+                                 background: `linear-gradient(135deg, ${currentTier.color}cc 0%, ${currentTier.color}88 100%)`,
+                                 boxShadow: `0 0 20px ${currentTier.color}40`
+                               }}>
+                          <span className="text-lg">{currentTier.emoji}</span>
+                          <span className="font-bold">{currentTier.name} TIER</span>
+                        </Badge>
+                        <div className="flex items-center gap-2 justify-end">
+                          <Badge className="gap-1 px-2 py-0.5 text-xs border-0 text-white"
+                                 style={{
+                                   background: 'linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)'
+                                 }}>
+                            <Flame className="h-3 w-3" />
+                            {weekSummary.streak} day streak
+                          </Badge>
+                          {nextTier && (
+                            <span className="text-xs text-gray-400">
+                              {daysUntil}d until {nextTier.emoji}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  })()}
                 </div>
 
                 {/* Weekly Progress Bar */}
@@ -397,6 +425,10 @@ export default function FitnessPage() {
         )}
 
         <FoodCalories />
+
+        {currentFriend && weekSummary && (
+          <StreakTierExplainer currentStreakDays={weekSummary.streak} />
+        )}
 
         {userBadges && (
           <BadgeGallery unlockedBadges={userBadges} />
