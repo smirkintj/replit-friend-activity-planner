@@ -15,7 +15,9 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import type { FitnessActivity, Friend } from "@/lib/types"
 import { calculateActivityPoints, getActivityIcon, getActivityColor } from "@/lib/fitness-points"
-import { Dumbbell, X } from "lucide-react"
+import { estimateCalories } from "@/lib/calorie-estimator"
+import { Dumbbell, X, Zap } from "lucide-react"
+import { useEffect } from "react"
 
 interface WorkoutFormProps {
   friends: Friend[]
@@ -35,6 +37,17 @@ export function WorkoutForm({ friends, onSubmit, onClose, currentFriendId }: Wor
 
   const needsDistance = ["run", "bike", "swim", "walk", "hike"].includes(type)
   const estimatedPoints = calculateActivityPoints(type, parseInt(duration) || 0, parseFloat(distance) || undefined)
+  
+  // Auto-calculate calories when distance or duration changes
+  useEffect(() => {
+    const durationNum = parseInt(duration) || 0
+    const distanceNum = parseFloat(distance) || 0
+    
+    if (durationNum > 0) {
+      const estimated = estimateCalories(type, distanceNum, durationNum)
+      setCalories(estimated.toString())
+    }
+  }, [type, duration, distance])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -147,18 +160,23 @@ export function WorkoutForm({ friends, onSubmit, onClose, currentFriendId }: Wor
                 />
               </div>
             )}
-            {!needsDistance && (
-              <div className="space-y-2">
-                <Label>Calories (optional)</Label>
-                <Input
-                  type="number"
-                  value={calories}
-                  onChange={(e) => setCalories(e.target.value)}
-                  placeholder="300"
-                  min="0"
-                />
-              </div>
-            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2">
+              <Zap className="h-3 w-3 text-yellow-400" />
+              Calories (auto-calculated)
+            </Label>
+            <Input
+              type="number"
+              value={calories}
+              onChange={(e) => setCalories(e.target.value)}
+              placeholder="0"
+              min="0"
+            />
+            <p className="text-xs text-muted-foreground">
+              Estimated based on activity type, distance, and duration. You can adjust if needed.
+            </p>
           </div>
 
           <div className="space-y-2">

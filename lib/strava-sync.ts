@@ -1,6 +1,7 @@
 import { createClient as createServerClient } from './supabase/server';
 import { getValidStravaToken, updateLastSync } from './strava-storage';
 import { addFitnessActivity } from './fitness-storage';
+import { estimateCalories } from './calorie-estimator';
 import { FitnessActivity } from './types';
 
 interface StravaActivity {
@@ -126,6 +127,9 @@ export async function syncStravaActivity(
     const durationMinutes = Math.round(activity.moving_time / 60);
     const type = mapStravaType(activity.type);
     const points = calculatePoints(type, distanceKm, durationMinutes);
+    
+    // Use Strava calories if available, otherwise estimate
+    const calories = activity.calories || estimateCalories(type, distanceKm, durationMinutes);
 
     const fitnessActivity: Omit<FitnessActivity, 'id' | 'createdAt' | 'points'> = {
       friendId,
@@ -133,7 +137,7 @@ export async function syncStravaActivity(
       date: new Date(activity.start_date).toISOString(),
       duration: durationMinutes,
       distance: distanceKm,
-      calories: activity.calories,
+      calories: calories,
       heartRate: activity.average_heartrate ? Math.round(activity.average_heartrate) : undefined,
       source: 'strava',
       stravaId: activity.id.toString(),
@@ -210,6 +214,9 @@ export async function syncRecentActivities(friendId: string): Promise<number> {
       const durationMinutes = Math.round(detailedActivity.moving_time / 60);
       const type = mapStravaType(detailedActivity.type);
       const points = calculatePoints(type, distanceKm, durationMinutes);
+      
+      // Use Strava calories if available, otherwise estimate
+      const calories = detailedActivity.calories || estimateCalories(type, distanceKm, durationMinutes);
 
       const fitnessActivity: Omit<FitnessActivity, 'id' | 'createdAt' | 'points'> = {
         friendId,
@@ -217,7 +224,7 @@ export async function syncRecentActivities(friendId: string): Promise<number> {
         date: new Date(detailedActivity.start_date).toISOString(),
         duration: durationMinutes,
         distance: distanceKm,
-        calories: detailedActivity.calories,
+        calories: calories,
         heartRate: detailedActivity.average_heartrate ? Math.round(detailedActivity.average_heartrate) : undefined,
         source: 'strava',
         stravaId: detailedActivity.id.toString(),
