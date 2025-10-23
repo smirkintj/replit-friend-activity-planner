@@ -313,7 +313,7 @@ export default function FitnessPage() {
                   </div>
                 </div>
 
-                {/* Main Stats - Mobile Responsive Grid */}
+                {/* Main Stats - Mobile: 2 most important, Desktop: All 4 */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                   <div className="p-3 md:p-4 rounded-xl backdrop-blur-sm text-center"
                        style={{ 
@@ -332,7 +332,8 @@ export default function FitnessPage() {
                     <div className="text-3xl md:text-4xl font-bold text-orange-400 mb-1">{weekSummary.totalCalories || 0}</div>
                     <div className="text-xs text-gray-300 uppercase tracking-wider font-semibold">Calories</div>
                   </div>
-                  <div className="p-3 md:p-4 rounded-xl backdrop-blur-sm text-center"
+                  {/* Desktop only stats */}
+                  <div className="hidden md:block p-3 md:p-4 rounded-xl backdrop-blur-sm text-center"
                        style={{ 
                          background: 'rgba(139, 92, 246, 0.1)',
                          border: '1px solid rgba(139, 92, 246, 0.2)'
@@ -340,7 +341,7 @@ export default function FitnessPage() {
                     <div className="text-3xl md:text-4xl font-bold text-white mb-1">{weekSummary.totalWorkouts}</div>
                     <div className="text-xs text-gray-300 uppercase tracking-wider font-semibold">Workouts</div>
                   </div>
-                  <div className="p-3 md:p-4 rounded-xl backdrop-blur-sm text-center"
+                  <div className="hidden md:block p-3 md:p-4 rounded-xl backdrop-blur-sm text-center"
                        style={{ 
                          background: 'rgba(139, 92, 246, 0.1)',
                          border: '1px solid rgba(139, 92, 246, 0.2)'
@@ -463,14 +464,20 @@ export default function FitnessPage() {
                       </Avatar>
                       
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-white">
+                        <p className="font-medium text-white text-sm md:text-base">
                           <span style={{ 
                             background: 'linear-gradient(135deg, #a78bfa 0%, #818cf8 100%)',
                             WebkitBackgroundClip: 'text',
                             WebkitTextFillColor: 'transparent'
                           }}>{activity.friendName}</span> completed a {activity.type}!
                         </p>
-                        <div className="flex items-center gap-3 text-sm text-gray-400">
+                        {/* Mobile: Simple view - icon + distance only */}
+                        <div className="flex items-center gap-2 text-sm text-gray-400 md:hidden">
+                          <span className="text-lg">{getActivityIcon(activity.type)}</span>
+                          {activity.distance && <span className="font-medium">{activity.distance}km</span>}
+                        </div>
+                        {/* Desktop: Full details */}
+                        <div className="hidden md:flex items-center gap-3 text-sm text-gray-400">
                           <span>{getActivityIcon(activity.type)}</span>
                           {activity.distance && <span>{activity.distance}km</span>}
                           <span>• {activity.duration}min</span>

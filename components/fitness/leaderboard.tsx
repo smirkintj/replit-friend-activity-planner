@@ -117,7 +117,8 @@ export function Leaderboard({ entries, title = "🏆 THIS WEEK'S CHAMPIONS" }: L
             <div className="text-sm text-gray-300 uppercase tracking-wider">points</div>
           </div>
 
-          <div className="space-y-2 text-sm">
+          {/* Desktop only: Detailed stats */}
+          <div className="hidden md:block space-y-2 text-sm">
             <div className="flex justify-between items-center p-2 rounded"
                  style={{ background: 'rgba(0, 0, 0, 0.2)' }}>
               <span className="text-gray-300">Workouts</span>
@@ -179,8 +180,9 @@ export function Leaderboard({ entries, title = "🏆 THIS WEEK'S CHAMPIONS" }: L
                 </Avatar>
 
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-lg text-white">{entry.friendName}</h3>
-                  <div className="flex items-center gap-4 text-sm text-gray-400">
+                  <h3 className="font-semibold text-base md:text-lg text-white">{entry.friendName}</h3>
+                  {/* Desktop only: Detailed stats */}
+                  <div className="hidden md:flex items-center gap-4 text-sm text-gray-400">
                     <span>{entry.workouts} workouts</span>
                     {entry.distance > 0 && <span>• {entry.distance.toFixed(1)}km</span>}
                     {entry.streak > 0 && (
