@@ -95,7 +95,7 @@ export function Leaderboard({ entries, title = "🏆 THIS WEEK'S CHAMPIONS" }: L
           <div className="mb-4">
             <Trophy className="h-12 w-12 mx-auto mb-2"
                     style={{ color: '#fbbf24' }} />
-            <h3 className="text-lg font-bold text-white">WEEK'S CHAMPION</h3>
+            <h3 className="text-lg font-bold text-white">TERPALING FIT 🔥</h3>
             <div className="text-6xl my-4">👑</div>
           </div>
 
@@ -123,11 +123,11 @@ export function Leaderboard({ entries, title = "🏆 THIS WEEK'S CHAMPIONS" }: L
               <span className="text-gray-300">Workouts</span>
               <span className="text-white font-bold">{champion.workouts}</span>
             </div>
-            {champion.distance > 0 && (
+            {champion.calories > 0 && (
               <div className="flex justify-between items-center p-2 rounded"
                    style={{ background: 'rgba(0, 0, 0, 0.2)' }}>
-                <span className="text-gray-300">Distance</span>
-                <span className="text-white font-bold">{champion.distance.toFixed(1)} km</span>
+                <span className="text-gray-300">Calories Burned</span>
+                <span className="text-white font-bold">{champion.calories.toLocaleString()} kcal</span>
               </div>
             )}
             <div className="flex justify-between items-center p-2 rounded"
@@ -154,7 +154,7 @@ export function Leaderboard({ entries, title = "🏆 THIS WEEK'S CHAMPIONS" }: L
               boxShadow: '0 0 30px rgba(139, 92, 246, 0.15)'
             }}>
         <CardHeader>
-          <CardTitle className="text-white">🏅 TOP PERFORMERS</CardTitle>
+          <CardTitle className="text-white">🏅 Anugerah Terpaling Sihat</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {otherEntries.map((entry) => (

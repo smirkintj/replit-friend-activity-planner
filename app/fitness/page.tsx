@@ -21,9 +21,11 @@ import { WorkoutForm } from "@/components/fitness/workout-form"
 import { Leaderboard } from "@/components/fitness/leaderboard"
 import { BadgeGallery } from "@/components/fitness/badge-gallery"
 import { StravaConnect } from "@/components/fitness/strava-connect"
+import { StravaProfile } from "@/components/fitness/strava-profile"
 import { FriendLogin } from "@/components/fitness/friend-login"
 import { WeeklyChallenges } from "@/components/fitness/weekly-challenges"
 import { FoodCalories } from "@/components/fitness/food-calories"
+import { ActivityDetailModal } from "@/components/fitness/activity-detail-modal"
 import type { Friend, FitnessActivity, LeaderboardEntry, FitnessBadge, WeeklyChallenge } from "@/lib/types"
 import { getActivityIcon, getActivityColor } from "@/lib/fitness-points"
 import { format, startOfWeek, addDays } from "date-fns"
@@ -38,6 +40,7 @@ export default function FitnessPage() {
   const [userBadges, setUserBadges] = useState<FitnessBadge[]>([])
   const [currentFriend, setCurrentFriend] = useState<Friend | null>(null)
   const [weeklyChallenges, setWeeklyChallenges] = useState<WeeklyChallenge[]>([])
+  const [selectedActivity, setSelectedActivity] = useState<any>(null)
 
   useEffect(() => {
     // Check if friend is logged in from session
@@ -196,10 +199,16 @@ export default function FitnessPage() {
         )}
 
         {currentFriend && (
-          <StravaConnect
-            friendId={currentFriend.id}
-            friendName={currentFriend.name}
-          />
+          <div className="space-y-4">
+            <StravaConnect
+              friendId={currentFriend.id}
+              friendName={currentFriend.name}
+            />
+            <StravaProfile
+              friendId={currentFriend.id}
+              friendName={currentFriend.name}
+            />
+          </div>
         )}
 
         {weekSummary && currentFriend && (
@@ -410,7 +419,8 @@ export default function FitnessPage() {
               ) : (
                 recentActivities.map((activity) => (
                   <div key={activity.id} 
-                       className="p-4 backdrop-blur-sm rounded-lg transition-all duration-200 hover:scale-[1.02]"
+                       className="p-4 backdrop-blur-sm rounded-lg transition-all duration-200 hover:scale-[1.02] cursor-pointer"
+                       onClick={() => setSelectedActivity(activity)}
                        style={{
                          background: 'rgba(139, 92, 246, 0.08)',
                          border: '1px solid rgba(139, 92, 246, 0.2)'
@@ -454,6 +464,12 @@ export default function FitnessPage() {
             </div>
           </CardContent>
         </Card>
+
+        <ActivityDetailModal
+          activity={selectedActivity}
+          isOpen={!!selectedActivity}
+          onClose={() => setSelectedActivity(null)}
+        />
       </main>
     </div>
   )

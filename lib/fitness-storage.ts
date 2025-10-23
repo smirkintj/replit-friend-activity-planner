@@ -188,6 +188,9 @@ export async function getWeeklyLeaderboard(friends: Friend[]): Promise<Leaderboa
     const totalDistance = friendActivities
       .filter(a => a.distance)
       .reduce((sum, a) => sum + (a.distance || 0), 0)
+    const totalCalories = friendActivities
+      .filter(a => a.calories)
+      .reduce((sum, a) => sum + (a.calories || 0), 0)
     const workoutCount = friendActivities.length
     const streak = calculateCurrentStreak(allFriendActivities)
     
@@ -198,6 +201,7 @@ export async function getWeeklyLeaderboard(friends: Friend[]): Promise<Leaderboa
       points: totalPoints,
       workouts: workoutCount,
       distance: totalDistance,
+      calories: totalCalories,
       streak: streak,
       badges: badges.length,
       rank: 0 // Will be calculated below

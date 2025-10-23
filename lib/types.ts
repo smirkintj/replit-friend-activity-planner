@@ -237,6 +237,7 @@ export interface LeaderboardEntry {
   points: number
   workouts: number
   distance: number
+  calories: number
   streak: number
   badges: number
   rank: number
