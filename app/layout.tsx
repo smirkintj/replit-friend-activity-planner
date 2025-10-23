@@ -11,9 +11,21 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: "gengputrafreebila",
-  description: "semua busy kan so boleh check sini tengok siapa free ye",
+  title: "korangfreebila",
+  description: "Track schedules, plan trips, compete in fitness challenges with friends",
   generator: "v0.app",
+  manifest: "/manifest.json",
+  themeColor: "#8b5cf6",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "korangfreebila",
+  },
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+  },
 }
 
 export default function RootLayout({
