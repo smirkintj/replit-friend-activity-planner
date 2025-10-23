@@ -58,7 +58,7 @@ export function FriendProfileModal({ friend, leaderboardEntry, isOpen, onClose }
   const tier = getCurrentStreakTier(leaderboardEntry.streak)
 
   return (
-    <Dialog open={isOpen} onClose={onClose}>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl backdrop-blur-xl border-0"
                      style={{
                        background: 'rgba(15, 20, 45, 0.95)',
