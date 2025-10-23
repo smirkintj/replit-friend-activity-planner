@@ -367,7 +367,7 @@ export async function getRecentActivities(limit: number = 10): Promise<(FitnessA
   const { data: activities, error: activitiesError } = await supabase
     .from("fitness_activities")
     .select("*")
-    .order("created_at", { ascending: false })
+    .order("date", { ascending: false })
     .limit(limit)
   
   if (activitiesError) {
