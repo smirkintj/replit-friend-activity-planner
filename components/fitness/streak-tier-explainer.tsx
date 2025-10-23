@@ -1,6 +1,5 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { STREAK_TIERS, getCurrentStreakTier, getNextStreakTier } from "@/lib/streak-tiers"
 import { CheckCircle, Lock } from "lucide-react"
 
@@ -13,19 +12,11 @@ export function StreakTierExplainer({ currentStreakDays }: StreakTierExplainerPr
   const nextTier = getNextStreakTier(currentStreakDays)
 
   return (
-    <Card className="backdrop-blur-lg border overflow-hidden"
-          style={{
-            background: 'rgba(15, 20, 45, 0.6)',
-            borderColor: 'rgba(139, 92, 246, 0.3)',
-            boxShadow: '0 0 30px rgba(139, 92, 246, 0.15)'
-          }}>
-      <CardHeader>
-        <CardTitle className="text-white">🏆 STREAK TIER REWARDS</CardTitle>
-        <p className="text-sm text-gray-400 mt-2">
-          Keep your streak alive to unlock cosmetic rewards! Your name will glow throughout the entire app.
-        </p>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <div>
+      <p className="text-sm text-gray-400 mb-4">
+        Keep your streak alive to unlock cosmetic rewards! Your name will glow throughout the entire app.
+      </p>
+      <div className="space-y-4">
         {STREAK_TIERS.map((tier, index) => {
           const isUnlocked = currentStreakDays >= tier.days
           const isNext = nextTier?.name === tier.name
@@ -195,7 +186,7 @@ export function StreakTierExplainer({ currentStreakDays }: StreakTierExplainerPr
             </p>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }

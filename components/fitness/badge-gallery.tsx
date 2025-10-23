@@ -1,6 +1,5 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { FitnessBadge, BadgeDefinition } from "@/lib/types"
@@ -69,27 +68,17 @@ export function BadgeGallery({ unlockedBadges, onBadgeClick }: BadgeGalleryProps
   ]
 
   return (
-    <Card className="backdrop-blur-lg border overflow-hidden"
-          style={{
-            background: 'rgba(15, 20, 45, 0.6)',
-            borderColor: 'rgba(139, 92, 246, 0.3)',
-            boxShadow: '0 0 30px rgba(139, 92, 246, 0.15)'
-          }}>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-white">
-          <Award className="h-6 w-6"
-                 style={{ color: '#8b5cf6' }} />
-          Badge Collection
-          <Badge variant="secondary" className="ml-auto border-0 text-white"
-                 style={{
-                   background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)'
-                 }}>
-            {unlockedBadges.length} / {BADGE_DEFINITIONS.length}
-          </Badge>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Tabs defaultValue="cardio" className="w-full">
+    <div>
+      <div className="flex items-center gap-2 mb-4">
+        <Badge variant="secondary" className="border-0 text-white"
+               style={{
+                 background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)'
+               }}>
+          {unlockedBadges.length} / {BADGE_DEFINITIONS.length} unlocked
+        </Badge>
+      </div>
+
+      <Tabs defaultValue="cardio" className="w-full">
           <TabsList className="grid w-full grid-cols-4 backdrop-blur-sm"
                     style={{
                       background: 'rgba(139, 92, 246, 0.1)',
@@ -125,7 +114,6 @@ export function BadgeGallery({ unlockedBadges, onBadgeClick }: BadgeGalleryProps
             )
           })}
         </Tabs>
-      </CardContent>
-    </Card>
+    </div>
   )
 }

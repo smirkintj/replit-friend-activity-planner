@@ -28,6 +28,8 @@ import { FoodCalories } from "@/components/fitness/food-calories"
 import { ActivityDetailModal } from "@/components/fitness/activity-detail-modal"
 import { StreakTierExplainer } from "@/components/fitness/streak-tier-explainer"
 import { StreakAvatar } from "@/components/fitness/streak-name-display"
+import { StreakTierBadge } from "@/components/fitness/streak-tier-badge"
+import { CollapsibleSection } from "@/components/ui/collapsible-section"
 import type { Friend, FitnessActivity, LeaderboardEntry, FitnessBadge, WeeklyChallenge } from "@/lib/types"
 import { getActivityIcon, getActivityColor } from "@/lib/fitness-points"
 import { format, startOfWeek, addDays } from "date-fns"
@@ -224,17 +226,18 @@ export default function FitnessPage() {
                     boxShadow: '0 0 30px rgba(139, 92, 246, 0.15)'
                   }}>
               <CardContent className="pt-6">
-                {/* Header with Rank */}
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-4">
+                {/* Header with Rank - Mobile Responsive */}
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+                  <div className="flex items-center gap-3 md:gap-4">
                     <StreakAvatar
                       src={currentFriend.imageUrl}
                       name={currentFriend.name}
                       streakDays={weekSummary.streak}
                       size="lg"
+                      className="flex-shrink-0"
                     />
-                    <div>
-                      <h2 className="text-2xl font-bold text-white">
+                    <div className="min-w-0 flex-1">
+                      <h2 className="text-xl md:text-2xl font-bold text-white truncate">
                         {currentFriend.name.toUpperCase()}'S WEEK
                       </h2>
                       {(() => {
@@ -243,8 +246,8 @@ export default function FitnessPage() {
                         const pointsBehind = leader && userEntry ? leader.points - userEntry.points : 0
                         
                         return userEntry && (
-                          <div className="flex items-center gap-2 mt-1">
-                            <Badge className="gap-1 px-2 py-0.5 text-xs border-0 text-white"
+                          <div className="flex flex-wrap items-center gap-2 mt-1">
+                            <Badge className="gap-1 px-2 py-0.5 text-xs border-0 text-white flex-shrink-0"
                                    style={{
                                      background: userEntry.rank === 1 
                                        ? 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)'
@@ -253,13 +256,13 @@ export default function FitnessPage() {
                               {userEntry.rank === 1 ? '👑' : `#${userEntry.rank}`} RANK {userEntry.rank}
                             </Badge>
                             {pointsBehind > 0 && (
-                              <span className="text-xs text-gray-400">
+                              <span className="text-xs text-gray-400 hidden sm:inline">
                                 {pointsBehind} pts behind leader
                               </span>
                             )}
                             {userEntry.rank === 1 && (
                               <span className="text-xs text-yellow-400">
-                                🔥 You're crushing it!
+                                🔥 Crushing it!
                               </span>
                             )}
                           </div>
@@ -268,39 +271,10 @@ export default function FitnessPage() {
                     </div>
                   </div>
                   
-                  {/* Streak Tier Display */}
-                  {(() => {
-                    const currentTier = getCurrentStreakTier(weekSummary.streak)
-                    const nextTier = getNextStreakTier(weekSummary.streak)
-                    const daysUntil = getDaysUntilNextTier(weekSummary.streak)
-                    
-                    return (
-                      <div className="text-right">
-                        <Badge variant="secondary" className="gap-2 px-3 py-1.5 text-white border-0 mb-2"
-                               style={{
-                                 background: `linear-gradient(135deg, ${currentTier.color}cc 0%, ${currentTier.color}88 100%)`,
-                                 boxShadow: `0 0 20px ${currentTier.color}40`
-                               }}>
-                          <span className="text-lg">{currentTier.emoji}</span>
-                          <span className="font-bold">{currentTier.name} TIER</span>
-                        </Badge>
-                        <div className="flex items-center gap-2 justify-end">
-                          <Badge className="gap-1 px-2 py-0.5 text-xs border-0 text-white"
-                                 style={{
-                                   background: 'linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)'
-                                 }}>
-                            <Flame className="h-3 w-3" />
-                            {weekSummary.streak} day streak
-                          </Badge>
-                          {nextTier && (
-                            <span className="text-xs text-gray-400">
-                              {daysUntil}d until {nextTier.emoji}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    )
-                  })()}
+                  {/* Streak Tier Badge */}
+                  <div className="md:flex-shrink-0">
+                    <StreakTierBadge streakDays={weekSummary.streak} />
+                  </div>
                 </div>
 
                 {/* Weekly Progress Bar */}
@@ -339,82 +313,77 @@ export default function FitnessPage() {
                   </div>
                 </div>
 
-                {/* Main Stats - 4 Column Grid */}
-                <div className="grid grid-cols-4 gap-4">
-                  <div className="p-4 rounded-xl backdrop-blur-sm text-center"
+                {/* Main Stats - Mobile Responsive Grid */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+                  <div className="p-3 md:p-4 rounded-xl backdrop-blur-sm text-center"
                        style={{ 
                          background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(99, 102, 241, 0.2) 100%)',
                          border: '2px solid rgba(139, 92, 246, 0.4)',
                          boxShadow: '0 0 20px rgba(139, 92, 246, 0.2)'
                        }}>
-                    <div className="text-4xl font-bold text-white mb-1">{weekSummary.totalPoints}</div>
+                    <div className="text-3xl md:text-4xl font-bold text-white mb-1">{weekSummary.totalPoints}</div>
                     <div className="text-xs text-gray-300 uppercase tracking-wider font-semibold">Points</div>
                   </div>
-                  <div className="p-4 rounded-xl backdrop-blur-sm text-center"
+                  <div className="p-3 md:p-4 rounded-xl backdrop-blur-sm text-center"
                        style={{ 
                          background: 'rgba(251, 146, 60, 0.15)',
                          border: '2px solid rgba(251, 146, 60, 0.3)'
                        }}>
-                    <div className="text-4xl font-bold text-orange-400 mb-1">{weekSummary.totalCalories || 0}</div>
+                    <div className="text-3xl md:text-4xl font-bold text-orange-400 mb-1">{weekSummary.totalCalories || 0}</div>
                     <div className="text-xs text-gray-300 uppercase tracking-wider font-semibold">Calories</div>
                   </div>
-                  <div className="p-4 rounded-xl backdrop-blur-sm text-center"
+                  <div className="p-3 md:p-4 rounded-xl backdrop-blur-sm text-center"
                        style={{ 
                          background: 'rgba(139, 92, 246, 0.1)',
                          border: '1px solid rgba(139, 92, 246, 0.2)'
                        }}>
-                    <div className="text-4xl font-bold text-white mb-1">{weekSummary.totalWorkouts}</div>
+                    <div className="text-3xl md:text-4xl font-bold text-white mb-1">{weekSummary.totalWorkouts}</div>
                     <div className="text-xs text-gray-300 uppercase tracking-wider font-semibold">Workouts</div>
                   </div>
-                  <div className="p-4 rounded-xl backdrop-blur-sm text-center"
+                  <div className="p-3 md:p-4 rounded-xl backdrop-blur-sm text-center"
                        style={{ 
                          background: 'rgba(139, 92, 246, 0.1)',
                          border: '1px solid rgba(139, 92, 246, 0.2)'
                        }}>
-                    <div className="text-4xl font-bold text-white mb-1">{weekSummary.totalDistance.toFixed(1)}</div>
+                    <div className="text-3xl md:text-4xl font-bold text-white mb-1">{weekSummary.totalDistance.toFixed(1)}</div>
                     <div className="text-xs text-gray-300 uppercase tracking-wider font-semibold">km</div>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Point System Explainer */}
-            <Card className="backdrop-blur-lg border"
-                  style={{
-                    background: 'rgba(15, 20, 45, 0.4)',
-                    borderColor: 'rgba(139, 92, 246, 0.2)'
-                  }}>
-              <CardContent className="pt-4 pb-4">
-                <div className="flex items-start gap-3">
-                  <div className="text-2xl">💡</div>
-                  <div className="flex-1">
-                    <h3 className="text-sm font-bold text-white mb-2">HOW POINTS WORK</h3>
-                    <div className="grid grid-cols-2 gap-2 text-xs text-gray-300">
-                      <div className="flex items-center gap-2">
-                        <span className="text-purple-400 font-mono">10pts/km</span>
-                        <span className="text-gray-500">→</span>
-                        <span>Run, Bike, Walk, Hike, Swim</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-purple-400 font-mono">5pts/10min</span>
-                        <span className="text-gray-500">→</span>
-                        <span>Gym, Strength</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-purple-400 font-mono">3pts/10min</span>
-                        <span className="text-gray-500">→</span>
-                        <span>Yoga, Other</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-orange-400 font-mono">+Streak</span>
-                        <span className="text-gray-500">→</span>
-                        <span>Daily workout bonus!</span>
-                      </div>
-                    </div>
-                  </div>
+            {/* Point System Explainer - Collapsible */}
+            <CollapsibleSection
+              title="HOW POINTS WORK"
+              icon="💡"
+              defaultOpen={false}
+              style={{
+                background: 'rgba(15, 20, 45, 0.4)',
+                borderColor: 'rgba(139, 92, 246, 0.2)'
+              }}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-gray-300">
+                <div className="flex items-center gap-2">
+                  <span className="text-purple-400 font-mono text-xs">10pts/km</span>
+                  <span className="text-gray-500">→</span>
+                  <span className="text-xs">Run, Bike, Walk, Hike, Swim</span>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="flex items-center gap-2">
+                  <span className="text-purple-400 font-mono text-xs">5pts/10min</span>
+                  <span className="text-gray-500">→</span>
+                  <span className="text-xs">Gym, Strength</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-purple-400 font-mono text-xs">3pts/10min</span>
+                  <span className="text-gray-500">→</span>
+                  <span className="text-xs">Yoga, Other</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-orange-400 font-mono text-xs">+Streak</span>
+                  <span className="text-gray-500">→</span>
+                  <span className="text-xs">Daily workout bonus!</span>
+                </div>
+              </div>
+            </CollapsibleSection>
           </div>
         )}
 
@@ -424,14 +393,41 @@ export default function FitnessPage() {
           <WeeklyChallenges challenges={weeklyChallenges} />
         )}
 
-        <FoodCalories />
+        <CollapsibleSection
+          title="🍽️ MALAYSIAN FOOD CALORIE GUIDE"
+          defaultOpen={false}
+          style={{
+            background: 'rgba(15, 20, 45, 0.6)',
+            borderColor: 'rgba(139, 92, 246, 0.3)',
+            boxShadow: '0 0 30px rgba(139, 92, 246, 0.15)'
+          }}>
+          <FoodCalories />
+        </CollapsibleSection>
 
         {currentFriend && weekSummary && (
-          <StreakTierExplainer currentStreakDays={weekSummary.streak} />
+          <CollapsibleSection
+            title="🏆 STREAK TIER REWARDS"
+            defaultOpen={false}
+            style={{
+              background: 'rgba(15, 20, 45, 0.6)',
+              borderColor: 'rgba(139, 92, 246, 0.3)',
+              boxShadow: '0 0 30px rgba(139, 92, 246, 0.15)'
+            }}>
+            <StreakTierExplainer currentStreakDays={weekSummary.streak} />
+          </CollapsibleSection>
         )}
 
         {userBadges && (
-          <BadgeGallery unlockedBadges={userBadges} />
+          <CollapsibleSection
+            title="🎖️ ACHIEVEMENT BADGES"
+            defaultOpen={false}
+            style={{
+              background: 'rgba(15, 20, 45, 0.6)',
+              borderColor: 'rgba(139, 92, 246, 0.3)',
+              boxShadow: '0 0 30px rgba(139, 92, 246, 0.15)'
+            }}>
+            <BadgeGallery unlockedBadges={userBadges} />
+          </CollapsibleSection>
         )}
 
         <Card className="backdrop-blur-lg border overflow-hidden"
