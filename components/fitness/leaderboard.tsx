@@ -110,7 +110,29 @@ export function Leaderboard({ entries, title = "🏆 THIS WEEK'S CHAMPIONS" }: L
             </AvatarFallback>
           </Avatar>
 
-          <h2 className="text-2xl font-bold text-white mb-2">{champion.friendName}</h2>
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <h2 className="text-2xl font-bold text-white">{champion.friendName}</h2>
+            {champion.stravaConnected && (
+              <Badge variant="secondary" className="text-xs border-0 px-2 py-0.5 text-white"
+                     style={{
+                       background: 'linear-gradient(135deg, #fc4c02 0%, #e34402 100%)',
+                       boxShadow: '0 0 10px rgba(252, 76, 2, 0.3)'
+                     }}>
+                ✓ Strava
+              </Badge>
+            )}
+          </div>
+
+          {champion.stravaConnected && champion.stravaAthleteId && (
+            <a
+              href={`https://www.strava.com/athletes/${champion.stravaAthleteId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-orange-400 hover:text-orange-300 mb-4 inline-block"
+            >
+              View Strava Profile →
+            </a>
+          )}
           
           <div className="mb-4">
             <div className="text-5xl font-bold text-yellow-400">{champion.points}</div>
@@ -158,12 +180,8 @@ export function Leaderboard({ entries, title = "🏆 THIS WEEK'S CHAMPIONS" }: L
           <CardTitle className="text-white">🏅 Anugerah Terpaling Sihat</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          {otherEntries.map((entry) => (
-            <div
-              key={entry.friendId}
-              className="p-4 rounded-xl transition-all duration-200 hover:scale-[1.01]"
-              style={getRankStyle(entry.rank)}
-            >
+          {otherEntries.map((entry) => {
+            const content = (
               <div className="flex items-center gap-4">
                 <div className="flex-shrink-0 w-12 text-center">
                   {getRankIcon(entry.rank)}
@@ -180,7 +198,18 @@ export function Leaderboard({ entries, title = "🏆 THIS WEEK'S CHAMPIONS" }: L
                 </Avatar>
 
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-base md:text-lg text-white">{entry.friendName}</h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-semibold text-base md:text-lg text-white">{entry.friendName}</h3>
+                    {entry.stravaConnected && (
+                      <Badge variant="secondary" className="text-xs border-0 px-2 py-0.5 text-white"
+                             style={{
+                               background: 'linear-gradient(135deg, #fc4c02 0%, #e34402 100%)',
+                               boxShadow: '0 0 10px rgba(252, 76, 2, 0.3)'
+                             }}>
+                        ✓ Strava
+                      </Badge>
+                    )}
+                  </div>
                   {/* Desktop only: Detailed stats */}
                   <div className="hidden md:flex items-center gap-4 text-sm text-gray-400">
                     <span>{entry.workouts} workouts</span>
@@ -200,8 +229,29 @@ export function Leaderboard({ entries, title = "🏆 THIS WEEK'S CHAMPIONS" }: L
                   <div className="text-xs text-gray-500 uppercase">pts</div>
                 </div>
               </div>
-            </div>
-          ))}
+            )
+
+            return (
+              <div
+                key={entry.friendId}
+                className="p-4 rounded-xl transition-all duration-200 hover:scale-[1.01]"
+                style={getRankStyle(entry.rank)}
+              >
+                {entry.stravaConnected && entry.stravaAthleteId ? (
+                  <a
+                    href={`https://www.strava.com/athletes/${entry.stravaAthleteId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block cursor-pointer"
+                  >
+                    {content}
+                  </a>
+                ) : (
+                  content
+                )}
+              </div>
+            )
+          })}
         </CardContent>
       </Card>
     </div>

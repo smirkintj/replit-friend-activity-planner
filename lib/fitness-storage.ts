@@ -177,6 +177,16 @@ export async function getWeeklyLeaderboard(friends: Friend[]): Promise<Leaderboa
     return activityDate >= startDate && activityDate <= endDate
   })
   
+  // Fetch all Strava connections
+  const supabase = createClient()
+  const { data: stravaConnections } = await supabase
+    .from("strava_connections")
+    .select("friend_id, athlete_id")
+  
+  const stravaMap = new Map(
+    (stravaConnections || []).map(sc => [sc.friend_id, sc.athlete_id])
+  )
+  
   const leaderboard: LeaderboardEntry[] = []
   
   for (const friend of friends) {
@@ -194,6 +204,8 @@ export async function getWeeklyLeaderboard(friends: Friend[]): Promise<Leaderboa
     const workoutCount = friendActivities.length
     const streak = calculateCurrentStreak(allFriendActivities)
     
+    const athleteId = stravaMap.get(friend.id)
+    
     leaderboard.push({
       friendId: friend.id,
       friendName: friend.name,
@@ -204,7 +216,9 @@ export async function getWeeklyLeaderboard(friends: Friend[]): Promise<Leaderboa
       calories: totalCalories,
       streak: streak,
       badges: badges.length,
-      rank: 0 // Will be calculated below
+      rank: 0, // Will be calculated below
+      stravaAthleteId: athleteId,
+      stravaConnected: !!athleteId
     })
   }
   

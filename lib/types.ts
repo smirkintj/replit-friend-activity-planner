@@ -241,6 +241,8 @@ export interface LeaderboardEntry {
   streak: number
   badges: number
   rank: number
+  stravaAthleteId?: string // Strava athlete ID if connected
+  stravaConnected: boolean // Whether they have Strava linked
 }
 
 export interface BadgeDefinition {

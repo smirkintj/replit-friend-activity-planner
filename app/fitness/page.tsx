@@ -464,13 +464,33 @@ export default function FitnessPage() {
                       </Avatar>
                       
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-white text-sm md:text-base">
-                          <span style={{ 
-                            background: 'linear-gradient(135deg, #a78bfa 0%, #818cf8 100%)',
-                            WebkitBackgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent'
-                          }}>{activity.friendName}</span> completed a {activity.type}!
-                        </p>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="font-medium text-white text-sm md:text-base">
+                            <span style={{ 
+                              background: 'linear-gradient(135deg, #a78bfa 0%, #818cf8 100%)',
+                              WebkitBackgroundClip: 'text',
+                              WebkitTextFillColor: 'transparent'
+                            }}>{activity.friendName}</span> completed a {activity.type}!
+                          </p>
+                          {activity.source === 'strava' && (
+                            <Badge variant="secondary" className="text-xs border-0 px-2 py-0.5 text-white"
+                                   style={{
+                                     background: 'linear-gradient(135deg, #fc4c02 0%, #e34402 100%)',
+                                     boxShadow: '0 0 10px rgba(252, 76, 2, 0.2)'
+                                   }}>
+                              Strava
+                            </Badge>
+                          )}
+                          {activity.source === 'manual' && (
+                            <Badge variant="secondary" className="text-xs border-0 px-2 py-0.5"
+                                   style={{
+                                     background: 'rgba(139, 92, 246, 0.3)',
+                                     color: '#c4b5fd'
+                                   }}>
+                              Manual
+                            </Badge>
+                          )}
+                        </div>
                         {/* Mobile: Simple view - icon + distance only */}
                         <div className="flex items-center gap-2 text-sm text-gray-400 md:hidden">
                           <span className="text-lg">{getActivityIcon(activity.type)}</span>
