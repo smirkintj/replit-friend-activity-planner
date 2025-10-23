@@ -62,7 +62,11 @@ export function Leaderboard({ entries, title = "🏆 THIS WEEK'S CHAMPIONS" }: L
   }
 
   const champion = entries[0]
-  const otherEntries = entries.slice(1)
+  // Filter out entries with 0 points from the rest of the leaderboard
+  const otherEntries = entries.slice(1).filter(entry => {
+    const points = Number(entry.points)
+    return !isNaN(points) && points > 0
+  })
 
   if (entries.length === 0) {
     return (

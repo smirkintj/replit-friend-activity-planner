@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -12,12 +12,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Calendar } from "@/components/ui/calendar"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import type { FitnessActivity, Friend } from "@/lib/types"
 import { calculateActivityPoints, getActivityIcon, getActivityColor } from "@/lib/fitness-points"
 import { estimateCalories } from "@/lib/calorie-estimator"
-import { Dumbbell, X, Zap } from "lucide-react"
-import { useEffect } from "react"
+import { Dumbbell, X, Zap, CalendarIcon } from "lucide-react"
+import { format, startOfDay, formatISO } from "date-fns"
+import { cn } from "@/lib/utils"
 
 interface WorkoutFormProps {
   friends: Friend[]
@@ -29,6 +32,7 @@ interface WorkoutFormProps {
 export function WorkoutForm({ friends, onSubmit, onClose, currentFriendId }: WorkoutFormProps) {
   const [friendId, setFriendId] = useState(currentFriendId || "")
   const [type, setType] = useState<FitnessActivity["type"]>("run")
+  const [date, setDate] = useState<Date>(new Date())
   const [duration, setDuration] = useState("")
   const [distance, setDistance] = useState("")
   const [calories, setCalories] = useState("")
@@ -55,10 +59,13 @@ export function WorkoutForm({ friends, onSubmit, onClose, currentFriendId }: Wor
 
     setIsSubmitting(true)
     try {
+      // Use start of day to avoid timezone issues
+      const dateAtStartOfDay = startOfDay(date)
+      
       await onSubmit({
         friendId,
         type,
-        date: new Date().toISOString(),
+        date: formatISO(dateAtStartOfDay),
         duration: parseInt(duration),
         distance: distance ? parseFloat(distance) : undefined,
         calories: calories ? parseInt(calories) : undefined,
@@ -68,6 +75,7 @@ export function WorkoutForm({ friends, onSubmit, onClose, currentFriendId }: Wor
       
       // Reset form
       setType("run")
+      setDate(new Date())
       setDuration("")
       setDistance("")
       setCalories("")
@@ -133,6 +141,39 @@ export function WorkoutForm({ friends, onSubmit, onClose, currentFriendId }: Wor
                 <SelectItem value="other">{getActivityIcon("other")} Other</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Workout Date</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !date && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {date ? format(date, "PPP") : <span>Pick a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={(newDate) => newDate && setDate(newDate)}
+                  initialFocus
+                  disabled={(checkDate) => {
+                    if (!checkDate) return false
+                    const today = startOfDay(new Date())
+                    const minDate = startOfDay(new Date("2024-01-01"))
+                    const dateToCheck = startOfDay(checkDate)
+                    return dateToCheck > today || dateToCheck < minDate
+                  }}
+                />
+              </PopoverContent>
+            </Popover>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
