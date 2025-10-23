@@ -171,9 +171,9 @@ export default function FitnessPage() {
                       background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent'
-                    }}>FitSquad</span>
+                    }}>gengputrasihatker</span>
                   </h1>
-                  <p className="text-sm text-gray-400">Track, compete, achieve</p>
+                  <p className="text-sm text-gray-400">kita tengok siapa paling aktif pastu kecam beliau berjemaah</p>
                 </div>
               </div>
             </div>
