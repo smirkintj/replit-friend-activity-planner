@@ -150,6 +150,7 @@ export function FriendLogin({ onLogin }: FriendLoginProps) {
                     setError("")
                   }}
                   placeholder="••••"
+                  autoComplete="current-password"
                   className="w-full pl-10 pr-4 py-3 rounded-lg border bg-white/5 text-white text-center text-2xl tracking-widest focus:outline-none focus:ring-2"
                   style={{
                     borderColor: 'rgba(139, 92, 246, 0.3)'
