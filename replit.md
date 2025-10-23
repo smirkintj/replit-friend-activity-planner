@@ -19,6 +19,12 @@ Design preference: Modern, fun, minimal, and gamified - NOT professional.
 
 **Framework**: Next.js 14 with App Router and React Server Components
 - **Rationale**: Provides modern React features, server-side rendering, and excellent developer experience with built-in routing
+- **PWA Support** (October 2025): Progressive Web App configuration for mobile installation
+  - **next-pwa**: Automatic service worker generation and offline caching
+  - **Manifest**: `/public/manifest.json` with app metadata, purple gradient theme (#8b5cf6), and app shortcuts
+  - **Icons**: 192x192 and 512x512 maskable icons with purple gradient matching app theme
+  - **Installation**: Users can "Add to Home Screen" on mobile devices for native app experience
+  - **Service Worker**: Disabled in development, auto-enabled in production for offline functionality
 - **UI Library**: Radix UI primitives with custom shadcn/ui components for accessible, customizable UI elements
 - **Styling**: Tailwind CSS with custom CSS variables for theming, supporting light/dark modes via oklch color space
   - **Design System (October 2025)**: Modern, fun, minimal, gamified aesthetic
