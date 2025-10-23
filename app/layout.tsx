@@ -15,17 +15,18 @@ export const metadata: Metadata = {
   description: "Track schedules, plan trips, compete in fitness challenges with friends",
   generator: "v0.app",
   manifest: "/manifest.json",
-  themeColor: "#8b5cf6",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
     title: "korangfreebila",
   },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-  },
+}
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: "#8b5cf6",
 }
 
 export default function RootLayout({
