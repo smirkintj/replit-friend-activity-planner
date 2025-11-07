@@ -3,6 +3,7 @@ import { getValidStravaToken, updateLastSync } from './strava-storage';
 import { addFitnessActivity } from './fitness-storage';
 import { estimateCalories } from './calorie-estimator';
 import { FitnessActivity } from './types';
+import { format } from 'date-fns';
 
 interface StravaActivity {
   id: number;
@@ -134,7 +135,7 @@ export async function syncStravaActivity(
     const fitnessActivity: Omit<FitnessActivity, 'id' | 'createdAt' | 'points'> = {
       friendId,
       type,
-      date: new Date(activity.start_date).toISOString(),
+      date: format(new Date(activity.start_date), 'yyyy-MM-dd'),
       duration: durationMinutes,
       distance: distanceKm,
       calories: calories,
@@ -221,7 +222,7 @@ export async function syncRecentActivities(friendId: string): Promise<number> {
       const fitnessActivity: Omit<FitnessActivity, 'id' | 'createdAt' | 'points'> = {
         friendId,
         type,
-        date: new Date(detailedActivity.start_date).toISOString(),
+        date: format(new Date(detailedActivity.start_date), 'yyyy-MM-dd'),
         duration: durationMinutes,
         distance: distanceKm,
         calories: calories,

@@ -59,13 +59,13 @@ export function WorkoutForm({ friends, onSubmit, onClose, currentFriendId }: Wor
 
     setIsSubmitting(true)
     try {
-      // Use start of day to avoid timezone issues
+      // Use date-only format (YYYY-MM-DD) to avoid timezone conversion issues
       const dateAtStartOfDay = startOfDay(date)
       
       await onSubmit({
         friendId,
         type,
-        date: formatISO(dateAtStartOfDay),
+        date: format(dateAtStartOfDay, 'yyyy-MM-dd'),
         duration: parseInt(duration),
         distance: distance ? parseFloat(distance) : undefined,
         calories: calories ? parseInt(calories) : undefined,
