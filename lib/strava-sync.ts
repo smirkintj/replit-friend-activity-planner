@@ -14,6 +14,7 @@ interface StravaActivity {
   elapsed_time: number;
   total_elevation_gain: number;
   start_date: string;
+  start_date_local: string;
   average_heartrate?: number;
   calories?: number;
 }
@@ -135,7 +136,7 @@ export async function syncStravaActivity(
     const fitnessActivity: Omit<FitnessActivity, 'id' | 'createdAt' | 'points'> = {
       friendId,
       type,
-      date: format(new Date(activity.start_date), 'yyyy-MM-dd'),
+      date: format(new Date(activity.start_date_local), 'yyyy-MM-dd'),
       duration: durationMinutes,
       distance: distanceKm,
       calories: calories,
@@ -222,7 +223,7 @@ export async function syncRecentActivities(friendId: string): Promise<number> {
       const fitnessActivity: Omit<FitnessActivity, 'id' | 'createdAt' | 'points'> = {
         friendId,
         type,
-        date: format(new Date(detailedActivity.start_date), 'yyyy-MM-dd'),
+        date: format(new Date(detailedActivity.start_date_local), 'yyyy-MM-dd'),
         duration: durationMinutes,
         distance: distanceKm,
         calories: calories,
