@@ -1,22 +1,13 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getFitnessEventWithDetails, updateFitnessEvent } from "@/lib/fitness-events-storage"
-
-function checkAuth(request: NextRequest): boolean {
-  const authHeader = request.headers.get("x-auth-role")
-  return authHeader === "superadmin" || authHeader === "friend"
-}
+import { getFitnessEventWithDetails, updateFitnessEvent, getFitnessEventById } from "@/lib/fitness-events-storage"
+import { requireAuth, canModifyEvent } from "@/lib/server-auth"
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    if (!checkAuth(request)) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      )
-    }
+    await requireAuth(request)
     
     const event = await getFitnessEventWithDetails(params.id)
     
@@ -42,10 +33,23 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
-    if (!checkAuth(request)) {
+    const auth = await requireAuth(request)
+    
+    // Get the event to find its activity_id
+    const existingEvent = await getFitnessEventById(params.id)
+    if (!existingEvent) {
       return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
+        { error: "Event not found" },
+        { status: 404 }
+      )
+    }
+    
+    // Check if user can modify this event
+    const canModify = await canModifyEvent(auth, existingEvent.activityId)
+    if (!canModify) {
+      return NextResponse.json(
+        { error: "Forbidden - only organizers can modify events" },
+        { status: 403 }
       )
     }
     

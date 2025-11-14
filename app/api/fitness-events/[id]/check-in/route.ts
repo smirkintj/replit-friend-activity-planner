@@ -1,20 +1,29 @@
 import { NextRequest, NextResponse } from "next/server"
-import { checkInParticipant } from "@/lib/fitness-events-storage"
-
-function checkAuth(request: NextRequest): boolean {
-  const authHeader = request.headers.get("x-auth-role")
-  return authHeader === "superadmin" || authHeader === "friend"
-}
+import { checkInParticipant, getFitnessEventById } from "@/lib/fitness-events-storage"
+import { requireAuth, canModifyEvent } from "@/lib/server-auth"
 
 export async function POST(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    if (!checkAuth(request)) {
+    const auth = await requireAuth(request)
+    
+    // Get the event to find its activity_id
+    const existingEvent = await getFitnessEventById(params.id)
+    if (!existingEvent) {
       return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
+        { error: "Event not found" },
+        { status: 404 }
+      )
+    }
+    
+    // Only organizers can check in participants
+    const canModify = await canModifyEvent(auth, existingEvent.activityId)
+    if (!canModify) {
+      return NextResponse.json(
+        { error: "Forbidden - only organizers can check in participants" },
+        { status: 403 }
       )
     }
     

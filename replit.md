@@ -7,6 +7,7 @@ A collaborative activity and trip planning application that helps friends coordi
 **New Feature (October 2025)**: **FitSquad** - A gamified fitness tracking system where friends can log workouts, compete on leaderboards, unlock achievement badges, and participate in squad challenges. Features automatic points calculation, streak tracking, and a comprehensive badge system with 17 unlockable achievements.
 
 **Latest Update (November 2025)**: 
+- **Fitness Events System (Backend Complete)** - Group fitness activities (runs, rides, hikes, races) with RSVP tracking, organizer check-in flow, and retroactive Strava workout linking with +50 bonus points. Fully integrated with trip planner.
 - **Strava-Only Workout Logging** - Removed manual workout entry; app now exclusively syncs workouts from Strava for data accuracy and consistency
 - **Achievable Streak Tiers** - Reduced tier prerequisites by ~50% for better progression: Rookie (3 days), Committed (7 days), Champion (14 days), Legend (30 days), Immortal (60 days), Godlike (90 days)
 - **Mobile UI Optimization** - Comprehensive mobile improvements: friend profile modal 70% more compact, eliminated horizontal overflow, responsive headers with accessible labels

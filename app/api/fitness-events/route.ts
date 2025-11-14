@@ -1,19 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createFitnessEvent, getUpcomingFitnessEvents } from "@/lib/fitness-events-storage"
-
-function checkAuth(request: NextRequest): boolean {
-  const authHeader = request.headers.get("x-auth-role")
-  return authHeader === "superadmin" || authHeader === "friend"
-}
+import { requireAuth } from "@/lib/server-auth"
 
 export async function GET(request: NextRequest) {
   try {
-    if (!checkAuth(request)) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      )
-    }
+    await requireAuth(request)
     
     const searchParams = request.nextUrl.searchParams
     const limit = searchParams.get("limit") ? parseInt(searchParams.get("limit")!) : 10
@@ -32,12 +23,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    if (!checkAuth(request)) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      )
-    }
+    await requireAuth(request)
     
     const body = await request.json()
     const { activityId, ...eventData } = body

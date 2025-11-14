@@ -1,22 +1,13 @@
 import { NextRequest, NextResponse } from "next/server"
 import { updateParticipantRsvp, addFitnessEventParticipant } from "@/lib/fitness-events-storage"
-
-function checkAuth(request: NextRequest): boolean {
-  const authHeader = request.headers.get("x-auth-role")
-  return authHeader === "superadmin" || authHeader === "friend"
-}
+import { requireAuth } from "@/lib/server-auth"
 
 export async function POST(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    if (!checkAuth(request)) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      )
-    }
+    const auth = await requireAuth(request)
     
     const body = await request.json()
     const { friendId, rsvpStatus } = body
