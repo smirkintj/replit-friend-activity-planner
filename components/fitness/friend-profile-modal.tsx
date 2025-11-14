@@ -54,13 +54,13 @@ export function FriendProfileModal({ friend, leaderboardEntry, isOpen, onClose }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl backdrop-blur-xl border-0"
+      <DialogContent className="max-w-lg backdrop-blur-xl border-0 max-h-[90vh] overflow-y-auto"
                      style={{
                        background: 'rgba(15, 20, 45, 0.95)',
                        boxShadow: '0 0 50px rgba(139, 92, 246, 0.3)'
                      }}>
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-white">Profile</DialogTitle>
+        <DialogHeader className="pb-2">
+          <DialogTitle className="text-xl font-bold text-white">Profile</DialogTitle>
         </DialogHeader>
 
         {isLoading ? (
@@ -69,34 +69,34 @@ export function FriendProfileModal({ friend, leaderboardEntry, isOpen, onClose }
             <p>Loading stats...</p>
           </div>
         ) : (
-          <div className="space-y-6">
-            {/* Profile Header */}
-            <div className="flex items-center gap-6">
-              <div className="relative">
-                <Avatar className="h-24 w-24 border-4"
+          <div className="space-y-4">
+            {/* Profile Header - Compact */}
+            <div className="flex items-center gap-4">
+              <div className="relative flex-shrink-0">
+                <Avatar className="h-16 w-16 border-4"
                         style={{ borderColor: tier.color }}>
                   <AvatarImage src={friend.imageUrl} alt={friend.name} />
                   <AvatarFallback style={{ 
                     background: `linear-gradient(135deg, ${tier.color} 0%, ${tier.color}cc 100%)`,
-                    fontSize: '2rem'
+                    fontSize: '1.5rem'
                   }}>
                     {friend.name.slice(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 {leaderboardEntry.rank <= 3 && (
-                  <div className="absolute -top-2 -right-2">
-                    {leaderboardEntry.rank === 1 && <span className="text-3xl">🥇</span>}
-                    {leaderboardEntry.rank === 2 && <span className="text-3xl">🥈</span>}
-                    {leaderboardEntry.rank === 3 && <span className="text-3xl">🥉</span>}
+                  <div className="absolute -top-1 -right-1">
+                    {leaderboardEntry.rank === 1 && <span className="text-2xl">🥇</span>}
+                    {leaderboardEntry.rank === 2 && <span className="text-2xl">🥈</span>}
+                    {leaderboardEntry.rank === 3 && <span className="text-2xl">🥉</span>}
                   </div>
                 )}
               </div>
 
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
-                  <h2 className="text-3xl font-bold text-white">{friend.name}</h2>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                  <h2 className="text-2xl font-bold text-white truncate">{friend.name}</h2>
                   {leaderboardEntry.stravaConnected && (
-                    <Badge variant="secondary" className="text-xs border-0 px-2 py-0.5 text-white"
+                    <Badge variant="secondary" className="text-xs border-0 px-2 py-0.5 text-white flex-shrink-0"
                            style={{
                              background: 'linear-gradient(135deg, #fc4c02 0%, #e34402 100%)',
                              boxShadow: '0 0 10px rgba(252, 76, 2, 0.3)'
@@ -106,12 +106,19 @@ export function FriendProfileModal({ friend, leaderboardEntry, isOpen, onClose }
                   )}
                 </div>
                 {friend.quote && (
-                  <p className="text-gray-400 italic text-sm mb-2">"{friend.quote}"</p>
+                  <p className="text-gray-400 italic text-xs mb-1.5 line-clamp-1">"{friend.quote}"</p>
                 )}
-                <div className="flex items-center gap-2">
-                  <StreakTierBadge streakDays={leaderboardEntry.streak} />
-                  <span className="text-sm text-gray-400">
-                    {leaderboardEntry.streak} day streak 🔥
+                <div className="flex items-center gap-2 text-xs">
+                  <Badge className="gap-1 px-2 py-0.5 border-0 text-white"
+                         style={{
+                           background: leaderboardEntry.rank === 1 
+                             ? 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)'
+                             : 'rgba(139, 92, 246, 0.4)'
+                         }}>
+                    {leaderboardEntry.rank === 1 ? '👑' : `#${leaderboardEntry.rank}`}
+                  </Badge>
+                  <span className="text-gray-400">
+                    🔥 {leaderboardEntry.streak} day streak
                   </span>
                 </div>
               </div>
@@ -124,104 +131,70 @@ export function FriendProfileModal({ friend, leaderboardEntry, isOpen, onClose }
                     borderColor: 'rgba(139, 92, 246, 0.3)'
                   }}>
               <CardContent className="pt-6">
-                <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                  <Calendar className="h-5 w-5" />
+                <h3 className="text-base font-bold text-white mb-3 flex items-center gap-2">
+                  <Calendar className="h-4 w-4" />
                   This Week
                 </h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="text-center p-3 rounded-lg"
-                       style={{ background: 'rgba(139, 92, 246, 0.1)' }}>
-                    <div className="text-3xl font-bold text-purple-400">{leaderboardEntry.points}</div>
-                    <div className="text-xs text-gray-400 uppercase mt-1">Points</div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="text-center p-2.5 rounded-lg"
+                       style={{ background: 'rgba(139, 92, 246, 0.15)' }}>
+                    <div className="text-2xl font-bold text-purple-400">{leaderboardEntry.points}</div>
+                    <div className="text-xs text-gray-400 uppercase mt-0.5">Points</div>
                   </div>
-                  <div className="text-center p-3 rounded-lg"
-                       style={{ background: 'rgba(139, 92, 246, 0.1)' }}>
-                    <div className="text-3xl font-bold text-blue-400">{leaderboardEntry.workouts}</div>
-                    <div className="text-xs text-gray-400 uppercase mt-1">Workouts</div>
+                  <div className="text-center p-2.5 rounded-lg"
+                       style={{ background: 'rgba(139, 92, 246, 0.15)' }}>
+                    <div className="text-2xl font-bold text-blue-400">{leaderboardEntry.workouts}</div>
+                    <div className="text-xs text-gray-400 uppercase mt-0.5">Workouts</div>
                   </div>
-                  <div className="text-center p-3 rounded-lg"
-                       style={{ background: 'rgba(139, 92, 246, 0.1)' }}>
-                    <div className="text-3xl font-bold text-green-400">
+                  <div className="text-center p-2.5 rounded-lg"
+                       style={{ background: 'rgba(139, 92, 246, 0.15)' }}>
+                    <div className="text-2xl font-bold text-green-400">
                       {leaderboardEntry.distance > 0 ? leaderboardEntry.distance.toFixed(1) : '0'}
                     </div>
-                    <div className="text-xs text-gray-400 uppercase mt-1">km</div>
+                    <div className="text-xs text-gray-400 uppercase mt-0.5">km</div>
                   </div>
-                  <div className="text-center p-3 rounded-lg"
-                       style={{ background: 'rgba(139, 92, 246, 0.1)' }}>
-                    <div className="text-3xl font-bold text-amber-400">
+                  <div className="text-center p-2.5 rounded-lg"
+                       style={{ background: 'rgba(139, 92, 246, 0.15)' }}>
+                    <div className="text-2xl font-bold text-amber-400">
                       {leaderboardEntry.calories > 0 ? leaderboardEntry.calories.toLocaleString() : '0'}
                     </div>
-                    <div className="text-xs text-gray-400 uppercase mt-1">kcal</div>
+                    <div className="text-xs text-gray-400 uppercase mt-0.5">kcal</div>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* All-Time Stats */}
+            {/* All-Time Stats - Compact Single Row */}
             <Card className="backdrop-blur-lg border overflow-hidden"
                   style={{
                     background: 'rgba(251, 191, 36, 0.1)',
                     borderColor: 'rgba(251, 191, 36, 0.3)'
                   }}>
-              <CardContent className="pt-6">
-                <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                  <Trophy className="h-5 w-5 text-yellow-400" />
-                  All-Time Stats
+              <CardContent className="pt-4 pb-4">
+                <h3 className="text-base font-bold text-white mb-2 flex items-center gap-2">
+                  <Trophy className="h-4 w-4 text-yellow-400" />
+                  All-Time
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="text-center p-3 rounded-lg"
-                       style={{ background: 'rgba(251, 191, 36, 0.1)' }}>
-                    <div className="text-3xl font-bold text-yellow-400">{totalPoints}</div>
-                    <div className="text-xs text-gray-400 uppercase mt-1">Total Points</div>
+                <div className="flex items-center justify-around gap-2">
+                  <div className="text-center">
+                    <div className="text-xl font-bold text-yellow-400">{totalPoints}</div>
+                    <div className="text-xs text-gray-500 uppercase">Points</div>
                   </div>
-                  <div className="text-center p-3 rounded-lg"
-                       style={{ background: 'rgba(251, 191, 36, 0.1)' }}>
-                    <div className="text-3xl font-bold text-yellow-400">{totalActivities}</div>
-                    <div className="text-xs text-gray-400 uppercase mt-1">Activities</div>
+                  <div className="h-8 w-px bg-gray-700" />
+                  <div className="text-center">
+                    <div className="text-xl font-bold text-yellow-400">{totalActivities}</div>
+                    <div className="text-xs text-gray-500 uppercase">Activities</div>
                   </div>
-                  <div className="text-center p-3 rounded-lg"
-                       style={{ background: 'rgba(251, 191, 36, 0.1)' }}>
-                    <div className="text-3xl font-bold text-yellow-400">
+                  <div className="h-8 w-px bg-gray-700" />
+                  <div className="text-center">
+                    <div className="text-xl font-bold text-yellow-400">
                       {totalDistance > 0 ? totalDistance.toFixed(1) : '0'}
                     </div>
-                    <div className="text-xs text-gray-400 uppercase mt-1">Total km</div>
+                    <div className="text-xs text-gray-500 uppercase">Total km</div>
                   </div>
                 </div>
               </CardContent>
             </Card>
-
-            {/* Quick Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-center gap-3 p-4 rounded-lg"
-                   style={{
-                     background: 'rgba(139, 92, 246, 0.1)',
-                     border: '1px solid rgba(139, 92, 246, 0.3)'
-                   }}>
-                <div className="p-3 rounded-lg"
-                     style={{ background: 'rgba(139, 92, 246, 0.2)' }}>
-                  <TrendingUp className="h-6 w-6 text-purple-400" />
-                </div>
-                <div>
-                  <div className="text-sm text-gray-400">Current Rank</div>
-                  <div className="text-2xl font-bold text-white">#{leaderboardEntry.rank}</div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3 p-4 rounded-lg"
-                   style={{
-                     background: 'rgba(251, 146, 60, 0.1)',
-                     border: '1px solid rgba(251, 146, 60, 0.3)'
-                   }}>
-                <div className="p-3 rounded-lg"
-                     style={{ background: 'rgba(251, 146, 60, 0.2)' }}>
-                  <Flame className="h-6 w-6 text-orange-400" />
-                </div>
-                <div>
-                  <div className="text-sm text-gray-400">Current Streak</div>
-                  <div className="text-2xl font-bold text-white">{leaderboardEntry.streak} days</div>
-                </div>
-              </div>
-            </div>
 
             {/* View Strava Link */}
             {leaderboardEntry.stravaConnected && leaderboardEntry.stravaAthleteId && (

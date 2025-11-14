@@ -142,50 +142,52 @@ export default function FitnessPage() {
                 background: 'rgba(10, 14, 39, 0.8)',
                 borderColor: 'rgba(139, 92, 246, 0.2)'
               }}>
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+        <div className="container mx-auto px-3 py-3">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
               <Link href="/">
-                <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white hover:bg-white/10">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back
+                <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white hover:bg-white/10 gap-1 px-2 md:px-3">
+                  <ArrowLeft className="h-4 w-4" />
+                  <span className="text-xs md:text-sm">Back</span>
                 </Button>
               </Link>
-              <div className="flex items-center gap-3">
-                <div className="h-12 w-12 rounded-2xl flex items-center justify-center shadow-lg relative"
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="h-10 w-10 rounded-2xl flex items-center justify-center shadow-lg relative flex-shrink-0"
                      style={{
                        background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
                        boxShadow: '0 0 20px rgba(139, 92, 246, 0.5)'
                      }}>
-                  <TrendingUp className="h-6 w-6 text-white" />
+                  <TrendingUp className="h-5 w-5 text-white" />
                 </div>
-                <div>
-                  <h1 className="text-2xl font-bold text-white">
+                <div className="min-w-0">
+                  <h1 className="text-lg md:text-2xl font-bold text-white truncate">
                     <span style={{ 
                       background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent'
                     }}>gengputrasihatker</span>
                   </h1>
-                  <p className="text-sm text-gray-400">kita tengok siapa paling aktif pastu kecam beliau berjemaah</p>
+                  <p className="text-xs md:text-sm text-gray-400 truncate hidden sm:block">kita tengok siapa paling aktif pastu kecam beliau berjemaah</p>
                 </div>
               </div>
             </div>
             <Button 
               onClick={() => setShowWorkoutForm(true)} 
-              className="gap-2"
+              className="gap-1 md:gap-2 flex-shrink-0 px-3 md:px-4"
+              size="sm"
               style={{
                 background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
                 boxShadow: '0 0 20px rgba(139, 92, 246, 0.3)'
               }}>
               <Plus className="h-4 w-4" />
-              Log Workout
+              <span className="hidden sm:inline">Log Workout</span>
+              <span className="sm:hidden">Log</span>
             </Button>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8 space-y-8">
+      <main className="container mx-auto px-3 md:px-4 py-4 md:py-8 space-y-4 md:space-y-8">
         {showWorkoutForm && (
           <div className="animate-bounce-subtle">
             <WorkoutForm
@@ -219,19 +221,19 @@ export default function FitnessPage() {
                     borderColor: 'rgba(139, 92, 246, 0.3)',
                     boxShadow: '0 0 30px rgba(139, 92, 246, 0.15)'
                   }}>
-              <CardContent className="pt-6">
+              <CardContent className="pt-4 md:pt-6">
                 {/* Header with Rank - Mobile Responsive */}
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-                  <div className="flex items-center gap-3 md:gap-4">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4 mb-4 md:mb-6">
+                  <div className="flex items-center gap-3">
                     <StreakAvatar
                       src={currentFriend.imageUrl}
                       name={currentFriend.name}
                       streakDays={weekSummary.streak}
-                      size="lg"
+                      size="md"
                       className="flex-shrink-0"
                     />
                     <div className="min-w-0 flex-1">
-                      <h2 className="text-xl md:text-2xl font-bold text-white truncate">
+                      <h2 className="text-lg md:text-2xl font-bold text-white truncate">
                         {currentFriend.name.toUpperCase()}'S WEEK
                       </h2>
                       {(() => {
@@ -272,17 +274,17 @@ export default function FitnessPage() {
                 </div>
 
                 {/* Weekly Progress Bar */}
-                <div className="mb-6">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-sm font-semibold text-gray-300">Weekly Activity</span>
-                    <span className="text-sm text-gray-400">{weekDays.filter(d => d.hasWorkout).length}/7 days</span>
+                <div className="mb-4 md:mb-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs md:text-sm font-semibold text-gray-300">Weekly Activity</span>
+                    <span className="text-xs md:text-sm text-gray-400">{weekDays.filter(d => d.hasWorkout).length}/7 days</span>
                   </div>
-                  <div className="grid grid-cols-7 gap-2">
+                  <div className="grid grid-cols-7 gap-1.5 md:gap-2">
                     {weekDays.map((day, i) => (
                       <div key={i} className="space-y-1">
                         <div className="text-xs text-center text-gray-400 font-medium">{day.day}</div>
                         <div
-                          className="h-20 rounded-lg flex flex-col items-center justify-center transition-all duration-300 hover:scale-105"
+                          className="h-14 md:h-20 rounded-lg flex flex-col items-center justify-center transition-all duration-300 hover:scale-105"
                           style={day.hasWorkout ? {
                             background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
                             boxShadow: '0 0 15px rgba(139, 92, 246, 0.5)'
@@ -293,12 +295,12 @@ export default function FitnessPage() {
                         >
                           {day.hasWorkout ? (
                             <div className="text-center">
-                              <div className="text-2xl mb-1">💪</div>
+                              <div className="text-xl md:text-2xl mb-0.5 md:mb-1">💪</div>
                               <div className="text-xs text-white font-bold">{day.date}</div>
                             </div>
                           ) : (
                             <div className="text-center">
-                              <div className="text-xl text-gray-600">{day.date}</div>
+                              <div className="text-base md:text-xl text-gray-600">{day.date}</div>
                             </div>
                           )}
                         </div>
