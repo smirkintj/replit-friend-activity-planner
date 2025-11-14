@@ -1,7 +1,6 @@
 import { createClient } from "@/lib/supabase/client"
 import type {
   FitnessActivity,
-  FitnessBadge,
   SquadChallenge,
   FitnessStats,
   LeaderboardEntry,
@@ -9,7 +8,6 @@ import type {
   WeeklyChallenge
 } from "./types"
 import { calculateActivityPoints, calculateCurrentStreak } from "./fitness-points"
-import { checkBadgeUnlocks, BADGE_DEFINITIONS } from "./fitness-badges"
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, format } from "date-fns"
 
 // Get all fitness activities (optionally filtered by friend)
@@ -81,16 +79,6 @@ export async function addFitnessActivity(
     return null
   }
   
-  // Check for badge unlocks
-  const friendActivities = await getFitnessActivities(activity.friendId)
-  const friendBadges = await getFitnessBadges(activity.friendId)
-  const newBadges = checkBadgeUnlocks(activity.friendId, friendActivities, friendBadges)
-  
-  // Unlock new badges
-  for (const badge of newBadges) {
-    await unlockBadge(activity.friendId, badge.id)
-  }
-  
   return {
     id: data.id,
     friendId: data.friend_id,
@@ -105,64 +93,6 @@ export async function addFitnessActivity(
     stravaId: data.strava_id,
     notes: data.notes,
     createdAt: data.created_at
-  }
-}
-
-// Get badges for a friend
-export async function getFitnessBadges(friendId: string): Promise<FitnessBadge[]> {
-  const supabase = createClient()
-  
-  const { data, error } = await supabase
-    .from("fitness_badges")
-    .select("*")
-    .eq("friend_id", friendId)
-    .order("unlocked_at", { ascending: false })
-  
-  if (error) {
-    console.error("[Fitness] Error fetching badges:", error)
-    return []
-  }
-  
-  return (data || []).map(row => ({
-    id: row.id,
-    friendId: row.friend_id,
-    badgeType: row.badge_type,
-    unlockedAt: row.unlocked_at,
-    metadata: row.metadata
-  }))
-}
-
-// Unlock a badge for a friend
-export async function unlockBadge(friendId: string, badgeType: string): Promise<FitnessBadge | null> {
-  const supabase = createClient()
-  
-  // Check if badge already unlocked
-  const existing = await getFitnessBadges(friendId)
-  if (existing.some(b => b.badgeType === badgeType)) {
-    return null
-  }
-  
-  const { data, error } = await supabase
-    .from("fitness_badges")
-    .insert({
-      friend_id: friendId,
-      badge_type: badgeType,
-      unlocked_at: new Date().toISOString()
-    })
-    .select()
-    .single()
-  
-  if (error) {
-    console.error("[Fitness] Error unlocking badge:", error)
-    return null
-  }
-  
-  return {
-    id: data.id,
-    friendId: data.friend_id,
-    badgeType: data.badge_type,
-    unlockedAt: data.unlocked_at,
-    metadata: data.metadata
   }
 }
 
@@ -192,7 +122,6 @@ export async function getWeeklyLeaderboard(friends: Friend[]): Promise<Leaderboa
   for (const friend of friends) {
     const friendActivities = weekActivities.filter(a => a.friendId === friend.id)
     const allFriendActivities = allActivities.filter(a => a.friendId === friend.id)
-    const badges = await getFitnessBadges(friend.id)
     
     const totalPoints = friendActivities.reduce((sum, a) => sum + a.points, 0)
     const totalDistance = friendActivities
@@ -215,7 +144,7 @@ export async function getWeeklyLeaderboard(friends: Friend[]): Promise<Leaderboa
       distance: totalDistance,
       calories: totalCalories,
       streak: streak,
-      badges: badges.length,
+      badges: 0,
       rank: 0, // Will be calculated below
       stravaAthleteId: athleteId,
       stravaConnected: !!athleteId
@@ -242,7 +171,6 @@ export async function getWeekSummary(friendId: string) {
     return activityDate >= startDate && activityDate <= endDate
   })
   
-  const badges = await getFitnessBadges(friendId)
   const streak = calculateCurrentStreak(allActivities)
   
   // Build daily activity map (Mon-Sun)
@@ -266,7 +194,6 @@ export async function getWeekSummary(friendId: string) {
       .filter(a => a.calories)
       .reduce((sum, a) => sum + (a.calories || 0), 0),
     streak: streak,
-    badgesCount: badges.length,
     dailyActivities: dailyActivities
   }
 }

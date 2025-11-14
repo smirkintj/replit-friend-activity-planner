@@ -11,7 +11,6 @@ import { getStoredData } from "@/lib/storage"
 import {
   getFitnessActivities,
   addFitnessActivity,
-  getFitnessBadges,
   getWeeklyLeaderboard,
   getWeekSummary,
   getRecentActivities,
@@ -19,18 +18,16 @@ import {
 } from "@/lib/fitness-storage"
 import { WorkoutForm } from "@/components/fitness/workout-form"
 import { Leaderboard } from "@/components/fitness/leaderboard"
-import { BadgeGallery } from "@/components/fitness/badge-gallery"
 import { StravaConnect } from "@/components/fitness/strava-connect"
 import { StravaProfile } from "@/components/fitness/strava-profile"
 import { FriendLogin } from "@/components/fitness/friend-login"
 import { WeeklyChallenges } from "@/components/fitness/weekly-challenges"
-import { FoodCalories } from "@/components/fitness/food-calories"
 import { ActivityDetailModal } from "@/components/fitness/activity-detail-modal"
 import { StreakTierExplainer } from "@/components/fitness/streak-tier-explainer"
 import { StreakAvatar } from "@/components/fitness/streak-name-display"
 import { StreakTierBadge } from "@/components/fitness/streak-tier-badge"
 import { CollapsibleSection } from "@/components/ui/collapsible-section"
-import type { Friend, FitnessActivity, LeaderboardEntry, FitnessBadge, WeeklyChallenge } from "@/lib/types"
+import type { Friend, FitnessActivity, LeaderboardEntry, WeeklyChallenge } from "@/lib/types"
 import { getActivityIcon, getActivityColor } from "@/lib/fitness-points"
 import { format, startOfWeek, addDays } from "date-fns"
 import { getCurrentStreakTier, getNextStreakTier, getDaysUntilNextTier } from "@/lib/streak-tiers"
@@ -42,7 +39,6 @@ export default function FitnessPage() {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
   const [recentActivities, setRecentActivities] = useState<any[]>([])
   const [weekSummary, setWeekSummary] = useState<any>(null)
-  const [userBadges, setUserBadges] = useState<FitnessBadge[]>([])
   const [currentFriend, setCurrentFriend] = useState<Friend | null>(null)
   const [weeklyChallenges, setWeeklyChallenges] = useState<WeeklyChallenge[]>([])
   const [selectedActivity, setSelectedActivity] = useState<any>(null)
@@ -85,11 +81,10 @@ export default function FitnessPage() {
 
   const loadFitnessData = async (friendList: Friend[], userId: string) => {
     try {
-      const [leaderboardData, recentData, summary, badges] = await Promise.all([
+      const [leaderboardData, recentData, summary] = await Promise.all([
         getWeeklyLeaderboard(friendList),
         getRecentActivities(15),
-        getWeekSummary(userId),
-        getFitnessBadges(userId)
+        getWeekSummary(userId)
       ])
       
       // Calculate challenges from the already-fetched summary (no redundant query)
@@ -98,7 +93,6 @@ export default function FitnessPage() {
       setLeaderboard(leaderboardData)
       setRecentActivities(recentData)
       setWeekSummary(summary)
-      setUserBadges(badges)
       setWeeklyChallenges(challenges)
     } catch (error) {
       console.error("Error loading fitness data:", error)
@@ -394,17 +388,6 @@ export default function FitnessPage() {
           <WeeklyChallenges challenges={weeklyChallenges} />
         )}
 
-        <CollapsibleSection
-          title="🍽️ MALAYSIAN FOOD CALORIE GUIDE"
-          defaultOpen={false}
-          style={{
-            background: 'rgba(15, 20, 45, 0.6)',
-            borderColor: 'rgba(139, 92, 246, 0.3)',
-            boxShadow: '0 0 30px rgba(139, 92, 246, 0.15)'
-          }}>
-          <FoodCalories />
-        </CollapsibleSection>
-
         {currentFriend && weekSummary && (
           <CollapsibleSection
             title="🏆 STREAK TIER REWARDS"
@@ -415,19 +398,6 @@ export default function FitnessPage() {
               boxShadow: '0 0 30px rgba(139, 92, 246, 0.15)'
             }}>
             <StreakTierExplainer currentStreakDays={weekSummary.streak} />
-          </CollapsibleSection>
-        )}
-
-        {userBadges && (
-          <CollapsibleSection
-            title="🎖️ ACHIEVEMENT BADGES"
-            defaultOpen={false}
-            style={{
-              background: 'rgba(15, 20, 45, 0.6)',
-              borderColor: 'rgba(139, 92, 246, 0.3)',
-              boxShadow: '0 0 30px rgba(139, 92, 246, 0.15)'
-            }}>
-            <BadgeGallery unlockedBadges={userBadges} />
           </CollapsibleSection>
         )}
 

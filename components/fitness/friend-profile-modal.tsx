@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Trophy, Flame, Award, TrendingUp, Calendar, Zap } from "lucide-react"
 import type { Friend, LeaderboardEntry } from "@/lib/types"
-import { getFitnessActivities, getFitnessBadges } from "@/lib/fitness-storage"
+import { getFitnessActivities } from "@/lib/fitness-storage"
 import { calculateCurrentStreak } from "@/lib/fitness-points"
 import { getCurrentStreakTier } from "@/lib/streak-tiers"
 import { StreakTierBadge } from "./streak-tier-badge"
@@ -23,7 +23,6 @@ export function FriendProfileModal({ friend, leaderboardEntry, isOpen, onClose }
   const [totalActivities, setTotalActivities] = useState(0)
   const [totalPoints, setTotalPoints] = useState(0)
   const [totalDistance, setTotalDistance] = useState(0)
-  const [badges, setBadges] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
@@ -37,15 +36,11 @@ export function FriendProfileModal({ friend, leaderboardEntry, isOpen, onClose }
     
     setIsLoading(true)
     try {
-      const [activities, badgeList] = await Promise.all([
-        getFitnessActivities(friend.id),
-        getFitnessBadges(friend.id)
-      ])
+      const activities = await getFitnessActivities(friend.id)
       
       setTotalActivities(activities.length)
       setTotalPoints(activities.reduce((sum, a) => sum + a.points, 0))
       setTotalDistance(activities.filter(a => a.distance).reduce((sum, a) => sum + (a.distance || 0), 0))
-      setBadges(badgeList.length)
     } catch (error) {
       console.error("Error loading stats:", error)
     } finally {
@@ -173,7 +168,7 @@ export function FriendProfileModal({ friend, leaderboardEntry, isOpen, onClose }
                   <Trophy className="h-5 w-5 text-yellow-400" />
                   All-Time Stats
                 </h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="text-center p-3 rounded-lg"
                        style={{ background: 'rgba(251, 191, 36, 0.1)' }}>
                     <div className="text-3xl font-bold text-yellow-400">{totalPoints}</div>
@@ -190,11 +185,6 @@ export function FriendProfileModal({ friend, leaderboardEntry, isOpen, onClose }
                       {totalDistance > 0 ? totalDistance.toFixed(1) : '0'}
                     </div>
                     <div className="text-xs text-gray-400 uppercase mt-1">Total km</div>
-                  </div>
-                  <div className="text-center p-3 rounded-lg"
-                       style={{ background: 'rgba(251, 191, 36, 0.1)' }}>
-                    <div className="text-3xl font-bold text-yellow-400">{badges}</div>
-                    <div className="text-xs text-gray-400 uppercase mt-1">Badges</div>
                   </div>
                 </div>
               </CardContent>

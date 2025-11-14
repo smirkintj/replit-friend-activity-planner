@@ -179,13 +179,6 @@ export function Leaderboard({ entries, friends, title = "🏆 THIS WEEK'S CHAMPI
               <span className="text-gray-300">Streak</span>
               <span className="text-white font-bold">{champion.streak} days 🔥</span>
             </div>
-            {champion.badges > 0 && (
-              <div className="flex justify-between items-center p-2 rounded"
-                   style={{ background: 'rgba(0, 0, 0, 0.2)' }}>
-                <span className="text-gray-300">Badges</span>
-                <span className="text-white font-bold">{champion.badges} 🏅</span>
-              </div>
-            )}
           </div>
         </CardContent>
       </Card>

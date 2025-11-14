@@ -190,19 +190,6 @@ export interface FitnessActivity {
   createdAt: string
 }
 
-export interface FitnessBadge {
-  id: string
-  friendId: string
-  badgeType: string // e.g., 'first_steps', 'marathon_runner', 'hot_streak'
-  unlockedAt: string
-  metadata?: {
-    distance?: number
-    streakDays?: number
-    workoutCount?: number
-    [key: string]: any
-  }
-}
-
 export interface SquadChallenge {
   id: string
   title: string
@@ -226,7 +213,6 @@ export interface FitnessStats {
   totalDistance: number
   totalWorkouts: number
   longestStreak: number
-  badgesCount: number
   updatedAt: string
 }
 
@@ -243,15 +229,6 @@ export interface LeaderboardEntry {
   rank: number
   stravaAthleteId?: string // Strava athlete ID if connected
   stravaConnected: boolean // Whether they have Strava linked
-}
-
-export interface BadgeDefinition {
-  id: string
-  name: string
-  description: string
-  emoji: string
-  category: "cardio" | "strength" | "streak" | "special"
-  condition: (activities: FitnessActivity[], badges: FitnessBadge[]) => boolean
 }
 
 export interface WeeklyChallenge {
