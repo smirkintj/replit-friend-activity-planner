@@ -5,18 +5,16 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ArrowLeft, Plus, Flame, TrendingUp, Calendar } from "lucide-react"
+import { ArrowLeft, Flame, TrendingUp, Calendar } from "lucide-react"
 import Link from "next/link"
 import { getStoredData } from "@/lib/storage"
 import {
   getFitnessActivities,
-  addFitnessActivity,
   getWeeklyLeaderboard,
   getWeekSummary,
   getRecentActivities,
   getWeeklyChallenges
 } from "@/lib/fitness-storage"
-import { WorkoutForm } from "@/components/fitness/workout-form"
 import { Leaderboard } from "@/components/fitness/leaderboard"
 import { StravaConnect } from "@/components/fitness/strava-connect"
 import { StravaProfile } from "@/components/fitness/strava-profile"
@@ -35,7 +33,6 @@ import { getCurrentStreakTier, getNextStreakTier, getDaysUntilNextTier } from "@
 export default function FitnessPage() {
   const [friends, setFriends] = useState<Friend[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [showWorkoutForm, setShowWorkoutForm] = useState(false)
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
   const [recentActivities, setRecentActivities] = useState<any[]>([])
   const [weekSummary, setWeekSummary] = useState<any>(null)
@@ -96,13 +93,6 @@ export default function FitnessPage() {
       setWeeklyChallenges(challenges)
     } catch (error) {
       console.error("Error loading fitness data:", error)
-    }
-  }
-
-  const handleAddWorkout = async (activity: Omit<FitnessActivity, "id" | "createdAt" | "points">) => {
-    await addFitnessActivity(activity)
-    if (currentFriend) {
-      await loadFitnessData(friends, currentFriend.id)
     }
   }
 
@@ -171,34 +161,11 @@ export default function FitnessPage() {
                 </div>
               </div>
             </div>
-            <Button 
-              onClick={() => setShowWorkoutForm(true)} 
-              className="gap-1 md:gap-2 flex-shrink-0 px-3 md:px-4"
-              size="sm"
-              style={{
-                background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
-                boxShadow: '0 0 20px rgba(139, 92, 246, 0.3)'
-              }}>
-              <Plus className="h-4 w-4" />
-              <span className="hidden sm:inline">Log Workout</span>
-              <span className="sm:hidden">Log</span>
-            </Button>
           </div>
         </div>
       </header>
 
       <main className="container mx-auto px-3 md:px-4 py-4 md:py-8 space-y-4 md:space-y-8">
-        {showWorkoutForm && (
-          <div className="animate-bounce-subtle">
-            <WorkoutForm
-              friends={friends}
-              onSubmit={handleAddWorkout}
-              onClose={() => setShowWorkoutForm(false)}
-              currentFriendId={currentFriend?.id || ""}
-            />
-          </div>
-        )}
-
         {currentFriend && (
           <div className="space-y-4">
             <StravaConnect

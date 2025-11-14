@@ -33,10 +33,10 @@ export interface StreakTier {
 export const STREAK_TIERS: StreakTier[] = [
   {
     name: 'Rookie',
-    days: 7,
+    days: 3,
     emoji: '🥉',
     color: '#cd7f32',
-    description: '1 week streak - Baru nak start!',
+    description: '3 hari - Baru nak start!',
     nameEffect: {
       type: 'none',
       colors: ['#cd7f32']
@@ -58,10 +58,10 @@ export const STREAK_TIERS: StreakTier[] = [
   },
   {
     name: 'Committed',
-    days: 30,
+    days: 7,
     emoji: '🥈',
     color: '#c0c0c0',
-    description: '30 hari berturut-turut - Dah committed ni!',
+    description: '1 minggu berturut-turut - Dah committed ni!',
     nameEffect: {
       type: 'gradient',
       colors: ['#c0c0c0', '#e8e8e8', '#c0c0c0']
@@ -83,10 +83,10 @@ export const STREAK_TIERS: StreakTier[] = [
   },
   {
     name: 'Champion',
-    days: 60,
+    days: 14,
     emoji: '🥇',
     color: '#fbbf24',
-    description: '60 hari - JUARA! 🏆',
+    description: '2 minggu - JUARA! 🏆',
     nameEffect: {
       type: 'animated-gradient',
       colors: ['#fbbf24', '#f59e0b', '#fbbf24'],
@@ -109,10 +109,10 @@ export const STREAK_TIERS: StreakTier[] = [
   },
   {
     name: 'Legend',
-    days: 90,
+    days: 30,
     emoji: '💎',
     color: '#8b5cf6',
-    description: '90 hari - Dah jadi LEGEND! 💎',
+    description: '1 bulan - Dah jadi LEGEND! 💎',
     nameEffect: {
       type: 'prism',
       colors: ['#8b5cf6', '#a78bfa', '#c4b5fd', '#a78bfa', '#8b5cf6'],
@@ -135,10 +135,10 @@ export const STREAK_TIERS: StreakTier[] = [
   },
   {
     name: 'Immortal',
-    days: 120,
+    days: 60,
     emoji: '👑',
     color: '#ec4899',
-    description: '120 hari - TAK BOLEH STOP! 👑',
+    description: '2 bulan - TAK BOLEH STOP! 👑',
     nameEffect: {
       type: 'animated-gradient',
       colors: ['#ec4899', '#f472b6', '#fbbf24', '#f472b6', '#ec4899'],
@@ -161,10 +161,10 @@ export const STREAK_TIERS: StreakTier[] = [
   },
   {
     name: 'Godlike',
-    days: 180,
+    days: 90,
     emoji: '⚡',
     color: '#10b981',
-    description: '6 BULAN!! GILA BETUL!! ⚡🔥',
+    description: '3 BULAN!! GILA BETUL!! ⚡🔥',
     nameEffect: {
       type: 'thunderstorm',
       colors: ['#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981'],
@@ -199,7 +199,7 @@ export function getCurrentStreakTier(streakDays: number): StreakTier {
       days: 0,
       emoji: '🔰',
       color: '#6b7280',
-      description: 'Baru je start - jom workout!',
+      description: 'Baru je start - jom workout 3 hari berturut-turut!',
       nameEffect: {
         type: 'none',
         colors: ['#6b7280']
@@ -212,7 +212,7 @@ export function getCurrentStreakTier(streakDays: number): StreakTier {
       hoverEffect: 'none',
       particles: 'none',
       entryAnimation: 'none',
-      specialEffect: 'None yet - complete 7 days to unlock!'
+      specialEffect: 'None yet - complete 3 days to unlock Rookie tier!'
     }
   }
   
