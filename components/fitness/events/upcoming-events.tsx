@@ -25,10 +25,13 @@ export function UpcomingEvents({ friends }: UpcomingEventsProps) {
 
   const fetchEvents = async () => {
     try {
+      // Viewing events is public - no auth required
       const response = await fetch("/api/fitness-events?limit=5")
       if (response.ok) {
         const data = await response.json()
         setEvents(data.events || [])
+      } else {
+        console.error("Failed to fetch events:", response.status, response.statusText)
       }
     } catch (error) {
       console.error("Failed to fetch events:", error)
@@ -41,17 +44,28 @@ export function UpcomingEvents({ friends }: UpcomingEventsProps) {
     if (!currentFriendId) return
 
     try {
+      // Get friend PIN for authentication
+      const friendPin = sessionStorage.getItem('fitness_friend_pin')
+      if (!friendPin) {
+        console.error("No authentication found")
+        return
+      }
+
       const response = await fetch(`/api/fitness-events/${eventId}/rsvp`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "x-auth-pin": friendPin
+        },
         body: JSON.stringify({
-          friendId: currentFriendId,
           rsvpStatus: status,
         }),
       })
 
       if (response.ok) {
         fetchEvents() // Refresh
+      } else {
+        console.error("RSVP failed:", response.status)
       }
     } catch (error) {
       console.error("Failed to RSVP:", error)

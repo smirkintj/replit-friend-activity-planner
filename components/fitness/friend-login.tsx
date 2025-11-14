@@ -55,9 +55,10 @@ export function FriendLogin({ onLogin }: FriendLoginProps) {
         const data = await response.json()
         const friend = friends.find(f => f.id === selectedFriendId)
         if (friend) {
-          // Store in session storage
+          // Store in session storage (including PIN for API auth)
           sessionStorage.setItem('fitness_friend_id', friend.id)
           sessionStorage.setItem('fitness_friend_name', friend.name)
+          sessionStorage.setItem('fitness_friend_pin', pin) // Store PIN for API calls
           onLogin(friend)
         }
       } else {

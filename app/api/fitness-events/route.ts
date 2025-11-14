@@ -4,7 +4,8 @@ import { requireAuth } from "@/lib/server-auth"
 
 export async function GET(request: NextRequest) {
   try {
-    await requireAuth(request)
+    // NOTE: GET endpoint is public - anyone can view upcoming events
+    // Authentication is only required for creating/editing events
     
     const searchParams = request.nextUrl.searchParams
     const limit = searchParams.get("limit") ? parseInt(searchParams.get("limit")!) : 10
