@@ -4,7 +4,9 @@ import { subDays, format, startOfDay } from 'date-fns';
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('[FillStreak] Starting request');
     const { friendName, days } = await request.json();
+    console.log('[FillStreak] Received:', { friendName, days });
     
     if (!friendName || !days) {
       return NextResponse.json(
@@ -13,21 +15,36 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    console.log('[FillStreak] Creating Supabase client');
     const supabase = await createClient();
 
     // 1. Find the friend
-    const { data: friend, error: friendError } = await supabase
+    console.log('[FillStreak] Querying for friend');
+    const { data: friends, error: friendError } = await supabase
       .from('friends')
-      .select('id, name')
-      .ilike('name', `%${friendName}%`)
-      .single();
+      .select('id, name');
 
-    if (friendError || !friend) {
+    console.log('[FillStreak] Query result:', { friends: friends?.length, error: friendError });
+
+    if (friendError) {
       return NextResponse.json(
-        { error: 'Friend not found' },
+        { error: 'Database error', details: friendError },
+        { status: 500 }
+      );
+    }
+
+    const friend = friends?.find(f => 
+      f.name.toLowerCase().includes(friendName.toLowerCase())
+    );
+
+    if (!friend) {
+      return NextResponse.json(
+        { error: 'Friend not found', availableFriends: friends?.map(f => f.name) },
         { status: 404 }
       );
     }
+
+    console.log('[FillStreak] Found friend:', friend);
 
     // 2. Get existing activities from the past N days
     const startDate = format(subDays(startOfDay(new Date()), days - 1), 'yyyy-MM-dd');
