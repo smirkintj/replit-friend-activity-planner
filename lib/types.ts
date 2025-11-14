@@ -25,7 +25,7 @@ export interface Activity {
   title: string
   startDate: string
   endDate: string
-  type: "trip" | "activity"
+  type: "trip" | "activity" | "fitness_event"
   withWho?: string
   notes?: string
   linkedActivityId?: string // Link to another activity
@@ -38,6 +38,7 @@ export interface Activity {
   isRecurring?: boolean // Added recurring activity fields
   recurrencePattern?: "daily" | "weekly" | "monthly"
   recurrenceEndDate?: string
+  isFitnessEvent?: boolean // True if type is 'fitness_event'
 }
 
 export interface PendingRequest {
@@ -243,4 +244,49 @@ export interface WeeklyChallenge {
   progress: number // 0-100 percentage
   completed: boolean
   reward: string // e.g., "+50 bonus pts", "Special badge"
+}
+
+// Fitness Events types
+export interface FitnessEvent {
+  id: string
+  activityId: string // FK to activities table
+  eventCategory: "run" | "ride" | "hike" | "race" | "swim" | "other"
+  intensityLevel?: "easy" | "moderate" | "hard" | "race"
+  meetupLocation?: string
+  meetupLat?: number
+  meetupLng?: number
+  meetupNotes?: string
+  routeSource?: "strava" | "gpx" | "manual" | "none"
+  routeExternalId?: string // Strava route ID or GPX file path
+  routeSnapshot?: any // Route preview data
+  gearChecklist?: string[] // Array of gear items
+  logisticsNotes?: string
+  autoLogWorkouts: boolean
+  pointsOverride?: number // Custom bonus points for this event
+  createdAt: string
+  updatedAt: string
+}
+
+export interface FitnessEventParticipant {
+  id: string
+  eventId: string
+  friendId: string
+  friendName?: string // Populated when fetched
+  friendImageUrl?: string // Populated when fetched
+  rsvpStatus: "invited" | "going" | "maybe" | "declined" | "waitlist"
+  attendanceStatus: "pending" | "checked_in" | "no_show"
+  checkedInAt?: string
+  fitnessActivityId?: string // Linked Strava workout after check-in
+  bonusPointsAwarded: number
+  notes?: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface FitnessEventWithDetails extends FitnessEvent {
+  activity: Activity // The linked activity with dates, title, etc.
+  participants: FitnessEventParticipant[]
+  goingCount: number
+  maybeCount: number
+  checkedInCount: number
 }

@@ -2,6 +2,7 @@ import { createClient as createServerClient } from './supabase/server';
 import { getValidStravaToken, updateLastSync } from './strava-storage';
 import { addFitnessActivity } from './fitness-storage';
 import { estimateCalories } from './calorie-estimator';
+import { checkAndLinkEventWorkout } from './fitness-event-auto-link';
 import { FitnessActivity } from './types';
 import { format } from 'date-fns';
 
@@ -165,6 +166,15 @@ export async function syncStravaActivity(
     if (created) {
       await updateLastSync(friendId);
       console.log('Successfully synced Strava activity:', activityId);
+      
+      // Check for matching fitness events and auto-link if eligible
+      await checkAndLinkEventWorkout(
+        friendId,
+        created.id,
+        type,
+        fitnessActivity.date
+      );
+      
       return true;
     }
 
@@ -251,6 +261,14 @@ export async function syncRecentActivities(friendId: string): Promise<number> {
       const created = await addFitnessActivity(fitnessActivity);
       if (created) {
         syncedCount++;
+        
+        // Check for matching fitness events and auto-link if eligible
+        await checkAndLinkEventWorkout(
+          friendId,
+          created.id,
+          type,
+          fitnessActivity.date
+        );
       }
     }
 
