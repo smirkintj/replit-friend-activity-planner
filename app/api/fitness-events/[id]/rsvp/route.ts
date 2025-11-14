@@ -10,7 +10,22 @@ export async function POST(
     const auth = await requireAuth(request)
     
     const body = await request.json()
-    const { friendId, rsvpStatus } = body
+    const { rsvpStatus } = body
+    
+    // SECURITY: Always use authenticated user's ID, never trust client
+    // Only superadmin can RSVP on behalf of others
+    const targetFriendId = auth.role === "superadmin" && body.friendId 
+      ? body.friendId 
+      : auth.friendId
+    
+    if (!targetFriendId) {
+      return NextResponse.json(
+        { error: "Friend ID not found in authentication" },
+        { status: 400 }
+      )
+    }
+    
+    const friendId = targetFriendId
     
     if (!friendId || !rsvpStatus) {
       return NextResponse.json(

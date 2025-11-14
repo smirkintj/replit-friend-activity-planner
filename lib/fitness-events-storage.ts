@@ -215,41 +215,55 @@ export async function updateParticipantRsvp(
 ): Promise<boolean> {
   const supabase = await createClient()
   
-  const { error } = await supabase
+  // FIX: Check if row exists by returning the data
+  const { data, error } = await supabase
     .from("fitness_event_participants")
     .update({ rsvp_status: rsvpStatus })
     .eq("event_id", eventId)
     .eq("friend_id", friendId)
+    .select()
   
   if (error) {
     console.error("[FitnessEvents] Error updating RSVP:", error)
     return false
   }
   
-  return true
+  // FIX: Return false if no rows were updated (participant doesn't exist)
+  return data && data.length > 0
 }
 
 export async function checkInParticipant(
   eventId: string,
-  friendId: string
+  friendId: string,
+  attendanceStatus: FitnessEventParticipant["attendanceStatus"] = "checked_in"
 ): Promise<boolean> {
   const supabase = await createClient()
   
-  const { error } = await supabase
+  // FIX: Support all attendance statuses including "no_show"
+  const updateData: any = {
+    attendance_status: attendanceStatus,
+  }
+  
+  // Only set checked_in_at for actual check-ins
+  if (attendanceStatus === "checked_in") {
+    updateData.checked_in_at = new Date().toISOString()
+  }
+  
+  // FIX: Return data to verify row was updated
+  const { data, error } = await supabase
     .from("fitness_event_participants")
-    .update({
-      attendance_status: "checked_in",
-      checked_in_at: new Date().toISOString(),
-    })
+    .update(updateData)
     .eq("event_id", eventId)
     .eq("friend_id", friendId)
+    .select()
   
   if (error) {
-    console.error("[FitnessEvents] Error checking in participant:", error)
+    console.error("[FitnessEvents] Error updating attendance:", error)
     return false
   }
   
-  return true
+  // Verify a row was actually updated
+  return data && data.length > 0
 }
 
 export async function linkWorkoutToEvent(

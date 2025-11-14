@@ -30,27 +30,31 @@ export async function POST(
     const body = await request.json()
     const { friendId, attendanceStatus } = body
     
-    if (!friendId) {
+    if (!friendId || !attendanceStatus) {
       return NextResponse.json(
-        { error: "Friend ID is required" },
+        { error: "Friend ID and attendance status are required" },
         { status: 400 }
       )
     }
     
-    if (attendanceStatus === "checked_in") {
-      const success = await checkInParticipant(params.id, friendId)
-      
-      if (!success) {
-        return NextResponse.json(
-          { error: "Failed to check in participant" },
-          { status: 500 }
-        )
-      }
-      
-      return NextResponse.json({ success: true })
+    // FIX: Support all attendance statuses
+    if (!["checked_in", "no_show", "pending"].includes(attendanceStatus)) {
+      return NextResponse.json(
+        { error: "Invalid attendance status" },
+        { status: 400 }
+      )
     }
     
-    // Handle "no_show" status
+    // Update attendance status (supports checked_in, no_show, pending)
+    const success = await checkInParticipant(params.id, friendId, attendanceStatus)
+    
+    if (!success) {
+      return NextResponse.json(
+        { error: "Failed to update attendance status" },
+        { status: 500 }
+      )
+    }
+    
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error("[API] Error checking in participant:", error)

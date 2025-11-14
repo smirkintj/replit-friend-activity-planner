@@ -25,6 +25,7 @@ import { StreakTierExplainer } from "@/components/fitness/streak-tier-explainer"
 import { StreakAvatar } from "@/components/fitness/streak-name-display"
 import { StreakTierBadge } from "@/components/fitness/streak-tier-badge"
 import { CollapsibleSection } from "@/components/ui/collapsible-section"
+import { UpcomingEvents } from "@/components/fitness/events/upcoming-events"
 import type { Friend, FitnessActivity, LeaderboardEntry, WeeklyChallenge } from "@/lib/types"
 import { getActivityIcon, getActivityColor } from "@/lib/fitness-points"
 import { format, startOfWeek, addDays } from "date-fns"
@@ -352,6 +353,15 @@ export default function FitnessPage() {
         )}
 
         <Leaderboard entries={leaderboard} friends={friends} />
+
+        {/* Upcoming Fitness Events */}
+        <div>
+          <h2 className="text-2xl font-bold mb-4 text-white flex items-center gap-2">
+            <Calendar className="w-6 h-6" />
+            UPCOMING EVENTS
+          </h2>
+          <UpcomingEvents friends={friends} />
+        </div>
 
         {weeklyChallenges.length > 0 && (
           <WeeklyChallenges challenges={weeklyChallenges} />
