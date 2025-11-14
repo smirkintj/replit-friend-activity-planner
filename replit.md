@@ -6,7 +6,12 @@ A collaborative activity and trip planning application that helps friends coordi
 
 **New Feature (October 2025)**: **FitSquad** - A gamified fitness tracking system where friends can log workouts, compete on leaderboards, unlock achievement badges, and participate in squad challenges. Features automatic points calculation, streak tracking, and a comprehensive badge system with 17 unlockable achievements.
 
-**Latest Update (October 2025)**: **Competitive FitSquad Redesign** - Enhanced YOUR WEEK section with competitive elements (rank display, points behind leader, calories tracking), point system explainer, and weekly challenges that reset every Monday for ongoing engagement. Strava Auto-Sync enables real-time webhook-based activity import with automatic points calculation and badge unlocking. **Friend Profile Modal** - Clicking on any user in the leaderboard now opens a detailed profile modal showing their weekly stats, all-time achievements, and current rank/streak instead of redirecting to Strava. **Recent Activity Sorting Fix** - Activities now display in order by workout date (not logged date), ensuring chronological accuracy.
+**Latest Update (November 2025)**: 
+- **Strava-Only Workout Logging** - Removed manual workout entry; app now exclusively syncs workouts from Strava for data accuracy and consistency
+- **Achievable Streak Tiers** - Reduced tier prerequisites by ~50% for better progression: Rookie (3 days), Committed (7 days), Champion (14 days), Legend (30 days), Immortal (60 days), Godlike (90 days)
+- **Mobile UI Optimization** - Comprehensive mobile improvements: friend profile modal 70% more compact, eliminated horizontal overflow, responsive headers with accessible labels
+- **HIIT Workout Support** - Database migration to properly categorize HIIT workouts (requires manual SQL execution in Supabase)
+- **Competitive FitSquad Redesign** - Enhanced YOUR WEEK section with competitive elements (rank display, points behind leader, calories tracking), point system explainer, and weekly challenges that reset every Monday for ongoing engagement. Strava Auto-Sync enables real-time webhook-based activity import with automatic points calculation and badge unlocking. **Friend Profile Modal** - Clicking on any user in the leaderboard now opens a detailed profile modal showing their weekly stats, all-time achievements, and current rank/streak instead of redirecting to Strava. **Recent Activity Sorting Fix** - Activities now display in order by workout date (not logged date), ensuring chronological accuracy.
 
 ## User Preferences
 
@@ -56,12 +61,13 @@ Design preference: Modern, fun, minimal, and gamified - NOT professional.
 - **Activity Logs**: Audit trail for all activity changes
 - **Comments/Reactions**: Social features for activity engagement
 - **Fitness Tracking (October 2025)**: Workout activities, achievement badges, squad challenges, and weekly stats
-  - **Fitness Activities**: Individual workouts with type, duration, distance, calories, points, and source (manual/Strava/Apple Health)
+  - **Fitness Activities**: Individual workouts with type (run/bike/swim/gym/yoga/walk/hike/hiit/other), duration, distance, calories, points, and source (Strava-only as of November 2025)
   - **Fitness Badges**: Unlockable achievements across cardio, strength, streak, and special categories
   - **Squad Challenges**: Group fitness goals with targets and participant tracking
   - **Fitness Stats**: Cached weekly/monthly aggregates for performance
   - **Weekly Challenges**: Rotating goals that reset every Monday (5 challenge types: distance, workouts, points, calories, streak)
   - **Competitive Features**: Rank display, points-behind-leader tracking, weekly leaderboards with gamified UI
+  - **Perpetual Streak Tiers** (November 2025): Gamified cosmetic reward system with 6 tiers (Rookie 3d, Committed 7d, Champion 14d, Legend 30d, Immortal 60d, Godlike 90d) featuring unique name effects, profile frames, particles, and hover animations
 
 **Storage Strategy**:
 - Session storage for admin authentication (browser-only)
