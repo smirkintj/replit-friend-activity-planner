@@ -177,7 +177,7 @@ export interface ActivityReaction {
 export interface FitnessActivity {
   id: string
   friendId: string
-  type: "run" | "bike" | "swim" | "gym" | "yoga" | "walk" | "hike" | "other"
+  type: "run" | "bike" | "swim" | "gym" | "yoga" | "walk" | "hike" | "hiit" | "other"
   date: string
   duration: number // minutes
   distance?: number // km (optional for strength training)

@@ -40,7 +40,7 @@ export function WorkoutForm({ friends, onSubmit, onClose, currentFriendId }: Wor
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const needsDistance = ["run", "bike", "swim", "walk", "hike"].includes(type)
-  const estimatedPoints = calculateActivityPoints(type, parseInt(duration) || 0, parseFloat(distance) || undefined)
+  const estimatedPoints = calculateActivityPoints(type, parseInt(duration) || 0, parseFloat(distance) || undefined, undefined)
   
   // Auto-calculate calories when distance or duration changes
   useEffect(() => {
@@ -136,6 +136,7 @@ export function WorkoutForm({ friends, onSubmit, onClose, currentFriendId }: Wor
                 <SelectItem value="swim">{getActivityIcon("swim")} Swimming</SelectItem>
                 <SelectItem value="walk">{getActivityIcon("walk")} Walking</SelectItem>
                 <SelectItem value="hike">{getActivityIcon("hike")} Hiking</SelectItem>
+                <SelectItem value="hiit">{getActivityIcon("hiit")} HIIT</SelectItem>
                 <SelectItem value="gym">{getActivityIcon("gym")} Gym</SelectItem>
                 <SelectItem value="yoga">{getActivityIcon("yoga")} Yoga</SelectItem>
                 <SelectItem value="other">{getActivityIcon("other")} Other</SelectItem>

@@ -56,7 +56,7 @@ export async function addFitnessActivity(
   const supabase = createClient()
   
   // Calculate points
-  const points = calculateActivityPoints(activity.type, activity.duration, activity.distance)
+  const points = calculateActivityPoints(activity.type, activity.duration, activity.distance, activity.heartRate)
   
   const { data, error } = await supabase
     .from("fitness_activities")

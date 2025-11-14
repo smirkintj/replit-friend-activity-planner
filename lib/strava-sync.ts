@@ -29,6 +29,11 @@ const STRAVA_TYPE_MAP: Record<string, FitnessActivity['type']> = {
   Hike: 'hike',
   VirtualRide: 'bike',
   VirtualRun: 'run',
+  Workout: 'hiit',
+  HIIT: 'hiit',
+  Crossfit: 'hiit',
+  EBikeRide: 'bike',
+  VelomobileRide: 'bike',
 };
 
 function mapStravaType(stravaType: string): FitnessActivity['type'] {
@@ -38,10 +43,18 @@ function mapStravaType(stravaType: string): FitnessActivity['type'] {
 function calculatePoints(
   type: FitnessActivity['type'],
   distance: number,
-  duration: number
+  duration: number,
+  heartRate?: number
 ): number {
   if (type === 'run' || type === 'bike' || type === 'walk' || type === 'hike' || type === 'swim') {
     return Math.round(distance * 10);
+  }
+  
+  if (type === 'hiit') {
+    const effortMultiplier = heartRate 
+      ? Math.min(2.0, Math.max(0.5, (heartRate - 100) / 100 + 1))
+      : 1.5;
+    return Math.round(effortMultiplier * duration);
   }
   
   if (type === 'gym') {
@@ -128,7 +141,8 @@ export async function syncStravaActivity(
     const distanceKm = activity.distance / 1000;
     const durationMinutes = Math.round(activity.moving_time / 60);
     const type = mapStravaType(activity.type);
-    const points = calculatePoints(type, distanceKm, durationMinutes);
+    const heartRate = activity.average_heartrate ? Math.round(activity.average_heartrate) : undefined;
+    const points = calculatePoints(type, distanceKm, durationMinutes, heartRate);
     
     // Use Strava calories if available, otherwise estimate
     const calories = activity.calories || estimateCalories(type, distanceKm, durationMinutes);
@@ -215,7 +229,8 @@ export async function syncRecentActivities(friendId: string): Promise<number> {
       const distanceKm = detailedActivity.distance / 1000;
       const durationMinutes = Math.round(detailedActivity.moving_time / 60);
       const type = mapStravaType(detailedActivity.type);
-      const points = calculatePoints(type, distanceKm, durationMinutes);
+      const heartRate = detailedActivity.average_heartrate ? Math.round(detailedActivity.average_heartrate) : undefined;
+      const points = calculatePoints(type, distanceKm, durationMinutes, heartRate);
       
       // Use Strava calories if available, otherwise estimate
       const calories = detailedActivity.calories || estimateCalories(type, distanceKm, durationMinutes);

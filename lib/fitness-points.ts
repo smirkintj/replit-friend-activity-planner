@@ -5,6 +5,7 @@ export function calculateActivityPoints(
   type: FitnessActivity['type'],
   duration: number, // minutes
   distance?: number, // km
+  heartRate?: number, // average HR for effort-based scoring
 ): number {
   let points = 0;
 
@@ -16,6 +17,16 @@ export function calculateActivityPoints(
     case 'hike':
       // Cardio: 10 points per km
       points = Math.round((distance || 0) * 10);
+      break;
+    
+    case 'hiit':
+      // HIIT: effort × duration formula
+      // Effort calculated from heart rate (normalized to 0.5-2.0 range)
+      // Default effort multiplier is 1.5 if no HR data
+      const effortMultiplier = heartRate 
+        ? Math.min(2.0, Math.max(0.5, (heartRate - 100) / 100 + 1))
+        : 1.5;
+      points = Math.round(effortMultiplier * duration);
       break;
     
     case 'gym':
@@ -93,6 +104,7 @@ export function getActivityIcon(type: FitnessActivity['type']): string {
     yoga: '🧘',
     walk: '🚶',
     hike: '🥾',
+    hiit: '🔥',
     other: '⚡'
   };
   return icons[type];
@@ -107,6 +119,7 @@ export function getActivityColor(type: FitnessActivity['type']): string {
     yoga: 'from-pink-500 to-pink-600',
     walk: 'from-amber-500 to-amber-600',
     hike: 'from-emerald-500 to-emerald-600',
+    hiit: 'from-red-500 to-orange-600',
     other: 'from-gray-500 to-gray-600'
   };
   return colors[type];
