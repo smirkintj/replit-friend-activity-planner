@@ -302,7 +302,7 @@ export async function getUpcomingFitnessEvents(limit = 10): Promise<FitnessEvent
       activities!inner (*)
     `)
     .gte("activities.start_date", today)
-    .order("activities.start_date", { ascending: true })
+    .order("start_date", { ascending: true, foreignTable: "activities" })
     .limit(limit)
   
   if (error || !data) {
