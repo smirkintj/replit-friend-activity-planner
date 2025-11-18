@@ -89,7 +89,21 @@ export function ActivitiesManager({ data, onUpdate, editingActivity }: Activitie
       // Load fitness event data if it exists
       const loadFitnessEvent = async () => {
         try {
-          const response = await fetch(`/api/fitness-events?activityId=${editingActivity.id}`)
+          // Wait for sessionStorage to be available (client-side only)
+          if (typeof window === 'undefined') return
+          
+          const adminPin = sessionStorage.getItem("admin_pin")
+          if (!adminPin) {
+            // Retry after a short delay to allow sessionStorage to hydrate
+            setTimeout(loadFitnessEvent, 100)
+            return
+          }
+          
+          const response = await fetch(`/api/fitness-events?activityId=${editingActivity.id}`, {
+            headers: {
+              "x-auth-pin": adminPin,
+            },
+          })
           if (response.ok) {
             const data = await response.json()
             if (data.event) {
@@ -401,7 +415,11 @@ export function ActivitiesManager({ data, onUpdate, editingActivity }: Activitie
     // Handle fitness event update/create/delete
     const adminPin = sessionStorage.getItem("admin_pin")
     try {
-      const existingEventResponse = await fetch(`/api/fitness-events?activityId=${editingId}`)
+      const existingEventResponse = await fetch(`/api/fitness-events?activityId=${editingId}`, {
+        headers: {
+          "x-auth-pin": adminPin || "",
+        },
+      })
       const existingEventData = await existingEventResponse.json()
 
       if (isFitnessEvent) {

@@ -4,15 +4,24 @@ import { requireAuth } from "@/lib/server-auth"
 
 export async function GET(request: NextRequest) {
   try {
-    // NOTE: GET endpoint is public - anyone can view upcoming events
-    // Authentication is only required for creating/editing events
-    
     const searchParams = request.nextUrl.searchParams
     const activityId = searchParams.get("activityId")
     const limit = searchParams.get("limit") ? parseInt(searchParams.get("limit")!) : 10
     
-    // If activityId is provided, fetch specific fitness event
+    // If activityId is provided, fetch specific fitness event (requires auth)
     if (activityId) {
+      const { requireAuth, canModifyEvent } = await import("@/lib/server-auth")
+      const auth = await requireAuth(request)
+      
+      // Check if user can access this event (organizer-only)
+      const canModify = await canModifyEvent(auth, activityId)
+      if (!canModify) {
+        return NextResponse.json(
+          { error: "Forbidden - only organizers can access event details" },
+          { status: 403 }
+        )
+      }
+      
       const { getFitnessEventByActivityId } = await import("@/lib/fitness-events-storage")
       const event = await getFitnessEventByActivityId(activityId)
       
@@ -23,7 +32,8 @@ export async function GET(request: NextRequest) {
       }
     }
     
-    // Otherwise, fetch upcoming events
+    // Otherwise, fetch upcoming events (public endpoint)
+    // NOTE: Public listing endpoint - anyone can view upcoming events
     const events = await getUpcomingFitnessEvents(limit)
     
     return NextResponse.json({ events })

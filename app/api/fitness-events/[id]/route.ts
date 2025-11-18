@@ -7,7 +7,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    await requireAuth(request)
+    const auth = await requireAuth(request)
     
     const event = await getFitnessEventWithDetails(params.id)
     
@@ -15,6 +15,15 @@ export async function GET(
       return NextResponse.json(
         { error: "Event not found" },
         { status: 404 }
+      )
+    }
+    
+    // Check if user can access this event (organizer-only)
+    const canModify = await canModifyEvent(auth, event.activity.id)
+    if (!canModify) {
+      return NextResponse.json(
+        { error: "Forbidden - only organizers can access event details" },
+        { status: 403 }
       )
     }
     
@@ -86,7 +95,25 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    await requireAuth(request)
+    const auth = await requireAuth(request)
+    
+    // Get the event to find its activity_id
+    const existingEvent = await getFitnessEventById(params.id)
+    if (!existingEvent) {
+      return NextResponse.json(
+        { error: "Event not found" },
+        { status: 404 }
+      )
+    }
+    
+    // Check if user can modify this event
+    const canModify = await canModifyEvent(auth, existingEvent.activityId)
+    if (!canModify) {
+      return NextResponse.json(
+        { error: "Forbidden - only organizers can delete events" },
+        { status: 403 }
+      )
+    }
     
     const { createClient } = await import("@/lib/supabase/server")
     const supabase = await createClient()
