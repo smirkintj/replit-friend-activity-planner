@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
-import { MapPin, Calendar, Users, Trophy, Info } from "lucide-react"
+import { MapPin, Calendar, Users, Trophy, Info, Navigation } from "lucide-react"
 import {
   Popover,
   PopoverContent,
@@ -134,9 +134,37 @@ export function UpcomingEvents({ friends }: UpcomingEventsProps) {
                       {event.activity.startTime && ` at ${event.activity.startTime}`}
                     </div>
                     {event.meetupLocation && (
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <MapPin className="w-4 h-4" />
-                        {event.meetupLocation}
+                        <span className="flex-1">{event.meetupLocation}</span>
+                        {event.meetupLat && event.meetupLng && (
+                          <div className="flex gap-1">
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-6 px-2 text-xs"
+                              onClick={() => {
+                                const url = `https://www.google.com/maps/search/?api=1&query=${event.meetupLat},${event.meetupLng}`
+                                window.open(url, '_blank')
+                              }}
+                            >
+                              <Navigation className="w-3 h-3 mr-1" />
+                              Google
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-6 px-2 text-xs"
+                              onClick={() => {
+                                const url = `https://maps.apple.com/?q=${event.meetupLat},${event.meetupLng}`
+                                window.open(url, '_blank')
+                              }}
+                            >
+                              <Navigation className="w-3 h-3 mr-1" />
+                              Apple
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     )}
                     <div className="flex items-center gap-2">
