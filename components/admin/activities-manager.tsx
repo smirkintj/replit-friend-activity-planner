@@ -415,16 +415,26 @@ export function ActivitiesManager({ data, onUpdate, editingActivity }: Activitie
     // Handle fitness event update/create/delete
     const adminPin = sessionStorage.getItem("admin_pin")
     try {
+      console.log("[FITNESS] Handling fitness event, isFitnessEvent:", isFitnessEvent)
+      console.log("[FITNESS] Fitness data:", fitnessData)
+      
       const existingEventResponse = await fetch(`/api/fitness-events?activityId=${editingId}`, {
         headers: {
           "x-auth-pin": adminPin || "",
         },
       })
+      
+      if (!existingEventResponse.ok) {
+        console.error("[FITNESS] Failed to fetch existing event:", existingEventResponse.status, existingEventResponse.statusText)
+      }
+      
       const existingEventData = await existingEventResponse.json()
+      console.log("[FITNESS] Existing event data:", existingEventData)
 
       if (isFitnessEvent) {
         // Validate fitness fields
         if (!fitnessData.meetupLocation.address) {
+          console.error("[FITNESS] Validation failed: No meetup location")
           toast({
             title: "Fitness Event Validation",
             description: "Please enter a meetup location for the fitness event.",
@@ -433,9 +443,12 @@ export function ActivitiesManager({ data, onUpdate, editingActivity }: Activitie
           return
         }
 
+        console.log("[FITNESS] Validation passed, processing fitness event...")
+
         if (existingEventData.event) {
           // Update existing fitness event
-          await fetch(`/api/fitness-events/${existingEventData.event.id}`, {
+          console.log("[FITNESS] Updating existing event:", existingEventData.event.id)
+          const updateResponse = await fetch(`/api/fitness-events/${existingEventData.event.id}`, {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
@@ -452,13 +465,21 @@ export function ActivitiesManager({ data, onUpdate, editingActivity }: Activitie
               pointsOverride: fitnessData.pointsOverride,
             }),
           })
+          
+          if (!updateResponse.ok) {
+            console.error("[FITNESS] Update failed:", updateResponse.status, await updateResponse.text())
+          } else {
+            console.log("[FITNESS] Update successful!")
+          }
+          
           toast({
             title: "Success!",
             description: "✅ Activity and Fitness Event updated!",
           })
         } else {
           // Create new fitness event
-          await fetch("/api/fitness-events", {
+          console.log("[FITNESS] Creating new fitness event for activity:", editingId)
+          const createResponse = await fetch("/api/fitness-events", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -476,6 +497,13 @@ export function ActivitiesManager({ data, onUpdate, editingActivity }: Activitie
               pointsOverride: fitnessData.pointsOverride,
             }),
           })
+          
+          if (!createResponse.ok) {
+            console.error("[FITNESS] Create failed:", createResponse.status, await createResponse.text())
+          } else {
+            console.log("[FITNESS] Create successful!")
+          }
+          
           toast({
             title: "Success!",
             description: "✅ Activity converted to Fitness Event!",
@@ -483,19 +511,29 @@ export function ActivitiesManager({ data, onUpdate, editingActivity }: Activitie
         }
       } else if (existingEventData.event) {
         // Delete fitness event if toggle is OFF
-        await fetch(`/api/fitness-events/${existingEventData.event.id}`, {
+        console.log("[FITNESS] Deleting fitness event:", existingEventData.event.id)
+        const deleteResponse = await fetch(`/api/fitness-events/${existingEventData.event.id}`, {
           method: "DELETE",
           headers: {
             "x-auth-pin": adminPin || "",
           },
         })
+        
+        if (!deleteResponse.ok) {
+          console.error("[FITNESS] Delete failed:", deleteResponse.status)
+        } else {
+          console.log("[FITNESS] Delete successful!")
+        }
+        
         toast({
           title: "Success!",
           description: "✅ Activity updated (Fitness Event removed)",
         })
+      } else {
+        console.log("[FITNESS] No action needed - toggle OFF and no existing event")
       }
     } catch (error) {
-      console.error("Failed to handle fitness event:", error)
+      console.error("[FITNESS] Failed to handle fitness event:", error)
       toast({
         title: "Warning",
         description: "Activity updated, but fitness event operation failed.",
