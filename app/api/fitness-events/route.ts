@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { createFitnessEvent, getUpcomingFitnessEvents } from "@/lib/fitness-events-storage"
-import { requireAuth } from "@/lib/server-auth"
+import { createFitnessEvent, getUpcomingFitnessEvents, getFitnessEventByActivityId } from "@/lib/fitness-events-storage"
 
 export async function GET(request: NextRequest) {
   try {
@@ -8,21 +7,8 @@ export async function GET(request: NextRequest) {
     const activityId = searchParams.get("activityId")
     const limit = searchParams.get("limit") ? parseInt(searchParams.get("limit")!) : 10
     
-    // If activityId is provided, fetch specific fitness event (requires auth)
+    // If activityId is provided, fetch specific fitness event
     if (activityId) {
-      const { requireAuth, canModifyEvent } = await import("@/lib/server-auth")
-      const auth = await requireAuth(request)
-      
-      // Check if user can access this event (organizer-only)
-      const canModify = await canModifyEvent(auth, activityId)
-      if (!canModify) {
-        return NextResponse.json(
-          { error: "Forbidden - only organizers can access event details" },
-          { status: 403 }
-        )
-      }
-      
-      const { getFitnessEventByActivityId } = await import("@/lib/fitness-events-storage")
       const event = await getFitnessEventByActivityId(activityId)
       
       if (event) {
@@ -33,7 +19,6 @@ export async function GET(request: NextRequest) {
     }
     
     // Otherwise, fetch upcoming events (public endpoint)
-    // NOTE: Public listing endpoint - anyone can view upcoming events
     const events = await getUpcomingFitnessEvents(limit)
     
     return NextResponse.json({ events })
@@ -48,10 +33,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    await requireAuth(request)
-    
     const body = await request.json()
-    const { activityId, ...eventData } = body
+    const { activityId, organizerId, ...eventData } = body
     
     if (!activityId) {
       return NextResponse.json(
@@ -60,7 +43,14 @@ export async function POST(request: NextRequest) {
       )
     }
     
-    const event = await createFitnessEvent(activityId, eventData)
+    if (!organizerId) {
+      return NextResponse.json(
+        { error: "Organizer ID is required" },
+        { status: 400 }
+      )
+    }
+    
+    const event = await createFitnessEvent(activityId, { ...eventData, organizerId })
     
     if (!event) {
       return NextResponse.json(

@@ -1,29 +1,17 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getFitnessEventWithDetails, updateFitnessEvent, getFitnessEventById } from "@/lib/fitness-events-storage"
-import { requireAuth, canModifyEvent } from "@/lib/server-auth"
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const auth = await requireAuth(request)
-    
     const event = await getFitnessEventWithDetails(params.id)
     
     if (!event) {
       return NextResponse.json(
         { error: "Event not found" },
         { status: 404 }
-      )
-    }
-    
-    // Check if user can access this event (organizer-only)
-    const canModify = await canModifyEvent(auth, event.activity.id)
-    if (!canModify) {
-      return NextResponse.json(
-        { error: "Forbidden - only organizers can access event details" },
-        { status: 403 }
       )
     }
     
@@ -42,26 +30,6 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
-    const auth = await requireAuth(request)
-    
-    // Get the event to find its activity_id
-    const existingEvent = await getFitnessEventById(params.id)
-    if (!existingEvent) {
-      return NextResponse.json(
-        { error: "Event not found" },
-        { status: 404 }
-      )
-    }
-    
-    // Check if user can modify this event
-    const canModify = await canModifyEvent(auth, existingEvent.activityId)
-    if (!canModify) {
-      return NextResponse.json(
-        { error: "Forbidden - only organizers can modify events" },
-        { status: 403 }
-      )
-    }
-    
     const body = await request.json()
     const event = await updateFitnessEvent(params.id, body)
     
@@ -95,26 +63,6 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const auth = await requireAuth(request)
-    
-    // Get the event to find its activity_id
-    const existingEvent = await getFitnessEventById(params.id)
-    if (!existingEvent) {
-      return NextResponse.json(
-        { error: "Event not found" },
-        { status: 404 }
-      )
-    }
-    
-    // Check if user can modify this event
-    const canModify = await canModifyEvent(auth, existingEvent.activityId)
-    if (!canModify) {
-      return NextResponse.json(
-        { error: "Forbidden - only organizers can delete events" },
-        { status: 403 }
-      )
-    }
-    
     const { createClient } = await import("@/lib/supabase/server")
     const supabase = await createClient()
     
