@@ -99,61 +99,7 @@ export function UpcomingEvents({ friends }: UpcomingEventsProps) {
         <CardContent className="pt-6 text-center text-muted-foreground">
           <Trophy className="w-12 h-12 mx-auto mb-4 opacity-50" />
           <p>No upcoming fitness events</p>
-          <p className="text-sm mt-2">Group workouts will appear here!</p>
-          
-          {/* Help Info */}
-          <div className="mt-4 pt-4 border-t border-border">
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="ghost" size="sm" className="gap-2">
-                  <Info className="w-4 h-4" />
-                  How to create fitness events?
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-80 glass-card" align="center">
-                <div className="space-y-3">
-                  <h3 className="font-bold text-sm flex items-center gap-2">
-                    <Trophy className="w-4 h-4 text-purple-400" />
-                    Creating Group Fitness Events
-                  </h3>
-                  
-                  <div className="space-y-2 text-sm">
-                    <div className="flex gap-2">
-                      <span className="text-purple-400 font-bold">1.</span>
-                      <div>
-                        <p className="font-medium">Run the database migration</p>
-                        <p className="text-xs text-muted-foreground">Open your Supabase dashboard → SQL Editor → paste the code from <code>supabase-fitness-events-schema.sql</code> → Run it</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex gap-2">
-                      <span className="text-purple-400 font-bold">2.</span>
-                      <div>
-                        <p className="font-medium">Go to Admin Panel</p>
-                        <p className="text-xs text-muted-foreground">Navigate to <code>/admin</code> and login with your superadmin PIN</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex gap-2">
-                      <span className="text-purple-400 font-bold">3.</span>
-                      <div>
-                        <p className="font-medium">Create a trip with type "fitness_event"</p>
-                        <p className="text-xs text-muted-foreground">Fill in the event details (meetup location, date, intensity). Everyone who RSVPs "Going" gets added to the event!</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex gap-2">
-                      <span className="text-orange-400 font-bold">✨</span>
-                      <div>
-                        <p className="font-medium">Bonus Points!</p>
-                        <p className="text-xs text-muted-foreground">Friends who attend and log their Strava workout get +50 bonus points automatically linked to the event!</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </PopoverContent>
-            </Popover>
-          </div>
+          <p className="text-sm mt-2">Check back later for group workouts!</p>
         </CardContent>
       </Card>
     )

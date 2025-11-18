@@ -374,15 +374,32 @@ export default function FitnessPage() {
               </PopoverTrigger>
               <PopoverContent className="w-80" align="start">
                 <div className="space-y-3">
-                  <h3 className="font-bold text-sm">Group Fitness Events</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Organize group runs, rides, hikes, or races! Create events from the Admin Panel and friends can RSVP.
+                  <h3 className="font-bold text-sm">🏃 Group Fitness Events</h3>
+                  <p className="text-sm">
+                    Join your friends for group runs, rides, hikes, or races!
                   </p>
-                  <div className="text-xs space-y-1 text-muted-foreground">
-                    <p>🏃 Plan meetup locations & routes</p>
-                    <p>✅ Track RSVPs & attendance</p>
-                    <p>🎯 Auto-link Strava workouts</p>
-                    <p>⭐ +50 bonus points for group participation!</p>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex gap-2 items-start">
+                      <span>✅</span>
+                      <div>
+                        <p className="font-medium">RSVP to Events</p>
+                        <p className="text-xs text-muted-foreground">Click "Going", "Maybe", or "Can't Make It" to respond</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-2 items-start">
+                      <span>🎯</span>
+                      <div>
+                        <p className="font-medium">Auto-Linked Workouts</p>
+                        <p className="text-xs text-muted-foreground">Your Strava activities automatically link to events you attend</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-2 items-start">
+                      <span>⭐</span>
+                      <div>
+                        <p className="font-medium">Bonus Points!</p>
+                        <p className="text-xs text-muted-foreground">Get +50 points when you attend and complete the workout</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </PopoverContent>
