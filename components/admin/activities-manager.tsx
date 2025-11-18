@@ -267,7 +267,7 @@ export function ActivitiesManager({ data, onUpdate, editingActivity }: Activitie
       "trip_created",
       activityId,
       formData.title,
-      formData.type,
+      formData.type as "trip" | "activity",
       participantNames,
       formData.location,
       formData.startDate,
@@ -551,7 +551,7 @@ export function ActivitiesManager({ data, onUpdate, editingActivity }: Activitie
       "trip_updated",
       editingId,
       formData.title,
-      formData.type,
+      formData.type as "trip" | "activity",
       participantNames,
       formData.location,
       formData.startDate,
@@ -642,7 +642,7 @@ export function ActivitiesManager({ data, onUpdate, editingActivity }: Activitie
           "trip_deleted",
           id,
           activity.title,
-          activity.type,
+          activity.type as "trip" | "activity",
           participantNames,
           activity.location,
           activity.startDate,
@@ -1076,7 +1076,7 @@ export function ActivitiesManager({ data, onUpdate, editingActivity }: Activitie
                     <Switch
                       id="autoLogWorkouts"
                       checked={fitnessData.autoLogWorkouts}
-                      onCheckedChange={(checked) =>
+                      onCheckedChange={(checked: boolean) =>
                         setFitnessData({ ...fitnessData, autoLogWorkouts: checked })
                       }
                     />
