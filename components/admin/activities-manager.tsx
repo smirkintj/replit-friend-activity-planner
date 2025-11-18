@@ -19,7 +19,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { LocationPicker } from "@/components/admin/location-picker"
-import { Switch } from "@/components/ui/switch"
+// import { Switch } from "@/components/ui/switch"
 
 interface ActivitiesManagerProps {
   data: AppData
@@ -972,18 +972,18 @@ export function ActivitiesManager({ data, onUpdate, editingActivity }: Activitie
           />
 
           <div className="space-y-4 border-2 rounded-lg p-4 bg-gradient-to-br from-purple-500/10 to-indigo-500/10 border-purple-500/30">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="isFitnessEvent"
+                checked={isFitnessEvent}
+                onCheckedChange={(checked) => setIsFitnessEvent(checked === true)}
+              />
               <label
                 htmlFor="isFitnessEvent"
                 className="text-base font-semibold cursor-pointer flex items-center gap-2"
               >
                 🏃 This is a Fitness Event
               </label>
-              <Switch
-                id="isFitnessEvent"
-                checked={isFitnessEvent}
-                onCheckedChange={setIsFitnessEvent}
-              />
             </div>
 
             {isFitnessEvent && (
@@ -1064,22 +1064,22 @@ export function ActivitiesManager({ data, onUpdate, editingActivity }: Activitie
                 </div>
 
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                    <div className="space-y-1">
-                      <Label htmlFor="autoLogWorkouts" className="font-semibold">
-                        Auto-link Strava Workouts
-                      </Label>
-                      <p className="text-xs text-muted-foreground">
-                        Automatically link participants' Strava activities on event date
-                      </p>
-                    </div>
-                    <Switch
+                  <div className="flex items-center space-x-2 p-3 bg-muted/50 rounded-lg">
+                    <Checkbox
                       id="autoLogWorkouts"
                       checked={fitnessData.autoLogWorkouts}
                       onCheckedChange={(checked: boolean) =>
                         setFitnessData({ ...fitnessData, autoLogWorkouts: checked })
                       }
                     />
+                    <div className="space-y-1">
+                      <Label htmlFor="autoLogWorkouts" className="font-semibold cursor-pointer">
+                        Auto-link Strava Workouts
+                      </Label>
+                      <p className="text-xs text-muted-foreground">
+                        Automatically link participants' Strava activities on event date
+                      </p>
+                    </div>
                   </div>
 
                   <div className="space-y-2">
