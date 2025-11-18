@@ -7,6 +7,16 @@ export interface AuthContext {
   friendName: string
 }
 
+/**
+ * Custom error class for authentication failures
+ */
+export class UnauthorizedError extends Error {
+  constructor(message: string = "Unauthorized") {
+    super(message)
+    this.name = "UnauthorizedError"
+  }
+}
+
 const SUPERADMIN_PIN = "9406"
 
 /**
@@ -61,7 +71,7 @@ export async function requireAuth(request: NextRequest): Promise<AuthContext> {
   const auth = await validateAuth(request)
   
   if (!auth) {
-    throw new Error("Unauthorized")
+    throw new UnauthorizedError()
   }
   
   return auth
