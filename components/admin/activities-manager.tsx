@@ -18,6 +18,8 @@ import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
+import { LocationPicker } from "@/components/admin/location-picker"
+import { Switch } from "@/components/ui/switch"
 
 interface ActivitiesManagerProps {
   data: AppData
@@ -51,6 +53,16 @@ export function ActivitiesManager({ data, onUpdate, editingActivity }: Activitie
     recurrenceEndDate: "",
   })
 
+  const [isFitnessEvent, setIsFitnessEvent] = useState(false)
+  const [fitnessData, setFitnessData] = useState({
+    eventCategory: "run" as "run" | "ride" | "hike" | "race" | "swim" | "other",
+    intensityLevel: "moderate" as "easy" | "moderate" | "hard" | "race" | undefined,
+    meetupLocation: { address: "", lat: null as number | null, lng: null as number | null },
+    meetupNotes: "",
+    autoLogWorkouts: true,
+    pointsOverride: 50,
+  })
+
   useEffect(() => {
     if (editingActivity) {
       setEditingId(editingActivity.id)
@@ -73,6 +85,34 @@ export function ActivitiesManager({ data, onUpdate, editingActivity }: Activitie
         recurrencePattern: editingActivity.recurrencePattern || "weekly",
         recurrenceEndDate: editingActivity.recurrenceEndDate || "",
       })
+
+      // Load fitness event data if it exists
+      const loadFitnessEvent = async () => {
+        try {
+          const response = await fetch(`/api/fitness-events?activityId=${editingActivity.id}`)
+          if (response.ok) {
+            const data = await response.json()
+            if (data.event) {
+              setIsFitnessEvent(true)
+              setFitnessData({
+                eventCategory: data.event.eventCategory,
+                intensityLevel: data.event.intensityLevel,
+                meetupLocation: {
+                  address: data.event.meetupLocation || "",
+                  lat: data.event.meetupLat,
+                  lng: data.event.meetupLng,
+                },
+                meetupNotes: data.event.meetupNotes || "",
+                autoLogWorkouts: data.event.autoLogWorkouts,
+                pointsOverride: data.event.pointsOverride || 50,
+              })
+            }
+          }
+        } catch (error) {
+          console.error("Failed to load fitness event:", error)
+        }
+      }
+      loadFitnessEvent()
     }
   }, [editingActivity])
 
@@ -113,6 +153,18 @@ export function ActivitiesManager({ data, onUpdate, editingActivity }: Activitie
       return
     }
 
+    // Validate fitness event fields if toggle is ON
+    if (isFitnessEvent) {
+      if (!fitnessData.meetupLocation.address) {
+        toast({
+          title: "Fitness Event Validation",
+          description: "Please enter a meetup location for the fitness event.",
+          variant: "destructive",
+        })
+        return
+      }
+    }
+
     const totalBudget = formData.budgetBreakdown.reduce((sum, item) => sum + item.amount, 0)
 
     const activityData = {
@@ -138,6 +190,47 @@ export function ActivitiesManager({ data, onUpdate, editingActivity }: Activitie
 
     const activityId = await saveActivity(activityData)
     console.log("[v0] Activity created with ID:", activityId)
+
+    // Create fitness event if toggle is ON
+    if (isFitnessEvent && activityId) {
+      try {
+        const adminPin = sessionStorage.getItem("admin_pin")
+        const response = await fetch("/api/fitness-events", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-auth-pin": adminPin || "",
+          },
+          body: JSON.stringify({
+            activityId,
+            eventCategory: fitnessData.eventCategory,
+            intensityLevel: fitnessData.intensityLevel || undefined,
+            meetupLocation: fitnessData.meetupLocation.address,
+            meetupLat: fitnessData.meetupLocation.lat,
+            meetupLng: fitnessData.meetupLocation.lng,
+            meetupNotes: fitnessData.meetupNotes || undefined,
+            autoLogWorkouts: fitnessData.autoLogWorkouts,
+            pointsOverride: fitnessData.pointsOverride,
+          }),
+        })
+
+        if (!response.ok) {
+          throw new Error("Failed to create fitness event")
+        }
+
+        toast({
+          title: "Success!",
+          description: "✅ Activity and Fitness Event created! Friends can now RSVP on the FitSquad page.",
+        })
+      } catch (error) {
+        console.error("Failed to create fitness event:", error)
+        toast({
+          title: "Partial Success",
+          description: "Activity created, but fitness event failed. Please edit and try again.",
+          variant: "destructive",
+        })
+      }
+    }
 
     const organizer = data.friends.find((f) => f.id === formData.organizerId)
     const participantNames = formData.friendIds
@@ -190,6 +283,15 @@ export function ActivitiesManager({ data, onUpdate, editingActivity }: Activitie
       isRecurring: false,
       recurrencePattern: "weekly",
       recurrenceEndDate: "",
+    })
+    setIsFitnessEvent(false)
+    setFitnessData({
+      eventCategory: "run",
+      intensityLevel: "moderate",
+      meetupLocation: { address: "", lat: null, lng: null },
+      meetupNotes: "",
+      autoLogWorkouts: true,
+      pointsOverride: 50,
     })
     setIsAdding(false)
     setShowTimeFields(false)
@@ -296,6 +398,93 @@ export function ActivitiesManager({ data, onUpdate, editingActivity }: Activitie
       recurrenceEndDate: formData.isRecurring ? formData.recurrenceEndDate : undefined,
     })
 
+    // Handle fitness event update/create/delete
+    const adminPin = sessionStorage.getItem("admin_pin")
+    try {
+      const existingEventResponse = await fetch(`/api/fitness-events?activityId=${editingId}`)
+      const existingEventData = await existingEventResponse.json()
+
+      if (isFitnessEvent) {
+        // Validate fitness fields
+        if (!fitnessData.meetupLocation.address) {
+          toast({
+            title: "Fitness Event Validation",
+            description: "Please enter a meetup location for the fitness event.",
+            variant: "destructive",
+          })
+          return
+        }
+
+        if (existingEventData.event) {
+          // Update existing fitness event
+          await fetch(`/api/fitness-events/${existingEventData.event.id}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              "x-auth-pin": adminPin || "",
+            },
+            body: JSON.stringify({
+              eventCategory: fitnessData.eventCategory,
+              intensityLevel: fitnessData.intensityLevel || undefined,
+              meetupLocation: fitnessData.meetupLocation.address,
+              meetupLat: fitnessData.meetupLocation.lat,
+              meetupLng: fitnessData.meetupLocation.lng,
+              meetupNotes: fitnessData.meetupNotes || undefined,
+              autoLogWorkouts: fitnessData.autoLogWorkouts,
+              pointsOverride: fitnessData.pointsOverride,
+            }),
+          })
+          toast({
+            title: "Success!",
+            description: "✅ Activity and Fitness Event updated!",
+          })
+        } else {
+          // Create new fitness event
+          await fetch("/api/fitness-events", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-auth-pin": adminPin || "",
+            },
+            body: JSON.stringify({
+              activityId: editingId,
+              eventCategory: fitnessData.eventCategory,
+              intensityLevel: fitnessData.intensityLevel || undefined,
+              meetupLocation: fitnessData.meetupLocation.address,
+              meetupLat: fitnessData.meetupLocation.lat,
+              meetupLng: fitnessData.meetupLocation.lng,
+              meetupNotes: fitnessData.meetupNotes || undefined,
+              autoLogWorkouts: fitnessData.autoLogWorkouts,
+              pointsOverride: fitnessData.pointsOverride,
+            }),
+          })
+          toast({
+            title: "Success!",
+            description: "✅ Activity converted to Fitness Event!",
+          })
+        }
+      } else if (existingEventData.event) {
+        // Delete fitness event if toggle is OFF
+        await fetch(`/api/fitness-events/${existingEventData.event.id}`, {
+          method: "DELETE",
+          headers: {
+            "x-auth-pin": adminPin || "",
+          },
+        })
+        toast({
+          title: "Success!",
+          description: "✅ Activity updated (Fitness Event removed)",
+        })
+      }
+    } catch (error) {
+      console.error("Failed to handle fitness event:", error)
+      toast({
+        title: "Warning",
+        description: "Activity updated, but fitness event operation failed.",
+        variant: "destructive",
+      })
+    }
+
     const organizer = data.friends.find((f) => f.id === formData.organizerId)
     const participantNames = formData.friendIds
       .map((id) => data.friends.find((f) => f.id === id)?.name)
@@ -353,6 +542,15 @@ export function ActivitiesManager({ data, onUpdate, editingActivity }: Activitie
       isRecurring: false,
       recurrencePattern: "weekly",
       recurrenceEndDate: "",
+    })
+    setIsFitnessEvent(false)
+    setFitnessData({
+      eventCategory: "run",
+      intensityLevel: "moderate",
+      meetupLocation: { address: "", lat: null, lng: null },
+      meetupNotes: "",
+      autoLogWorkouts: true,
+      pointsOverride: 50,
     })
     setOriginalDates(null)
     setEditingId(null)
@@ -717,6 +915,137 @@ export function ActivitiesManager({ data, onUpdate, editingActivity }: Activitie
             onChange={(breakdown) => setFormData({ ...formData, budgetBreakdown: breakdown })}
           />
 
+          <div className="space-y-4 border-2 rounded-lg p-4 bg-gradient-to-br from-purple-500/10 to-indigo-500/10 border-purple-500/30">
+            <div className="flex items-center justify-between">
+              <label
+                htmlFor="isFitnessEvent"
+                className="text-base font-semibold cursor-pointer flex items-center gap-2"
+              >
+                🏃 This is a Fitness Event
+              </label>
+              <Switch
+                id="isFitnessEvent"
+                checked={isFitnessEvent}
+                onCheckedChange={setIsFitnessEvent}
+              />
+            </div>
+
+            {isFitnessEvent && (
+              <div className="space-y-4 pt-2 border-t border-purple-500/20">
+                <p className="text-sm text-muted-foreground">
+                  Configure group fitness event details. Friends can RSVP and earn bonus points!
+                </p>
+
+                <div className="space-y-2">
+                  <Label htmlFor="eventCategory" className="text-base font-semibold">
+                    Event Type <span className="text-destructive">*</span>
+                  </Label>
+                  <Select
+                    value={fitnessData.eventCategory}
+                    onValueChange={(value: typeof fitnessData.eventCategory) =>
+                      setFitnessData({ ...fitnessData, eventCategory: value })
+                    }
+                  >
+                    <SelectTrigger id="eventCategory">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="run">🏃 Run</SelectItem>
+                      <SelectItem value="ride">🚴 Ride</SelectItem>
+                      <SelectItem value="hike">🥾 Hike</SelectItem>
+                      <SelectItem value="race">🏁 Race</SelectItem>
+                      <SelectItem value="swim">🏊 Swim</SelectItem>
+                      <SelectItem value="other">🎯 Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="intensityLevel">Intensity Level</Label>
+                  <Select
+                    value={fitnessData.intensityLevel || "moderate"}
+                    onValueChange={(value: "easy" | "moderate" | "hard" | "race") =>
+                      setFitnessData({ ...fitnessData, intensityLevel: value })
+                    }
+                  >
+                    <SelectTrigger id="intensityLevel">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="easy">😌 Easy - Chill pace</SelectItem>
+                      <SelectItem value="moderate">💪 Moderate - Regular workout</SelectItem>
+                      <SelectItem value="hard">🔥 Hard - Challenging</SelectItem>
+                      <SelectItem value="race">🏆 Race - Competition mode!</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-base font-semibold">
+                    📍 Meetup Location <span className="text-destructive">*</span>
+                  </Label>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Where should friends meet for this event?
+                  </p>
+                  <LocationPicker
+                    value={fitnessData.meetupLocation}
+                    onChange={(location) =>
+                      setFitnessData({ ...fitnessData, meetupLocation: location })
+                    }
+                    placeholder="Search for meetup location..."
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="meetupNotes">Meetup Notes</Label>
+                  <Textarea
+                    id="meetupNotes"
+                    placeholder="e.g., Meet at 7am sharp! Bring water and sunscreen."
+                    value={fitnessData.meetupNotes}
+                    onChange={(e) => setFitnessData({ ...fitnessData, meetupNotes: e.target.value })}
+                    rows={3}
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                    <div className="space-y-1">
+                      <Label htmlFor="autoLogWorkouts" className="font-semibold">
+                        Auto-link Strava Workouts
+                      </Label>
+                      <p className="text-xs text-muted-foreground">
+                        Automatically link participants' Strava activities on event date
+                      </p>
+                    </div>
+                    <Switch
+                      id="autoLogWorkouts"
+                      checked={fitnessData.autoLogWorkouts}
+                      onCheckedChange={(checked) =>
+                        setFitnessData({ ...fitnessData, autoLogWorkouts: checked })
+                      }
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="pointsOverride">Bonus Points</Label>
+                    <Input
+                      id="pointsOverride"
+                      type="number"
+                      min="0"
+                      value={fitnessData.pointsOverride}
+                      onChange={(e) =>
+                        setFitnessData({ ...fitnessData, pointsOverride: parseInt(e.target.value) || 0 })
+                      }
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Points awarded to participants who complete the workout
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
           <div className="space-y-4 border rounded-lg p-4 bg-muted/30">
             <div className="flex items-center space-x-2">
               <Checkbox
@@ -797,6 +1126,15 @@ export function ActivitiesManager({ data, onUpdate, editingActivity }: Activitie
                   isRecurring: false,
                   recurrencePattern: "weekly",
                   recurrenceEndDate: "",
+                })
+                setIsFitnessEvent(false)
+                setFitnessData({
+                  eventCategory: "run",
+                  intensityLevel: "moderate",
+                  meetupLocation: { address: "", lat: null, lng: null },
+                  meetupNotes: "",
+                  autoLogWorkouts: true,
+                  pointsOverride: 50,
                 })
                 setShowTimeFields(false)
               }}

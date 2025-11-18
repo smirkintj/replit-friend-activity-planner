@@ -8,8 +8,22 @@ export async function GET(request: NextRequest) {
     // Authentication is only required for creating/editing events
     
     const searchParams = request.nextUrl.searchParams
+    const activityId = searchParams.get("activityId")
     const limit = searchParams.get("limit") ? parseInt(searchParams.get("limit")!) : 10
     
+    // If activityId is provided, fetch specific fitness event
+    if (activityId) {
+      const { getFitnessEventByActivityId } = await import("@/lib/fitness-events-storage")
+      const event = await getFitnessEventByActivityId(activityId)
+      
+      if (event) {
+        return NextResponse.json({ event })
+      } else {
+        return NextResponse.json({ event: null })
+      }
+    }
+    
+    // Otherwise, fetch upcoming events
     const events = await getUpcomingFitnessEvents(limit)
     
     return NextResponse.json({ events })

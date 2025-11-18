@@ -72,3 +72,44 @@ export async function PATCH(
     )
   }
 }
+
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  // PUT is the same as PATCH for this endpoint
+  return PATCH(request, { params })
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    await requireAuth(request)
+    
+    const { createClient } = await import("@/lib/supabase/server")
+    const supabase = await createClient()
+    
+    const { error } = await supabase
+      .from("fitness_events")
+      .delete()
+      .eq("id", params.id)
+    
+    if (error) {
+      console.error("[API] Error deleting fitness event:", error)
+      return NextResponse.json(
+        { error: "Failed to delete fitness event" },
+        { status: 500 }
+      )
+    }
+    
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error("[API] Error deleting fitness event:", error)
+    return NextResponse.json(
+      { error: "Failed to delete fitness event" },
+      { status: 500 }
+    )
+  }
+}
