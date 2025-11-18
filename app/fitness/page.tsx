@@ -5,7 +5,12 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ArrowLeft, Flame, TrendingUp, Calendar } from "lucide-react"
+import { ArrowLeft, Flame, TrendingUp, Calendar, Info } from "lucide-react"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import Link from "next/link"
 import { getStoredData } from "@/lib/storage"
 import {
@@ -356,10 +361,33 @@ export default function FitnessPage() {
 
         {/* Upcoming Fitness Events */}
         <div>
-          <h2 className="text-2xl font-bold mb-4 text-white flex items-center gap-2">
-            <Calendar className="w-6 h-6" />
-            UPCOMING EVENTS
-          </h2>
+          <div className="flex items-center gap-2 mb-4">
+            <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+              <Calendar className="w-6 h-6" />
+              UPCOMING EVENTS
+            </h2>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-purple-400 hover:text-purple-300 hover:bg-white/10">
+                  <Info className="w-4 h-4" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80" align="start">
+                <div className="space-y-3">
+                  <h3 className="font-bold text-sm">Group Fitness Events</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Organize group runs, rides, hikes, or races! Create events from the Admin Panel and friends can RSVP.
+                  </p>
+                  <div className="text-xs space-y-1 text-muted-foreground">
+                    <p>🏃 Plan meetup locations & routes</p>
+                    <p>✅ Track RSVPs & attendance</p>
+                    <p>🎯 Auto-link Strava workouts</p>
+                    <p>⭐ +50 bonus points for group participation!</p>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
           <UpcomingEvents friends={friends} />
         </div>
 
